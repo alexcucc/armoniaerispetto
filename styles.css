@@ -62,8 +62,9 @@ footer {
   font-size: 16px;
   margin: 4px 2px;
   border-radius: 12px;
-  -webkit-transition-duration: 0.4s; /* Safari */
-  transition-duration: 0.4s;
+  -webkit-transition-duration: 0.5s; /* Safari */
+  transition-duration: 0.5s;
+  cursor: pointer
 }
 
 .button:hover {
