@@ -2,12 +2,15 @@
 <html lang="it">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contatti - Fondazione Armonia e Rispetto</title>
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="main.js"></script>
   </head>
   <body>
-    <my-header></my-header>
+    <header>
+      <common-header></common-header>
+    </header>
     <main>
       <section class="hero">
         <h1>Contatti</h1>
@@ -20,12 +23,13 @@
           <input type="text" name="nome" placeholder="Nome"><br>
           <input type="text" name="cognome" placeholder="Cognome"><br>
           <input type="email" name="email" placeholder="Email"><br>
-          <textarea name="messaggio" rows="8" maxlength="2000" placeholder="Messaggio" size="50"></textarea><br><br>
-          <input type="submit" value="Send">
-          <input type="reset" value="Reset">
+          <textarea name="messaggio" rows="8" maxlength="2000" placeholder="Messaggio" size="50"></textarea><br>
+          <input type="submit" value="Invia">
         </form>          
       </section>
     </main>
-    <my-footer></my-footer>
+    <footer>
+      <common-footer></common-footer>
+    </footer>
   </body>
 </html>
