@@ -63,11 +63,10 @@ nav ul li a {
   background-position: center;
   background-repeat: no-repeat;
   color: white;
-  padding: 2em 2em;
-  height: 100%;
+  padding: 1em 1em;
   display: flex;
   flex-direction: column;
-  color:black
+  color: black;
 }
 
 footer {

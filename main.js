@@ -1,3 +1,16 @@
+// common head
+class CommonHead extends HTMLElement {
+    connectedCallback() {
+        this.outerHTML = `
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="stylesheet" href="styles.css">
+            `
+    }
+}
+customElements.define('common-head', CommonHead)
+
+// common header
 class CommonHeader extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
@@ -19,9 +32,9 @@ class CommonHeader extends HTMLElement {
             `
     }
 }
-
 customElements.define('common-header', CommonHeader)
 
+// commo footer
 class CommonFooter extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
@@ -32,5 +45,4 @@ class CommonFooter extends HTMLElement {
         `
     }
 }
-
 customElements.define('common-footer', CommonFooter)
