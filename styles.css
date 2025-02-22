@@ -149,16 +149,17 @@ footer {
 
   .nav-links {
     display: none;
-    /*flex-direction: column;
+    flex-direction: column;
     text-align: center;
-    gap: 1rem;*/
+    gap: 1rem;
+    padding-left: 0px;
   }
 
   .navigation-menu.active ul {
     display: flex;
-    flex-direction: column;
+    /*flex-direction: column;
     align-items: center;
-    width: 100%;
+    width: 100%;*/
   }
 
   .content {
