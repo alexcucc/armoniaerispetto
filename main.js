@@ -14,27 +14,28 @@ customElements.define('common-head', CommonHead)
 class CommonHeader extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
-            <img class="logo" src="images/original/logo.png"/>
-            <h1 class="title">Fondazione Armonia e Rispetto (ETS)</h1>
-            <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="chi_siamo.html">Chi siamo</a></li>
-                <li><a href="missione.html">Missione</a></li>
-                <li><a href="valori.html">Valori</a></li>
-                <li><a href="in_concreto.html">In Concreto</a></li>
-                <li><a href="progetti.html">Progetti</a></li>
-                <li><a href="eventi.html">Eventi</a></li>
-                <li><a href="contatti.html">Contatti</a></li>
-                <li><a href="dona_ora.html">Dona ora</a></li>
-            </ul>
+            <img class="logo" src="images/logo.png"/>
+            <h1>Fondazione Armonia e Rispetto (ETS)</h1>
+            <nav class="navigation-menu">
+                <button class="hamburger">☰</button>
+                <ul class="nav-links">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="chi_siamo.html">Chi siamo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="missione.html">Missione</a></li>
+                    <li class="nav-item"><a class="nav-link" href="valori.html">Valori</a></li>
+                    <li class="nav-item"><a class="nav-link" href="in_concreto.html">In Concreto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="progetti.html">Progetti</a></li>
+                    <li class="nav-item"><a class="nav-link" href="eventi.html">Eventi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contatti.html">Contatti</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dona_ora.html">Dona ora</a></li>
+                </ul>
             </nav>
             `
     }
 }
 customElements.define('common-header', CommonHeader)
 
-// commo footer
+// common footer
 class CommonFooter extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
@@ -46,3 +47,15 @@ class CommonFooter extends HTMLElement {
     }
 }
 customElements.define('common-footer', CommonFooter)
+
+// hamburger
+document
+    .querySelector('.hamburger')
+    .addEventListener(
+        'click',
+        function() {
+            document
+                .querySelector('.navigation-menu')
+                .classList
+                .toggle('active');
+        });

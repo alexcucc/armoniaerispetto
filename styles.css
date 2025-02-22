@@ -9,20 +9,29 @@ body {
 
 html {
   font-family: "Liberation Sans";
-  font-size: 1.2em
+  font-size: 1.2rem
+}
+
+.hero {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .logo {
-  height: 5em;
-  width: 5em;
+  height: 4rem;
+  width: 4rem;
+  margin-top: 0.2rem;
+}
+
+header h1 {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 main {
   flex: 1;
-}
-
-.title {
-  margin-top: 0px
 }
 
 header {
@@ -35,41 +44,132 @@ header {
   position: sticky;
   z-index: 999;
   box-shadow: 0 1px 10px 3px rgba(0,0,0,0.5);
-  font-size: 1em;
 }
-
 
 h1 {
   text-align: center;
 }
 
-nav ul {
-  list-style-type: none;
-  padding: 0;
+.navigation-menu {
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgb(0, 0, 155);
+  padding: 0rem 2rem;
+  position: relative;
 }
 
-nav ul li {
-  display: inline;
-  margin: 0 1em;
-}
-
-nav ul li a {
-  color: white;
-  text-decoration: none;
-}
-
-.hero {
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: white;
-  padding: 1em 1em;
+.nav-links {
   display: flex;
-  flex-direction: column;
-  color: black;
+  justify-content: center;
+  order: 1;
+  list-style: none;
+  gap: 1rem;
+}
+
+.nav-links a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  position: relative;
+}
+
+.nav-links a:hover {
+  color: #3498db;
+}
+
+.nav-links a.active {
+  background-color: #3498db;
+  color: white;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #3498db;
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
 }
 
 footer {
   color: black;
   text-align: center;
+  font-size: 0.8em;
+}
+
+.content {
+  display: flex;
+  gap: 1em;
+  margin: 1em auto;
+  margin: 0;
+}
+
+.content-left {
+  flex: 1;
+  max-width: 60%;
+}
+
+.content-right {
+  max-width: 40%;
+  height: auto;
+  order: 2;
+}
+
+.image {
+  max-width: 100%;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+
+  .hamburger {
+    display: block;
+  }
+
+  .navigation-menu {
+    flex-direction: column;
+  }
+
+  .nav-links {
+    display: none;
+    /*flex-direction: column;
+    text-align: center;
+    gap: 1rem;*/
+  }
+
+  .navigation-menu.active ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .content {
+    flex-direction: column;
+  }
+
+  .content-left {
+    max-width: 100%;
+  }
+
+  .content-right {
+    max-width: 100%;
+  }
 }

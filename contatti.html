@@ -10,21 +10,31 @@
       <common-header></common-header>
     </header>
     <main>
-      <section class="hero">
-        <h1>Contatti</h1>
-        <h2>Email</h2>
-        Segreteria: <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a>
-        <br>
-        Informazioni: <a href="mailto:info@armoniaerispetto.it">info@armoniaerispetto.it</a>
-        <br><br>Invia una e-mail
-        <form action="https://formspree.io/f/xzzdybyl" method="POST">
-          <input type="text" name="nome" placeholder="Nome"><br>
-          <input type="text" name="cognome" placeholder="Cognome"><br>
-          <input type="email" name="email" placeholder="Email"><br>
-          <textarea name="messaggio" rows="8" maxlength="2000" placeholder="Messaggio" size="50"></textarea><br>
-          <input type="submit" value="Invia">
-        </form>          
-      </section>
+      <div class="hero">
+        <div class="title">
+          <h1>Contatti</h1>
+        </div>
+        <div class="content">
+          <div class="content-left">
+            <h2>E-mail</h2>
+            Segreteria: <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a>
+            <br>
+            Informazioni: <a href="mailto:info@armoniaerispetto.it">info@armoniaerispetto.it</a>
+          </div>
+          <div class="content-right">
+            <div class="content-form">
+              <h2>Invia una e-mail</h2>
+              <form action="https://formspree.io/f/xzzdybyl" method="POST">
+                <input type="text" name="nome" placeholder="Nome"><br>
+                <input type="text" name="cognome" placeholder="Cognome"><br>
+                <input type="email" name="email" placeholder="Email"><br>
+                <textarea name="messaggio" rows="8" maxlength="2000" placeholder="Messaggio" size="50"></textarea><br>
+                <input type="submit" value="Invia">
+              </form> 
+            </div>
+          </div>
+        </div> 
+      </div>
     </main>
     <footer>
       <common-footer></common-footer>
