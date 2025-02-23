@@ -22,7 +22,7 @@ html {
 .logo {
   height: 4rem;
   width: 4rem;
-  margin-top: 0.2rem;
+  margin-right: 1em;
 }
 
 header h1 {
@@ -64,13 +64,14 @@ h1 {
   order: 1;
   list-style: none;
   gap: 1rem;
+  padding: 0;
 }
 
 .nav-links a {
   color: #ecf0f1;
   text-decoration: none;
   font-size: 1.1rem;
-  padding: 0.5rem 1rem;
+  margin: 0.5rem 1rem;
   border-radius: 4px;
   position: relative;
 }
@@ -92,7 +93,7 @@ h1 {
   bottom: 0;
   left: 0;
   background-color: #3498db;
-  transition: width 0.3s ease;
+  transition: width 0.5s ease;
 }
 
 .nav-links a:hover::after {
@@ -110,6 +111,7 @@ footer {
   gap: 1em;
   margin: 1em auto;
   margin: 0;
+  align-items: center;
 }
 
 .content-left {
@@ -135,6 +137,16 @@ footer {
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.2em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 }
 
 @media (max-width: 768px) {
@@ -144,6 +156,9 @@ footer {
   }
 
   .navigation-menu {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease-in-out;
     flex-direction: column;
   }
 
@@ -153,6 +168,11 @@ footer {
     text-align: center;
     gap: 1rem;
     padding-left: 0px;
+  }
+
+  .navigation-menu.active {
+    opacity: 1;
+    visibility: visible;
   }
 
   .navigation-menu.active ul {

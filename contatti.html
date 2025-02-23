@@ -4,6 +4,7 @@
     <common-head></common-head>
     <title>Contatti - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
+    <script type="module" src="form.js"></script>
   </head>
   <body>
     <header>
@@ -12,26 +13,29 @@
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Contatti</h1>
+          <h1>I nostri contatti</h1>
         </div>
         <div class="content">
           <div class="content-left">
-            <h2>E-mail</h2>
+            <div class="content-form">
+              <h2>Scrivici i tuoi commenti</h2>
+              <form id="form" action="https://api.web3forms.com/submit" method="POST">
+                <input type="hidden" name="access_key" value="f51034bf-d024-4b26-9499-5b8d4012561f">
+                <input type="text" name="name" placeholder="Nome" required><br>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <textarea name="message" rows="8" maxlength="2000" placeholder="Messaggio" size="50" required></textarea><br>
+                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                <input type="submit" value="Invia">
+                <div id="result"></div>
+              </form> 
+            </div>
+            <h2>Oppure contattaci via mail</h2>
             Segreteria: <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a>
             <br>
             Informazioni: <a href="mailto:info@armoniaerispetto.it">info@armoniaerispetto.it</a>
           </div>
           <div class="content-right">
-            <div class="content-form">
-              <h2>Invia una e-mail</h2>
-              <form action="https://formspree.io/f/xzzdybyl" method="POST">
-                <input type="text" name="nome" placeholder="Nome"><br>
-                <input type="text" name="cognome" placeholder="Cognome"><br>
-                <input type="email" name="email" placeholder="Email"><br>
-                <textarea name="messaggio" rows="8" maxlength="2000" placeholder="Messaggio" size="50"></textarea><br>
-                <input type="submit" value="Invia">
-              </form> 
-            </div>
+            <img class="image" src="images/dogs.jpg">
           </div>
         </div> 
       </div>

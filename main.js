@@ -14,14 +14,15 @@ customElements.define('common-head', CommonHead)
 class CommonHeader extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
-            <img class="logo" src="images/logo.png"/>
-            <h1>Fondazione Armonia e Rispetto (ETS)</h1>
+            <div class="title">
+                <img class="logo" src="images/logo.png"/>
+                <h1>Fondazione Armonia e Rispetto (ETS)</h1>
+            </div>
+            <button class="hamburger">☰</button>
             <nav class="navigation-menu">
-                <button class="hamburger">☰</button>
                 <ul class="nav-links">
                     <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="chi_siamo.html">Chi siamo</a></li>
-                    <li class="nav-item"><a class="nav-link" href="missione.html">Missione</a></li>
                     <li class="nav-item"><a class="nav-link" href="valori.html">Valori</a></li>
                     <li class="nav-item"><a class="nav-link" href="in_concreto.html">In Concreto</a></li>
                     <li class="nav-item"><a class="nav-link" href="progetti.html">Progetti</a></li>
@@ -40,7 +41,7 @@ class CommonFooter extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
             <hr/>
-            FONDAZIONE ARMONIA E RISPETTO ETS strada Castelvecchio 21 - 10024 Moncalieri  (TO) - tel. 379/1908704
+            FONDAZIONE ARMONIA E RISPETTO ETS
             <br>
             Iscritta al Registro Unico del Terzo Settore Atto DD 1104/A2202A/2024 - Codice Fiscale 94090600019
         `
@@ -59,3 +60,4 @@ document
                 .classList
                 .toggle('active');
         });
+        
