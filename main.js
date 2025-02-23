@@ -23,8 +23,8 @@ class CommonHeader extends HTMLElement {
                 <ul class="nav-links">
                     <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="chi_siamo.html">Chi siamo</a></li>
-                    <li class="nav-item"><a class="nav-link" href="valori.html">Valori</a></li>
-                    <li class="nav-item"><a class="nav-link" href="in_concreto.html">In Concreto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="valori.html">I valori</a></li>
+                    <li class="nav-item"><a class="nav-link" href="in_concreto.html">In concreto</a></li>
                     <li class="nav-item"><a class="nav-link" href="progetti.html">Progetti</a></li>
                     <li class="nav-item"><a class="nav-link" href="eventi.html">Eventi</a></li>
                     <li class="nav-item"><a class="nav-link" href="contatti.html">Contatti</a></li>

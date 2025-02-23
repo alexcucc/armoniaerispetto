@@ -58,6 +58,11 @@ h1 {
   position: relative;
 }
 
+.nav-link {
+  text-align: center;
+  display: block;
+}
+
 .nav-links {
   display: flex;
   justify-content: center;
@@ -65,6 +70,8 @@ h1 {
   list-style: none;
   gap: 1rem;
   padding: 0;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .nav-links a {
@@ -74,34 +81,14 @@ h1 {
   margin: 0.5rem 1rem;
   border-radius: 4px;
   position: relative;
+  text-align: center;
 }
 
 .nav-links a:hover {
   color: #3498db;
 }
 
-.nav-links a.active {
-  background-color: #3498db;
-  color: white;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: 0;
-  left: 0;
-  background-color: #3498db;
-  transition: width 0.5s ease;
-}
-
-.nav-links a:hover::after {
-  width: 100%;
-}
-
 footer {
-  color: black;
   text-align: center;
   font-size: 0.8em;
 }
@@ -166,8 +153,8 @@ footer {
     display: none;
     flex-direction: column;
     text-align: center;
-    gap: 1rem;
-    padding-left: 0px;
+    gap: 0px;
+    padding: 0px;
   }
 
   .navigation-menu.active {
