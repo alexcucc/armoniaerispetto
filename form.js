@@ -1,11 +1,14 @@
-const form = document.getElementById('form');
-const result = document.getElementById('result');
+const form = document.getElementById('contactForm');
+const contactFormResult = document.getElementById('contactFormResult');
+
 form.addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(form);
     const object = Object.fromEntries(formData);
     const json = JSON.stringify(object);
-    result.innerHTML = "Invio della e-mail in corso..."
+    contactFormResult.innerHTML = 'Invio della e-mail in corso...';
+    contactFormResult.style.color = 'black';
+    contactFormResult.style.display = 'block';
 
     fetch('https://api.web3forms.com/submit', {
             method: 'POST',
@@ -16,19 +19,22 @@ form.addEventListener('submit', function(e) {
             body: json
         })
         .then(async (response) => {
-            let json = await response.json();
             if (response.status == 200) {
-                result.innerHTML = 'E-mail inviata';
+                contactFormResult.innerHTML = 'E-mail inviata correttamente';
+                contactFormResult.style.color = 'green';
+                contactFormResult.style.display = "block";
             }
         })
         .catch(error => {
+            contactFormResult.innerHTML = "Errore durante l'invio della email";
+            contactFormResult.style.color = 'red';
+            contactFormResult.style.display = 'block';
             console.log(error);
-            result.innerHTML = "Errore durante l'invio della e-mail";
         })
         .then(function() {
             form.reset();
             setTimeout(() => {
-                result.style.display = "none";
-            }, 3000);
+                contactFormResult.style.display = 'none';
+            }, 5000);
         });
 });

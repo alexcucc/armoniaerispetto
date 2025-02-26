@@ -17,17 +17,36 @@
         </div>
         <div class="content">
           <div class="content-left">
-            <div class="content-form">
-              <h2>Scrivici i tuoi commenti</h2>
-              <form id="form" action="https://api.web3forms.com/submit" method="POST">
-                <input type="hidden" name="access_key" value="f51034bf-d024-4b26-9499-5b8d4012561f">
-                <input type="text" name="name" placeholder="Nome" required><br>
-                <input type="email" name="email" placeholder="Email" required><br>
-                <textarea name="message" rows="8" maxlength="2000" placeholder="Messaggio" size="50" required></textarea><br>
-                <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
-                <input type="submit" value="Invia">
-                <div id="result"></div>
-              </form> 
+            <h2>Scrivici i tuoi commenti</h2>
+            <div class="contact-form-container">
+              <form id="contactForm">
+                  <input type="hidden" name="access_key" value="f51034bf-d024-4b26-9499-5b8d4012561f">
+                  <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+                  
+                  <div class="form-group">
+                      <label class="form-label required" for="name">Nome</label>
+                      <input type="text" class="form-input" id="name" name="name" required>
+                  </div>
+          
+                  <div class="form-group">
+                      <label class="form-label required" for="email">Email</label>
+                      <input type="email" class="form-input" id="email" name="email" required>
+                  </div>
+          
+                  <div class="form-group">
+                      <label class="form-label" for="phone">Telefono</label>
+                      <input type="tel" class="form-input" id="phone" name="phone">
+                  </div>
+          
+                  <div class="form-group">
+                      <label class="form-label required" for="message">Messaggio</label>
+                      <textarea class="form-textarea" id="message" name="message" required></textarea>
+                  </div>
+          
+                  <button type="submit" class="submit-btn">Invia Messaggio</button>
+                  <p class="form-note">I campi contrassegnati con * sono obbligatori</p>
+                  <div class="contact-form-result" id="contactFormResult"></div>
+              </form>
             </div>
             <h2>Oppure contattaci via mail</h2>
             Segreteria: <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a>
