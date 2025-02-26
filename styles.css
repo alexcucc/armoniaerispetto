@@ -10,7 +10,9 @@ body {
 
 html {
   font-family: "Liberation Sans";
-  font-size: 1.2rem
+  font-size: 1.2rem;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .hero {
@@ -94,7 +96,12 @@ footer {
 }
 
 .footer {
-  margin-bottom: 0;
+  margin-bottom: 0.2em
+}
+
+.footer-text {
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 .content {
