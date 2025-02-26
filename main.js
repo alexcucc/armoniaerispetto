@@ -3,8 +3,8 @@ class CommonHead extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="styles.css">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <link rel="stylesheet" href="styles.css"/>
             `
     }
 }
@@ -40,11 +40,13 @@ customElements.define('common-header', CommonHeader)
 class CommonFooter extends HTMLElement {
     connectedCallback() {
         this.outerHTML = `
-            <hr/>
-            FONDAZIONE ARMONIA E RISPETTO ETS
-            <br>
-            Iscritta al Registro Unico del Terzo Settore Atto DD 1104/A2202A/2024 - Codice Fiscale 94090600019
-        `
+            <div class="footer">
+                <hr/>
+                FONDAZIONE ARMONIA E RISPETTO ETS
+                <br>
+                Iscritta al Registro Unico del Terzo Settore Atto DD 1104/A2202A/2024 - Codice Fiscale 94090600019
+            </div>    
+            `
     }
 }
 customElements.define('common-footer', CommonFooter)
