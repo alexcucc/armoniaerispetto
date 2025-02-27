@@ -6,9 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 🚚 Get latest code
-      uses: actions/checkout@
+      uses: actions/checkout@v4
+
     - name: Change permissions
       run: ls -ltr
+      
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
