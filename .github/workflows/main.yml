@@ -14,3 +14,7 @@ jobs:
         username: ${{ secrets.ftp_username }}
         password: ${{ secrets.ftp_password }}
         protocol: ftps
+        exclude: |
+            **/.git*
+            **/.git*/**
+            ./README.md
