@@ -8,15 +8,13 @@ jobs:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
 
-    - name: Change permissions
-      run: chmod -R 777 . 
-
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ftp.armoniaerispetto.it
         username: ${{ secrets.ftp_username }}
         password: ${{ secrets.ftp_password }}
+        server-dir: www.armoniaerispetto.it/
         protocol: ftps
         exclude: |
             **/.git*
