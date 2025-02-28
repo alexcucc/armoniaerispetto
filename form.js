@@ -4,19 +4,13 @@ const contactFormResult = document.getElementById('contactFormResult');
 form.addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(form);
-    const object = Object.fromEntries(formData);
-    const json = JSON.stringify(object);
     contactFormResult.innerHTML = 'Invio della e-mail in corso...';
     contactFormResult.style.color = 'black';
     contactFormResult.style.display = 'block';
 
     fetch('send_mail.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: json
+            body: formData
         })
         .then(async (response) => {
             if (response.status == 200) {
