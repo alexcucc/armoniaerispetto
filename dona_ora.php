@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
   <head>
-    <common-head></common-head>
+    <?php include 'common-head.php';?>
     <title>Dona ora - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
   </head>
   <body>
-    <header>
-      <common-header></common-header>
-    </header>
+    <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
@@ -26,8 +24,6 @@
         </div>
       </div>
     </main>
-    <footer>
-      <common-footer></common-footer>
-    </footer>
+    <?php include 'footer.php';?>
   </body>
 </html>

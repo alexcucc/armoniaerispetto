@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
   <head>
-    <common-head></common-head>
+    <?php include 'common-head.php';?>
     <title>In concreto - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
   </head>
   <body>
-    <header>
-      <common-header></common-header>
-    </header>
+    <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
@@ -16,6 +14,9 @@
         </div>
         <div class="content">
           <div class="content-left">
+            <img class="image" src="images/gorilla.jpg">
+          </div>
+          <div class="content-right">
             Per promuovere la coesistenza tra animali allo stato libero e uomini nel rispetto dei diritti di entrambi, stiamo lavorando alle seguenti iniziative:
             <ul>
               <li>azioni volte all'espansione di una cultura di coesistenza pacifica e vincente con gli animali, soprattutto quelli a rischio di estinzione, affinché diventino fonte di sviluppo sostenibile per le popolazioni locali (ad esempio contribuendo alla gestione e salvaguardia dei parchi naturali), contrastando lo sfruttamento dell'habitat e la distruzione della biodiversità</li>
@@ -40,14 +41,9 @@
               <li>la sensibilizzazione e la comunicazione, anche attraverso canali di comunicazione a distanza (social network), sulle tematiche ambientali, diretta al pubblico e/o a soggetti istituzionali, docenti, dipendenti pubblici e privati, finalizzate alla conoscenza e alla tutela dell'ambiente anche per il coinvolgimento e la partecipazione attiva e volontaria dei cittadini</li>
             </ul>
           </div>
-          <div class="content-right">
-            <img class="image" src="images/gorilla.jpg">
-          </div>
         </div>
       </div>
     </main>
-    <footer>
-      <common-footer></common-footer>
-    </footer>
+    <?php include 'footer.php';?>
   </body>
 </html>

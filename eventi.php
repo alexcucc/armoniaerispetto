@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
   <head>
-    <common-head></common-head>
+    <?php include 'common-head.php';?>
     <title>Eventi - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
   </head>
   <body>
-    <header>
-      <common-header></common-header>
-    </header>
+    <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
@@ -16,16 +14,14 @@
         </div>
         <div class="content">
           <div class="content-left">
-            In corso di aggiornamento.
+            <img class="image" src="images/leopard.jpg">
           </div>
           <div class="content-right">
-            <img class="image" src="images/leopard.jpg">
+            In corso di aggiornamento.
           </div>
         </div>
       </div>
     </main>
-    <footer>
-      <common-footer></common-footer>
-    </footer>
+    <?php include 'footer.php';?>
   </body>
 </html>

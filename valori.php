@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="it">
   <head>
-    <common-head></common-head>
+    <?php include 'common-head.php';?>
     <title>Valori - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
   </head>
   <body>
-    <header>
-      <common-header></common-header>
-    </header>
+    <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
@@ -16,6 +14,9 @@
         </div>
         <div class="content">
           <div class="content-left">
+            <img class="image" src="images/wolves.jpg">
+          </div>
+          <div class="content-right">
             <h2>Il merito dei valori sta nelle azioni concrete</h2>
             Crediamo che le belle idee meritino di essere sviluppate. Pensiamo che difendere l'idea che l'uomo e gli animali possano coesistere  pacificamente ed in armonia e addirittura in sinergia sia possibile se si fanno seguire azioni concrete per passare ai fatti.
             <br>
@@ -34,14 +35,9 @@
             <br>
             Per combattere tutte quelle situazioni in cui l'animale è maltrattato, abusato,  e da essere vivente e cosciente diventa oggetto di cui disporre senza rispetto.
           </div>
-          <div class="content-right">
-            <img class="image" src="images/wolves.jpg">
-          </div>
         </div>
       </div>
     </main>
-    <footer>
-      <common-footer></common-footer>
-    </footer>
+    <?php include 'footer.php';?>
   </body>
 </html>

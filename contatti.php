@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
   <head>
-    <common-head></common-head>
+    <?php include 'common-head.php';?>
     <title>Contatti - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
     <script type="module" src="form.js"></script>
   </head>
   <body>
-    <header>
-      <common-header></common-header>
-    </header>
+    <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
@@ -17,6 +15,9 @@
         </div>
         <div class="content">
           <div class="content-left">
+            <img class="image" src="images/dogs.jpg">
+          </div>
+          <div class="content-right">
             <h2>Scrivici i tuoi commenti</h2>
             <div class="contact-form-container">
               <form id="contactForm">
@@ -53,14 +54,9 @@
             <br>
             Informazioni: <a href="mailto:info@armoniaerispetto.it">info@armoniaerispetto.it</a>
           </div>
-          <div class="content-right">
-            <img class="image" src="images/dogs.jpg">
-          </div>
         </div> 
       </div>
     </main>
-    <footer>
-      <common-footer></common-footer>
-    </footer>
+    <?php include 'footer.php';?>
   </body>
 </html>

@@ -118,6 +118,7 @@ footer {
 }
 
 .content-right {
+  flex: 1;
   max-width: 50%;
   height: auto;
   order: 2;
