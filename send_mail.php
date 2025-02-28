@@ -1,27 +1,27 @@
 <?php 
-    if (isset($_POST['submit'])) {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $to = "alex.cucc@hotmail.it";
         $from = $_POST['email'];
         $name = $_POST['name'];
         $phone = $_POST['phone'];
         $message = $_POST['message'];
-        $subject = "Richiesta informazioni";
-        $subject2 = "Copy of your form submission";
-        $message = $name . " wrote the following:" . "\n\n" . $_POST['message'];
-        $message2 = "Here is a copy of your message " . $name . "\n\n" . $_POST['message'];
-        $headers = "From:" . $from;
-        $headers2 = "From:" . $to;
+        $subjectOperator = "Richiesta informazioni";
+        $subjectCustomer = "Grazie per la tua email, ti ricontatteremo a breve";
+        $messageOperator = "Nome: ". $name . "\nE-mail: " . $from . "\nTelefono: " . $phone . "\nMessaggio: " . $message;
+        $messageCustomer = $name . " grazie per la tua email, ti ricontatteremo a breve";
+        $headersOperator = "From:" . $from;
+        $headersCustomer = "From:" . $to;
 
         mail(
             $to,
-            $subject,
-            $message,
-            $headers);
+            $subjectOperator,
+            $messageOperator,
+            $headersOperator);
         mail(
             $from,
-            $subject2,
-            $message2,
-            $headers2);
+            $subjectCustomer,
+            $messageCustomer,
+            $headersCustomer);
     }
 ?>

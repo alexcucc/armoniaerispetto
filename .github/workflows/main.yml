@@ -1,6 +1,6 @@
 on: push
 name: 🚀 Deploy website on push
-run-name: Deploy website
+run-name: 🚀 Deploy website
 jobs:
   web-deploy:
     name: 🎉 Deploy
