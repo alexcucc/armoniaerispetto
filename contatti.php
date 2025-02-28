@@ -21,9 +21,7 @@
             <h2>Scrivici i tuoi commenti</h2>
             <div class="contact-form-container">
               <form id="contactForm">
-                  <input type="hidden" name="access_key" value="f51034bf-d024-4b26-9499-5b8d4012561f">
-                  <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
-                  
+              
                   <div class="form-group">
                       <label class="form-label required" for="name">Nome</label>
                       <input type="text" class="form-input" id="name" name="name" required>

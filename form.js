@@ -10,7 +10,7 @@ form.addEventListener('submit', function(e) {
     contactFormResult.style.color = 'black';
     contactFormResult.style.display = 'block';
 
-    fetch('https://api.web3forms.com/submit', {
+    fetch('send_mail.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
