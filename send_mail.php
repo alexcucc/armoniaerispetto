@@ -37,18 +37,25 @@
 
     $to = "alex.cucc@hotmail.it";
     $sender = "postmaster@armoniaerispetto.it";
-    $subject = "Testing e-mail";
+    $subjectOperator = "Richiesta informazioni";
+    $subjectCustomer = "$name grazie per l'e-mail, ti ricontatteremo a breve";
 
-    $email_content = "Name: $name\n";
-    $email_content .= "Email: $email\n\n";
-    $email_content .= "Message:\n$message\n";
+    $contentOperator = "Name: $name\n";
+    $contentOperator .= "Email: $email\n\n";
+    $contentOperator .= "Message:\n$message\n";
 
     $headers = "From: $sender";
 
     sendMailOrFail(
         $to,
-        $subject,
-        $email_content,
+        $subjectOperator,
+        $contentOperator,
+        $headers,
+        $sender);
+    sendMailOrFail(
+        $email,
+        $subjectCustomer,
+        $contentCustomer,
         $headers,
         $sender);
 ?>
