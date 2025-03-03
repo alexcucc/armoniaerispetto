@@ -2,7 +2,7 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $to = "alex.cucc@hotmail.it";
-        $from = $_POST['email'];
+        $email = $_POST['email'];
         $name = $_POST['name'];
         $phone = $_POST['phone'];
         $message = $_POST['message'];
@@ -10,10 +10,10 @@
         $returnPath = "-f$sender";
         $subjectOperator = "Richiesta informazioni";
         $subjectCustomer = "Grazie per la tua email, ti ricontatteremo a breve";
-        $messageOperator = "Nome: ". $name . "\nE-mail: " . $from . "\nTelefono: " . $phone . "\nMessaggio: " . $message;
-        $messageCustomer = $name . " grazie per la tua email, ti ricontatteremo a breve";
-        $headersOperator = "From:" . $from;
-        $headersCustomer = "From:" . $to;
+        $messageOperator = "Nome: $name \nE-mail: $email\nTelefono: $phone\nMessaggio: $message";
+        $messageCustomer = "$name grazie per la tua email, ti ricontatteremo a breve";
+        $headersOperator = "From: $email";
+        $headersCustomer = "From: $to";
 
         sendMailOrThrowError(
             $to,
@@ -22,7 +22,7 @@
             $headersOperator,
             $returnPath);
         sendMailOrThrowError(
-            $from,
+            $email,
             $subjectCustomer,
             $messageCustomer,
             $headersCustomer,

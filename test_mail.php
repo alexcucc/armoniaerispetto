@@ -10,7 +10,7 @@ $subject = "Testing e-mail";
 $sender = "postmaster@armoniaerispetto.it";
 
 
-$headers = "From: $sender\n";
+$headers = "From: $sender";
 /*$headers .= "MIME-Version: 1.0\n";
 $headers .= "Content-Type: multipart/alternative;\n\tboundary=\"$mail_boundary\"\n";
 $headers .= "X-Mailer: PHP " . phpversion();*/
