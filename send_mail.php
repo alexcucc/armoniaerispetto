@@ -14,17 +14,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $to = "alex.cucc@hotmail.it";
-    
-    $subject = "New contact from $name";
+    $sender = "postmaster@armoniaerispetto.it";
+    $subject = "Testing e-mail";
 
     $email_content = "Name: $name\n";
     $email_content .= "Email: $email\n\n";
     $email_content .= "Message:\n$message\n";
 
-    $headers = "From: $name <$email>\r\n";
-    $headers .= "Reply-To: $email\r\n";
+    $headers = "From: $sender";
 
-    if (mail($to, $subject, $email_content, $headers)) {
+    if (mail($to, $subject, $email_content, $headers, "-f$sender")) {
 
         http_response_code(200);
     } else {
