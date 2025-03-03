@@ -6,6 +6,8 @@
         $name = $_POST['name'];
         $phone = $_POST['phone'];
         $message = $_POST['message'];
+        $sender = "postmaster@armoniaerispetto.it";
+        $returnPath = "-f$sender";
         $subjectOperator = "Richiesta informazioni";
         $subjectCustomer = "Grazie per la tua email, ti ricontatteremo a breve";
         $messageOperator = "Nome: ". $name . "\nE-mail: " . $from . "\nTelefono: " . $phone . "\nMessaggio: " . $message;
@@ -13,15 +15,35 @@
         $headersOperator = "From:" . $from;
         $headersCustomer = "From:" . $to;
 
-        mail(
+        sendMailOrThrowError(
             $to,
             $subjectOperator,
             $messageOperator,
-            $headersOperator);
-        mail(
+            $headersOperator,
+            $returnPath);
+        sendMailOrThrowError(
             $from,
             $subjectCustomer,
             $messageCustomer,
-            $headersCustomer);
+            $headersCustomer,
+            $returnPath);
+    }
+
+    function sendMailOrThrowError(
+        $to,
+        $subject,
+        $message,
+        $headers,
+        $returnPath) {
+
+            if (!mail(
+                $to,
+                $subject,
+                $message,
+                $headers,
+                $returnPath)) {
+                    error_log("Error while sending email to: " . $to);
+                    http_response_code(500);
+                }
     }
 ?>
