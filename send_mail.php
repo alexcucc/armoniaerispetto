@@ -35,14 +35,14 @@
         exit;
     }
 
-    $to = "alex.cucc@hotmail.it";
+    $to = "info@armoniaerispetto.it";
     $sender = "postmaster@armoniaerispetto.it";
     $subjectOperator = "Richiesta informazioni";
     $subjectCustomer = "Richiesta informazioni";
 
-    $contentOperator = "Name: $name\n";
-    $contentOperator .= "Email: $email\n\n";
-    $contentOperator .= "Message:\n$message\n";
+    $contentOperator = "Nome: $name\n";
+    $contentOperator .= "E-mail: $email\n";
+    $contentOperator .= "Messaggio:\n$message\n";
     $contentCustomer = "$name grazie per l'e-mail, ti ricontatteremo a breve";
 
     $headers = "From: $sender";
