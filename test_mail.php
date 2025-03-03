@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 
 // Genera un boundary
-$mail_boundary = "=_NextPart_" . md5(uniqid(time()));
+//$mail_boundary = "=_NextPart_" . md5(uniqid(time()));
 
 $to = "alex.cucc@hotmail.it";
 $subject = "Testing e-mail";
@@ -36,7 +36,7 @@ $msg = "Questa è una e-Mail di test inviata dal servizio Hosting di Aruba.it pe
 Aruba.it";  // aggiungi il messaggio in formato HTML
 
 // Boundary di terminazione multipart/alternative
-$msg .= "\n--$mail_boundary--\n";
+//$msg .= "\n--$mail_boundary--\n";
 
 // Imposta il Return-Path (funziona solo su hosting Windows)
 //ini_set("sendmail_from", $sender);
