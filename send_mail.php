@@ -38,11 +38,12 @@
     $to = "alex.cucc@hotmail.it";
     $sender = "postmaster@armoniaerispetto.it";
     $subjectOperator = "Richiesta informazioni";
-    $subjectCustomer = "$name grazie per l'e-mail, ti ricontatteremo a breve";
+    $subjectCustomer = "Richiesta informazioni";
 
     $contentOperator = "Name: $name\n";
     $contentOperator .= "Email: $email\n\n";
     $contentOperator .= "Message:\n$message\n";
+    $contentCustomer = "$name grazie per l'e-mail, ti ricontatteremo a breve";
 
     $headers = "From: $sender";
 
