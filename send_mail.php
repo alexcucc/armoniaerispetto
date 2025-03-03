@@ -24,12 +24,12 @@
             $messageOperator,
             $headersOperator,
             $returnPath);
-        sendMailOrThrowError(
+        /*sendMailOrThrowError(
             $email,
             $subjectCustomer,
             $messageCustomer,
             $headersCustomer,
-            $returnPath);
+            $returnPath);*/
     }
 
     function sendMailOrThrowError(
