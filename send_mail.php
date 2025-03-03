@@ -1,6 +1,29 @@
 <?php
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    function sendMailOrFail(
+        $to,
+        $subject,
+        $email_content,
+        $headers,
+        $sender) {
+
+        if (!mail(
+            $to,
+            $subject,
+            $email_content,
+            $headers,
+            "-f$sender")) {
+
+            http_response_code(500);
+            exit;
+        }
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] != "POST") {
+
+        http_response_code(403);
+        exit;
+    }
 
     $name = trim(filter_input(INPUT_POST, "name", FILTER_SANITIZE_STRING));
     $email = trim(filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL));
@@ -9,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($name) || empty($message) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
         http_response_code(400);
-        echo "Please fill in all fields and provide a valid email address.";
         exit;
     }
 
@@ -23,16 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $headers = "From: $sender";
 
-    if (mail($to, $subject, $email_content, $headers, "-f$sender")) {
-
-        http_response_code(200);
-    } else {
-
-        http_response_code(500);
-    }
-} else {
-
-    http_response_code(403);
-}
-
+    sendMailOrFail(
+        $to,
+        $subject,
+        $email_content,
+        $headers,
+        $sender);
 ?>
