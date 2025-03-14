@@ -24,7 +24,7 @@
             Sia negli ambienti urbani dove gli animali rivestono sempre più importanza come compagni della nostra esistenza, sia negli ambienti poco antropizzati dove con  l'animale è condiviso il lavoro e la fatica della sussistenza, dobbiamo sviluppare la cultura del rispetto verso i nostri compagni.
             <br>
             <br>
-            Ancora di più il rispetto è dovuto a tutti quelli che malgrado loro hanno il compito di essere il nostro cibo.
+            Ancora di più il rispetto è dovuto a tutti quelli che, malgrado loro, hanno il destino di essere il nostro cibo.
             <br>
             A loro sopratutto dobbiamo garantire una dignità ed una esistenza libera da abusi, violenza e sopraffazione
             <br>
