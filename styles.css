@@ -158,7 +158,8 @@ footer {
 .main-image {
   flex: 1;
   border-radius: 1em;
-  object-fit: fill;
+  width: 100%;
+  height: 100%;
 }
 
 .hamburger {
