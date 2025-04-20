@@ -3,7 +3,9 @@
         <img class="logo" src="images/logo.png"/>
         <h1>Fondazione Armonia e Rispetto (ETS)</h1>
     </div>
-    <button class="hamburger">☰</button>
+    <div class="hamburger-container">
+        <button class="hamburger">☰</button>
+    </div>
     <nav class="navigation-menu">
         <ul class="nav-links">
             <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
