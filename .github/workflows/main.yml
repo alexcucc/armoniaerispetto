@@ -13,6 +13,7 @@ jobs:
       uses: cicirello/generate-sitemap@v1
       with:
         base-url-path: https://www.armoniaerispetto.it/
+        additional-extensions: php
 
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
