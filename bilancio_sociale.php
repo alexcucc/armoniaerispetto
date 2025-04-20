@@ -12,7 +12,7 @@
         <div class="title">
           <h1>Bilancio Sociale</h1>
         </div>
-        <div class="single-content">
+        <div class="content-container">
           In corso di aggiornamento
         </div>
       </div>

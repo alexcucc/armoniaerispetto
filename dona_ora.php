@@ -12,14 +12,12 @@
         <div class="title">
           <h1>Dona ora</h1>
         </div>
-        <div class="single-content">
+        <div class="content-container">
           <div class="content-left">
-            <h2>Cinque per mille</h2>
-            In corso di aggiornamento.
+            <a href="/cinque_per_mille.php"><h2>Cinque per mille</h2></a>
           </div>
           <div class="content-right">
-            <h2>Donazioni e lasciti</h2>
-            In corso di aggiornamento.
+          <a href="/donazioni_e_lasciti.php"><h2>Donazioni e lasciti</h2></a>
           </div>
         </div>
       </div>

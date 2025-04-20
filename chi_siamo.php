@@ -12,7 +12,7 @@
         <div class="title">
           <h1>Chi siamo</h1>
         </div>
-        <div class="single-content">
+        <div class="content-container">
           <div class="content-left">
             <img class="image" src="images/elephants.jpg">
           </div>

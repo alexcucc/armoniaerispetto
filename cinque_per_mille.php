@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Eventi - Fondazione Armonia e Rispetto</title>
+    <title>Cinque per mille - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
   </head>
   <body>
@@ -10,15 +10,10 @@
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Eventi</h1>
+          <h1>Cinque per mille</h1>
         </div>
         <div class="content-container">
-          <div class="content-left">
-            <img class="image" src="images/leopard.jpg">
-          </div>
-          <div class="content-right">
-            In corso di aggiornamento.
-          </div>
+          In corso di aggiornamento.
         </div>
       </div>
     </main>

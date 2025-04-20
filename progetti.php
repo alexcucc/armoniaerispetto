@@ -12,12 +12,12 @@
         <div class="title">
           <h1>I nostri progetti</h1>
         </div>
-        <div class="single-content">
+        <div class="content-container">
           <div class="content-left">
-            <img class="image" src="images/lions.jpg">
+            <a href="/catalogo_progetti.php"><h2>Catalogo progetti</h2></a>
           </div>
           <div class="content-right">
-            In corso di aggiornamento
+          <a href="/presenta_un_progetto.php"><h2>Presenta un progetto</h2></a>
           </div>
         </div>
       </div>
