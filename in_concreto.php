@@ -13,7 +13,7 @@
           <h1>In concreto</h1>
         </div>
         <h2>Perseguiamo il nostro obiettivo diretto a salvaguardare e difendere gli animali e a favorirne la coesistenza con l'uomo con le seguenti azione concrete</h2>
-        <div class="content">
+        <div class="multiple-content">
           <div class="content-left">
             <img class="image" src="images/gorilla.jpg">
           </div>
@@ -26,7 +26,7 @@
             </ul>
           </div>
         </div>
-        <div class="content">
+        <div class="multiple-content">
           <div class="content-left">
             <b>Per promuovere la coesistenza tra animali allo stato libero e uomini nel rispetto dei diritti di entrambi, stiamo lavorando alle seguenti iniziative:</b>
             <ul>
@@ -40,7 +40,7 @@
             <img class="image" src="images/turtle.jpg">
           </div>
         </div>
-        <div class="content">
+        <div class="multiple-content">
           <div class="content-left">
             <img class="image" src="images/whales.jpg">
           </div>

@@ -12,7 +12,7 @@
         <div class="title">
           <h1>Eventi</h1>
         </div>
-        <div class="content">
+        <div class="single-content">
           <div class="content-left">
             <img class="image" src="images/leopard.jpg">
           </div>

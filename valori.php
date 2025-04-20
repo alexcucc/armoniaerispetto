@@ -12,7 +12,7 @@
         <div class="title">
           <h1>I nostri valori</h1>
         </div>
-        <div class="content">
+        <div class="single-content">
           <div class="content-left">
             <img class="image" src="images/wolves.jpg">
           </div>

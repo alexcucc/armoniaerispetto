@@ -13,14 +13,14 @@
         <div class="title">
           <h1>I nostri contatti</h1>
         </div>
-        <div class="content">
+        <div class="single-content">
           <div class="content-left">
             <img class="image" src="images/dogs.jpg">
           </div>
           <div class="content-right">
             <h2>Scrivici i tuoi commenti</h2>
             <div class="contact-form-container">
-              <form id="contactForm">
+              <form id="contactForm" class="contact-form">
               
                   <div class="form-group">
                       <label class="form-label required" for="name">Nome</label>

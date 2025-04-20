@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Dona ora - Fondazione Armonia e Rispetto</title>
+    <title>Bilancio Sociale - Fondazione Armonia e Rispetto</title>
     <script type="module" src="main.js"></script>
   </head>
   <body>
@@ -10,17 +10,10 @@
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Dona ora</h1>
+          <h1>Bilancio Sociale</h1>
         </div>
         <div class="single-content">
-          <div class="content-left">
-            <h2>Cinque per mille</h2>
-            In corso di aggiornamento.
-          </div>
-          <div class="content-right">
-            <h2>Donazioni e lasciti</h2>
-            In corso di aggiornamento.
-          </div>
+          In corso di aggiornamento
         </div>
       </div>
     </main>
