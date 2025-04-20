@@ -13,10 +13,10 @@
           <h1>I nostri valori</h1>
         </div>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <img class="image" src="images/wolves.jpg">
           </div>
-          <div class="content-right">
+          <div class="content">
             <h2>Il merito dei valori sta nelle azioni concrete</h2>
             Crediamo che le belle idee meritino di essere sviluppate. Pensiamo che difendere l'idea che l'uomo e gli animali possano coesistere  pacificamente ed in armonia e addirittura in sinergia sia possibile se si fanno seguire azioni concrete per passare ai fatti.
             <br>

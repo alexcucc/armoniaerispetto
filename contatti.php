@@ -14,10 +14,10 @@
           <h1>I nostri contatti</h1>
         </div>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <img class="image" src="images/dogs.jpg">
           </div>
-          <div class="content-right">
+          <div class="content">
             <h2>Scrivici i tuoi commenti</h2>
             <div class="contact-form-container">
               <form id="contactForm" class="contact-form">

@@ -14,10 +14,10 @@
         </div>
         <h2>Perseguiamo il nostro obiettivo diretto a salvaguardare e difendere gli animali e a favorirne la coesistenza con l'uomo con le seguenti azione concrete</h2>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <img class="image" src="images/gorilla.jpg">
           </div>
-          <div class="content-right">
+          <div class="content">
             <b>Contribuiamo allo sviluppo sostenibile delle popolazioni dei paesi meno sviluppati per:</b>
             <ul>
               <li>sostenere attività tese a favorire lo sviluppo educativo, economico e produttivo operando prevalentemente in contesti rurali con la finalità di consentire una maggior autonomia di sostentamento delle realtà locali inserite nell'ambiente
@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <b>Per promuovere la coesistenza tra animali allo stato libero e uomini nel rispetto dei diritti di entrambi, stiamo lavorando alle seguenti iniziative:</b>
             <ul>
               <li>azioni volte all'espansione di una cultura di coesistenza pacifica e vincente con gli animali, soprattutto quelli a rischio di estinzione, affinché diventino fonte di sviluppo sostenibile per le popolazioni locali (ad esempio contribuendo alla gestione e salvaguardia dei parchi naturali), contrastando lo sfruttamento dell'habitat e la distruzione della biodiversità</li>
@@ -36,15 +36,15 @@
               <li>la partecipazione all'istituzione ed alla gestione di centri per il recupero, salvaguardia e ripopolamento della fauna selvatica, al fine di curare, riabilitare e rilasciare in natura gli animali selvatici in difficoltà o a rischio di estinzione</li>
             </ul>
           </div>
-          <div class="content-right">
+          <div class="content">
             <img class="image" src="images/turtle.jpg">
           </div>
         </div>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <img class="image" src="images/whales.jpg">
           </div>
-          <div class="content-right">
+          <div class="content">
             <b>Ma anche presso di noi possiamo e vogliamo promuovere la cultura delle popolazioni dei paesi sviluppati sulla biodiversità attraverso:</b>
             <ul>
               <li>attività di promozione della cultura ecologica ed educazione ambientale rivolte alle scuole e alle università anche tramite formazione extrascolastica</li>

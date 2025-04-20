@@ -13,10 +13,10 @@
           <h1>I nostri progetti</h1>
         </div>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <a href="/catalogo_progetti.php"><h2>Catalogo progetti</h2></a>
           </div>
-          <div class="content-right">
+          <div class="content">
           <a href="/presenta_un_progetto.php"><h2>Presenta un progetto</h2></a>
           </div>
         </div>

@@ -13,10 +13,10 @@
           <h1>Eventi</h1>
         </div>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <img class="image" src="images/leopard.jpg">
           </div>
-          <div class="content-right">
+          <div class="content">
             In corso di aggiornamento.
           </div>
         </div>

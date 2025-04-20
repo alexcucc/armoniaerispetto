@@ -12,9 +12,9 @@
         <div class="title">
           <h1>Per una coesistenza tra uomini ed animali in vera armonia e pieno rispetto</h1>
         </div>
-        <div class="main-image-container">
-          <div class="main-image">
-            <!--<img class="main-image" src="images/elephant_and_man.png">-->
+        <div class="content-container">
+          <div class="content">
+            <img class="main-image" src="images/elephant_and_man.png">
           </div>
         </div>
       </div>

@@ -13,10 +13,10 @@
           <h1>Dona ora</h1>
         </div>
         <div class="content-container">
-          <div class="content-left">
+          <div class="content">
             <a href="/cinque_per_mille.php"><h2>Cinque per mille</h2></a>
           </div>
-          <div class="content-right">
+          <div class="content">
           <a href="/donazioni_e_lasciti.php"><h2>Donazioni e lasciti</h2></a>
           </div>
         </div>
