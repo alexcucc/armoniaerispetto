@@ -82,7 +82,7 @@ h1 {
   text-decoration: none;
   font-size: 1.1rem;
   margin: 0.5rem 1rem;
-  border-radius: 4px;
+  border-radius: 0.3em;
   position: relative;
   text-align: center;
 }
@@ -118,19 +118,20 @@ footer {
 }
 
 .main-image {
-  max-height: 31em;
+  max-height: 30rem;
   max-width: 100%;
   display: block;
   margin: auto;
-  border-radius: 0.5em;
+  border-radius: 0.3em;
 }
 
 .image {
-  max-height: 100%;
-  max-width: 100%;
+  max-width: 30rem;
+  height: 100%;
+  width: 100%;
   display: block;
   margin: auto;
-  border-radius: 0.5em;
+  border-radius: 0.3em;
 }
 
 .hamburger-container {
@@ -166,7 +167,7 @@ footer {
   margin: 0 auto;
   padding: 0px;
   background-color: #f9f9f9;
-  border-radius: 10px;
+  border-radius: 0.3em;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
@@ -191,7 +192,7 @@ footer {
   width: 100%;
   padding: 12px;
   border: 2px solid #ddd;
-  border-radius: 5px;
+  border-radius: 0.3em;
   transition: border-color 0.3s ease;
 }
 
@@ -213,7 +214,7 @@ footer {
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.3em;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
