@@ -17,7 +17,7 @@
           <div class="content">
             <img class="image" src="images/dogs.jpg">
           </div>
-          <div class="content">
+          <div class="content" style="display: block;">
             <h2>Scrivici i tuoi commenti</h2>
             <div class="contact-form-container">
               <form id="contactForm" class="contact-form">

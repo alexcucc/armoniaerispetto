@@ -14,7 +14,7 @@
         </div>
         <div class="content-container">
           <div class="content">
-            <img class="image" src="images/leopard.jpg">
+            <img class="image" src="images/penguins.jpg">
           </div>
           <div class="content">
             In corso di aggiornamento.
