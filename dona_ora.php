@@ -14,10 +14,10 @@
         </div>
         <div class="content-container">
           <div class="content">
-            <a href="/cinque_per_mille.php"><h2>Cinque per mille</h2></a>
+            <button onclick="window.location.href='cinque_per_mille.php';" class="page-button">Cinque per Mille</button>
           </div>
           <div class="content">
-          <a href="/donazioni_e_lasciti.php"><h2>Donazioni e lasciti</h2></a>
+            <button onclick="window.location.href='donazioni_e_lasciti.php';" class="page-button">Donazioni e Lasciti</button>
           </div>
         </div>
       </div>

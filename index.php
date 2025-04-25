@@ -15,6 +15,7 @@
         <div class="content-container">
           <div class="content">
             <img class="main-image" src="images/elephant_and_man.png">
+            <button onclick="window.location.href='dona_ora.php';" class="page-button">Dona Ora</button>
           </div>
         </div>
       </div>

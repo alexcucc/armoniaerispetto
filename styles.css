@@ -53,6 +53,30 @@ h1 {
   margin: 0;
 }
 
+.page-button {
+  display: block;
+  margin: 20px auto;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #28a745; /* Green shade */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.page-button:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: scale(1.05);
+}
+
+.page-button:active {
+  background-color: #1e7e34; /* Even darker green on active */
+  transform: scale(0.95);
+}
+
 .navigation-menu {
   justify-content: space-between;
   align-items: center;
