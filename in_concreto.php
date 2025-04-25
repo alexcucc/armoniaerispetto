@@ -12,7 +12,7 @@
         <div class="title">
           <h1>In concreto</h1>
         </div>
-        <h2>Perseguiamo il nostro obiettivo diretto a salvaguardare e difendere gli animali e a favorirne la coesistenza con l'uomo con le seguenti azione concrete</h2>
+        <h2>Perseguiamo il nostro obiettivo diretto a salvaguardare e difendere gli animali e a favorirne la coesistenza con l'uomo con le seguenti azioni concrete</h2>
         <div class="content-container">
           <div class="content">
             <img class="image" src="images/gorilla.jpg">
