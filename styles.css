@@ -85,6 +85,12 @@ h1 {
   position: relative;
 }
 
+.nav-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .nav-link {
   text-align: center;
   display: block;
@@ -95,7 +101,6 @@ h1 {
   justify-content: center;
   order: 1;
   list-style: none;
-  gap: 1rem;
   padding: 0;
   margin-top: 0px;
   margin-bottom: 0px;
@@ -274,7 +279,7 @@ footer {
   margin-bottom: 0;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
   .hamburger {
     display: block;
