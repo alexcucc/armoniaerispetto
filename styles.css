@@ -13,6 +13,8 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 html {
@@ -29,6 +31,10 @@ h1, h2, h3, h4, h5, h6, .nav-links a {
   font-family: 'Merriweather', Georgia, serif;
   font-weight: 700;
   line-height: 1.3;
+}
+
+h1, h2, h3, h4, h5, h6, .title, .nav-links, footer {
+  text-align: center; /* Keep headings and specific elements centered */
 }
 
 @keyframes fadeIn {
