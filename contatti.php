@@ -3,7 +3,6 @@
   <head>
     <?php include 'common-head.php';?>
     <title>Contatti - Fondazione Armonia e Rispetto</title>
-    <script type="module" src="main.js"></script>
     <script type="module" src="form.js"></script>
   </head>
   <body>

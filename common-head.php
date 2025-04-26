@@ -3,3 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="stylesheet" href="styles.css"/>
 <link rel="icon" href="/images/favicon.ico">
+<script type="module" src="main.js"></script>
+<script src="https://unpkg.com/lunr/lunr.js"></script>
+<script src="https://unpkg.com/lunr-languages/lunr.stemmer.support.js"></script>
+<script src="https://unpkg.com/lunr-languages/lunr.it.js"></script>

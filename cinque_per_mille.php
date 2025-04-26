@@ -3,7 +3,6 @@
   <head>
     <?php include 'common-head.php';?>
     <title>Cinque per mille - Fondazione Armonia e Rispetto</title>
-    <script type="module" src="main.js"></script>
   </head>
   <body>
     <?php include 'header.php';?>

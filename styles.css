@@ -53,6 +53,131 @@ img {
   color: #2D3748;
 }
 
+.search-container {
+  margin-left: 0; /* Remove auto margin */
+  margin-right: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  order: 2; /* Move search to end */
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2em;
+  padding: 0.3em;
+  transition: all 0.3s ease;
+}
+
+.search-form:hover,
+.search-form:focus-within {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.4em 1em;
+  font-size: 0.95rem;
+  width: 200px;
+  transition: width 0.3s ease;
+}
+
+.search-input:focus {
+  width: 250px;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-button {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5em 0.8em;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  opacity: 0.8;
+}
+
+.search-button:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.search-results-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.search-result {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 0.5em;
+  background: #f5f5f5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-result mark {
+  background-color: rgba(46, 139, 87, 0.2);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.result-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  padding: 1rem;
+}
+
+.no-results {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 0.5em;
+}
+
+.search-result h2 {
+  margin: 0 0 0.5rem 0;
+}
+
+.search-result .excerpt {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.search-result .result-link {
+  color: #2E8B57;
+  font-size: 0.9rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
 .page-button:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 2px;
@@ -89,7 +214,6 @@ header {
   text-align: center;
   text-shadow: 2px 2px 3px rgba(0,0,0,0.5);
   position: sticky;
-  z-index: 999;
   box-shadow: 0 1px 10px 3px rgba(0,0,0,0.5);
 }
 
@@ -123,11 +247,10 @@ h1 {
 }
 
 .navigation-menu {
-  justify-content: space-between;
+  display: flex;
   align-items: center;
-  background-color: #2E8B57;
-  padding: 0rem 0.5rem;
-  position: relative;
+  justify-content: center;
+  margin-bottom: 0.5rem;
 }
 
 .nav-item {
@@ -143,12 +266,9 @@ h1 {
 
 .nav-links {
   display: flex;
-  justify-content: center;
-  order: 1;
   list-style: none;
+  margin: 0;
   padding: 0;
-  margin-top: 0px;
-  margin-bottom: 0px;
 }
 
 .nav-links a {
@@ -380,6 +500,7 @@ textarea:focus-visible {
   --spacing-unit: 1rem;
 }
 
+/* Dark Mode Styles */
 @media (prefers-color-scheme: dark) {
   body {
       background-color: #1a1a1a;
@@ -399,6 +520,45 @@ textarea:focus-visible {
   
   .form-label {
       color: #ccc;
+  }
+
+  .search-results-container {
+    color: #e0e0e0;
+  }
+
+  .search-result {
+      background: #2d2d2d;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .search-result h2 a {
+      color: #3CA76A;
+  }
+
+  .search-result .excerpt {
+      color: #ccc;
+  }
+
+  .search-result mark {
+      background-color: rgba(46, 139, 87, 0.3);
+      color: #e0e0e0;
+  }
+
+  .result-meta {
+      color: #999;
+  }
+
+  .no-results {
+      background: #2d2d2d;
+      color: #e0e0e0;
+  }
+
+  .loading {
+      color: #999;
+  }
+
+  .error {
+      color: #ff6b6b;
   }
 }
 
@@ -445,7 +605,22 @@ textarea:focus-visible {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1440px) {
+
+  .search-container {
+    width: 100%;
+    order: -1;
+  }
+
+  .search-form {
+    max-width: 300px;
+    margin: auto;
+  }
+
+  .search-input,
+  .search-input:focus {
+    width: 100%;
+  }
 
   .hamburger {
     display: block;
@@ -468,24 +643,20 @@ textarea:focus-visible {
 
   .navigation-menu.active {
     max-height: 25em;
+    padding: 1rem;
   }
 
   .nav-links {
-    display: flex;
     flex-direction: column;
+    width: 100%;
     text-align: center;
-    gap: 0;
-    padding: 0;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out;
-    background-color: inherit;
+    order: 1;
   }
 
   .navigation-menu.active .nav-links {
     opacity: 1;
     visibility: visible;
-}
+  }
 
   .navigation-menu.active ul {
     display: flex;
