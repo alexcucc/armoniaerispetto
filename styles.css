@@ -501,6 +501,49 @@ textarea:focus-visible {
   --spacing-unit: 1rem;
 }
 
+.pdf-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.mobile-pdf-notice {
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pdf-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.pdf-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #2E8B57;
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.pdf-button:hover {
+  background-color: #3CA76A;
+}
+
+.pdf-button .icon {
+  font-size: 1.2rem;
+}
+
 /* Dark Mode Styles */
 @media (prefers-color-scheme: dark) {
   body {
@@ -560,6 +603,11 @@ textarea:focus-visible {
 
   .error {
       color: #ff6b6b;
+  }
+
+  .mobile-pdf-notice {
+    background: #2d2d2d;
+    color: #e0e0e0;
   }
 }
 
