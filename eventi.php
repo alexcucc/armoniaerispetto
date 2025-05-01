@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Eventi - Fondazione Armonia e Rispetto</title>
+    <title>Eventi</title>
   </head>
   <body>
     <?php include 'header.php';?>

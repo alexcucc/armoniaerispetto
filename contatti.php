@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Contatti - Fondazione Armonia e Rispetto</title>
+    <title>Contatti</title>
     <script type="module" src="form.js"></script>
   </head>
   <body>
@@ -10,7 +10,7 @@
     <main>
       <div class="hero">
         <div class="title">
-          <h1>I nostri contatti</h1>
+          <h1>I nostri Contatti</h1>
         </div>
         <div class="content-container">
           <div class="content">

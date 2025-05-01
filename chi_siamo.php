@@ -2,14 +2,14 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Chi siamo - Fondazione Armonia e Rispetto</title>
+    <title>Chi Siamo</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Chi siamo</h1>
+          <h1>Chi Siamo</h1>
         </div>
         <div class="content-container">
           <div class="content">

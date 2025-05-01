@@ -2,14 +2,14 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Dona ora - Fondazione Armonia e Rispetto</title>
+    <title>Dona Ora</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Dona ora</h1>
+          <h1>Dona Ora</h1>
         </div>
         <div class="content-container">
           <div class="content">

@@ -2,14 +2,14 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>In concreto - Fondazione Armonia e Rispetto</title>
+    <title>In Concreto</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>In concreto</h1>
+          <h1>In Concreto</h1>
         </div>
         <h2>Perseguiamo il nostro obiettivo diretto a salvaguardare e difendere gli animali e a favorirne la coesistenza con l'uomo con le seguenti azioni concrete</h2>
         <div class="content-container">

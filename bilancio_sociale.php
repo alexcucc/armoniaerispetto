@@ -2,7 +2,7 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Bilancio Sociale - Fondazione Armonia e Rispetto</title>
+    <title>Bilancio Sociale</title>
   </head>
   <body>
     <?php include 'header.php';?>
