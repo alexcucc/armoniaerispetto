@@ -503,9 +503,10 @@ textarea:focus-visible {
 
 .pdf-container {
   width: 100%;
+  height: 100%;
   max-width: 1000px;
-  margin: 2rem auto;
-  padding: 1rem;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .mobile-pdf-notice {

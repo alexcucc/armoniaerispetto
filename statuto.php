@@ -36,7 +36,7 @@
                           data="documents/statuto.pdf"
                           type="application/pdf"
                           width="100%"
-                          height="800px">
+                          height="100%">
                           <p>Il tuo browser non supporta la visualizzazione PDF.
                              <a href="documents/statuto.pdf" download>Scarica il PDF</a>
                           </p>
