@@ -84,7 +84,6 @@ async function displayResults() {
                     <p class="excerpt">${generateExcerpt(page.content, query)}</p>
                     <div class="result-meta">
                         <a class="result-link" href="${page.path}">${page.path}</a>
-                        <span class="relevance">Rilevanza: ${Math.round(result.score * 100)}%</span>
                     </div>
                 </div>`;
         }).join('');

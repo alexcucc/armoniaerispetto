@@ -32,7 +32,6 @@
                     <li class="nav-item"><a class="nav-link" href="contatti.php">Contatti</a></li>
                     <li class="nav-item"><a class="nav-link" href="dona_ora.php">Dona Ora</a></li>
                     <li class="nav-item"><a class="nav-link" href="bandi.php">Bandi</a></li>
-                    <li class="nav-item"><a class="nav-link" href="bilancio_sociale.php">Bilancio Sociale</a></li>
                     <li class="nav-item"><a class="nav-link" href="documenti.php">Documenti</a></li> 
                 </ul>
             </div>
