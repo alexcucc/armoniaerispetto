@@ -34,6 +34,7 @@ jobs:
           /header.php
           /footer.php
           /send_mail.php
+          /documents/statuto.pdf
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -46,4 +47,5 @@ jobs:
         exclude: |
             **/.git*
             **/.git*/**
-            ./README.md
+            README.md
+            generate_search_index.py

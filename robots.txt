@@ -1,4 +1,15 @@
 User-agent: *
-Disallow:
+
+Disallow: /images
+Disallow: /documents
+Disallow: common-head.php
+Disallow: footer.php
+Disallow: form.js
+Disallow: header.php
+Disallow: main.js
+Disallow: search_index.json
+Disallow: search.js
+Disallow: send_mail.php
+Disallow: styles.css
 
 Sitemap: https://www.armoniaerispetto.it/sitemap.xml
