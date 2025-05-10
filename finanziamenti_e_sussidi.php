@@ -12,7 +12,7 @@
           <h1>Finanziamenti e Sussidi</h1>
         </div>
         <div class="content-container">
-          In corso di aggiornamento.
+          <p>Per informazioni sui finanziamenti e sussidi disponibili, contattaci tramite il nostro <a href="contatti.php">form di contatto</a>.</P>
         </div>
       </div>
     </main>
