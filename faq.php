@@ -2,17 +2,17 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Presenta un Progetto</title>
+    <title>FAQ</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Presenta un Progetto</h1>
+          <h1>FAQ</h1>
         </div>
         <div class="content-container">
-          In fase di aggiornamento.
+          In corso di aggiornamento
         </div>
       </div>
     </main>

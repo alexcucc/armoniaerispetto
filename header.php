@@ -30,9 +30,10 @@
                     <li class="nav-item"><a class="nav-link" href="progetti.php">Progetti</a></li>
                     <li class="nav-item"><a class="nav-link" href="eventi.php">Eventi</a></li>
                     <li class="nav-item"><a class="nav-link" href="contatti.php">Contatti</a></li>
+                    <li class="nav-item"><a class="nav-link" href="bandi_e_finanziamenti.php">Bandi e Finanziamenti</a></li>
+                    <li class="nav-item"><a class="nav-link" href="documenti.php">Documenti</a></li>
+                    <li class="nav-item"><a class="nav-link" href="faq.php">FAQ</a></li>
                     <li class="nav-item"><a class="nav-link" href="dona_ora.php">Dona Ora</a></li>
-                    <li class="nav-item"><a class="nav-link" href="bandi.php">Bandi</a></li>
-                    <li class="nav-item"><a class="nav-link" href="documenti.php">Documenti</a></li> 
                 </ul>
             </div>
         </nav>

@@ -2,19 +2,17 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Home</title>
+    <title>Progetti in Corso</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Per una coesistenza tra uomini ed animali in vera armonia e pieno rispetto</h1>
+          <h1>Progetti in Corso</h1>
         </div>
         <div class="content-container">
-          <div class="content">
-            <img class="main-image" src="images/elephant_and_man.png">
-          </div>
+          In fase di aggiornamento.
         </div>
       </div>
     </main>

@@ -16,7 +16,7 @@
             <button onclick="window.location.href='catalogo_progetti.php';" class="page-button">Catalogo Progetti</button>
           </div>
           <div class="content">
-            <button onclick="window.location.href='presenta_un_progetto.php';" class="page-button">Presenta un Progetto</button>
+            <button onclick="window.location.href='progetti_in_corso.php';" class="page-button">Progetti in Corso</button>
           </div>
         </div>
       </div>
