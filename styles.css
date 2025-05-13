@@ -223,6 +223,7 @@ h1 {
 }
 
 .page-button {
+  text-align: center;
   width: min(15em, 100%);
   display: block;
   margin: auto;
