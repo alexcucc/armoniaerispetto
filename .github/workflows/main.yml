@@ -46,6 +46,7 @@ jobs:
         echo "\$db_user = '${{ secrets.db_user }}';" >> db/config/db.php
         echo "\$db_pass = '${{ secrets.db_pass }}';" >> db/config/db.php
         echo "?>" >> db/config/db.php
+        ls
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
