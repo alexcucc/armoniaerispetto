@@ -651,7 +651,7 @@ textarea:focus-visible {
   }
 
   .navigation-menu.active {
-    max-height: 26em;
+    max-height: 30em;
     padding: 1rem;
   }
 

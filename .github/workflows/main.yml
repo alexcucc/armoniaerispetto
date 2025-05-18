@@ -35,6 +35,17 @@ jobs:
           /footer.php
           /send_mail.php
           /documents/statuto.pdf
+          /db
+
+    - name: 📝 Add credentials file
+      run: |
+        echo "<?php" > db/config/db.php
+        echo "" >> db/config/db.php
+        echo "\$db_host = '${{ secrets.db_host }}';" >> db/config/db.php
+        echo "\$db_name = '${{ secrets.db_name }}';" >> db/config/db.php
+        echo "\$db_user = '${{ secrets.db_user }}';" >> db/config/db.php
+        echo "\$db_pass = '${{ secrets.db_pass }}';" >> db/config/db.php
+        echo "?>" >> db/config/db.php
     
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -49,3 +60,7 @@ jobs:
             **/.git*/**
             README.md
             generate_search_index.py
+            docker/**
+            db/migrations/**
+            db/config/**
+            Makefile

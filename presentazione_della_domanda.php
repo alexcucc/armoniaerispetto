@@ -2,21 +2,21 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Statuto</title>
+    <title>Presentazione della Domanda</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Statuto</h1>
+          <h1>Presentazione della Domanda</h1>
         </div>
         <div class="content-container">
           <div class="content">
-            <a href="documents/statuto.pdf" class="page-button" target="_blank">
+            <a href="documents/presentazione_della_domanda.pdf" class="page-button" target="_blank">
               Visualizza file
             </a>
-            <a href="documents/statuto.pdf" class="page-button" download>
+            <a href="documents/presentazione_della_domanda.pdf" class="page-button" download>
               Scarica file
             </a>
         </div>

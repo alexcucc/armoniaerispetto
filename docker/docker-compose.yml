@@ -1,0 +1,24 @@
+services:
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: 'armonia_e_rispetto'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysql", "-u", "root", "-proot", "--execute", "SHOW DATABASES;"]
+      interval: 3s
+      retries: 5
+      timeout: 5s
+
+  flyway:
+    image: redgate/flyway
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ../db/migrations:/flyway/sql
+    command: -url=jdbc:mysql://mysql:3306/armonia_e_rispetto -user=root -password=root migrate
