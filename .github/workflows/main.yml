@@ -36,6 +36,8 @@ jobs:
           /send_mail.php
           /documents/statuto.pdf
           /db
+          /login_handler.php
+          /register_handler.php
 
     - name: 📝 Replace credentials file
       run: |
