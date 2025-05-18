@@ -17,7 +17,12 @@ def generate_index():
     index = []
     excluded_dirs = [
         '.git',
-        'node_modules'
+        '.github',
+        '.venv',
+        'db',
+        'docker',
+        'documents',
+        'images'
     ]
     excluded_files = [
         'search_index.json',
@@ -25,10 +30,14 @@ def generate_index():
         'footer.php',
         'header.php',
         'common-head.php',
-        'send_mail.php'
+        'send_mail.php',
+        'login_handler.php',
+        'signup_handler.php',
+        'logout.php'
     ]
     
     for root, dirs, files in os.walk('.'):
+
         dirs[:] = [d for d in dirs if d not in excluded_dirs]
         
         for file in files:
