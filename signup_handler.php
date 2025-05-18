@@ -1,7 +1,16 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] != "POST") {
+
+session_start();
+
+header('Content-Type: application/json');
+
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     http_response_code(403);
-    exit('Forbidden');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Forbidden'
+    ]);
+    exit;
 }
 
 $first_name = trim($_POST['first_name'] ?? '');
@@ -13,28 +22,39 @@ $phone = trim($_POST['phone'] ?? '');
 
 if (empty($first_name) || empty($last_name) || empty($email) || empty($username) || empty($password)) {
     http_response_code(400);
-    exit('Missing required fields');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Compilare tutti i campi richiesti.'
+    ]);
+    exit;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(400);
-    exit('Invalid email format');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Formato della mail non valido.'
+    ]);
+    exit;
 }
 
 include_once 'db/common-db.php';
 
 try {
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM user WHERE email = :email OR username = :username");
-    $stmt->execute(['email' => $email, 'username' => $username]);
-    if ($stmt->fetchColumn() > 0) {
+    $stmt = $pdo->prepare("SELECT * FROM user WHERE username = :username OR email = :email LIMIT 1");
+    $stmt->execute(['username' => $username, 'email' => $email]);
+    $existingUser = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($existingUser) {
         http_response_code(409);
-        exit('Email o username già in uso');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Username o email già in uso.'
+        ]);
+        exit;
     }
 
-    // Hash the password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    // Insert the new user record
     $stmt = $pdo->prepare("INSERT INTO user (firstname, lastname, email, username, password, phone) VALUES (:firstname, :lastname, :email, :username, :password, :phone)");
     $stmt->execute([
         'firstname' => $first_name,
@@ -45,12 +65,22 @@ try {
         'phone'     => $phone
     ]);
 
-    // Redirect to the login page after successful registration
-    header("Location: login.php");
+    $_SESSION['logged_in'] = true;
+    $_SESSION['user_id'] = $pdo->lastInsertId();
+    $_SESSION['username'] = $username;
+
+    echo json_encode([
+        'success' => true,
+        'redirect' => 'benvenuto.php'
+    ]);
     exit;
 } catch (PDOException $e) {
     http_response_code(500);
     error_log('Database error: ' . $e->getMessage());
-    exit('Database error');
+    echo json_encode([
+        'success' => false,
+        'message' => 'Errore di database durante la registrazione.'
+    ]);
+    exit;
 }
 ?>

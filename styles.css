@@ -27,6 +27,18 @@ html {
   scroll-behavior: smooth;
 }
 
+#error-message {
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  border: 1px solid #e74c3c;
+  background-color: #fceae9;
+  color: #e74c3c;
+  border-radius: 4px;
+  width: 80%;
+  display: none;
+}
+
 h1, h2, h3, h4, h5, h6, .nav-links a {
   font-family: 'Merriweather', Georgia, serif;
   font-weight: 700;
@@ -509,6 +521,12 @@ textarea:focus-visible {
   body {
       background-color: #1a1a1a;
       color: #e0e0e0;
+  }
+
+  #error-message {
+    border-color: #ff6b6b;
+    background-color: #4d1b1b;
+    color: #ff6b6b;
   }
   
   .contact-form-container {

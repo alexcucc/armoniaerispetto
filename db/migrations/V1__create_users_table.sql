@@ -8,3 +8,6 @@ CREATE TABLE user (
   phone VARCHAR(50),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE user ADD UNIQUE INDEX idx_email (email);
+ALTER TABLE user ADD UNIQUE INDEX idx_username (username);
