@@ -7,10 +7,17 @@ def extract_content(file_path):
         content = f.read()
         if file_path.endswith(('.php', '.html')):
             soup = BeautifulSoup(content, 'html.parser')
-            # Remove script and style elements
+
+            # Remove script, style, header, footer, and PHP code
             for elem in soup(['script', 'style', 'header', 'footer']):
                 elem.decompose()
-            return ' '.join(soup.get_text().split())
+            
+            # Remove PHP code by stripping <?php ... ?> blocks
+            text = soup.get_text()
+            php_free_text = ' '.join(
+                part.strip() for part in text.split('<?php') if '?>' not in part
+            )
+            return ' '.join(php_free_text.split())
     return ''
 
 def generate_index():
