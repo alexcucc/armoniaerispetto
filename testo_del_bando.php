@@ -13,10 +13,10 @@
         </div>
         <div class="content-container">
           <div class="content">
-            <a href="documents/bando.odt" class="page-button" target="_blank">
+            <a href="documents/bando.pdf" class="page-button" target="_blank">
               Visualizza file
             </a>
-            <a href="documents/bando.odt" class="page-button" download>
+            <a href="documents/bando.pdf" class="page-button" download>
               Scarica file
             </a>
         </div>
