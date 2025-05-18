@@ -62,5 +62,4 @@ jobs:
             generate_search_index.py
             docker/**
             db/migrations/**
-            db/config/**
             Makefile
