@@ -28,6 +28,16 @@ if (empty($first_name) || empty($last_name) || empty($email) || empty($password)
     exit;
 }
 
+// Add password validation: must be alphanumeric and at least 6 characters long
+if (!preg_match('/^[a-zA-Z0-9]{6,}$/', $password)) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'La password deve essere alfanumerica e contenere almeno 6 caratteri.'
+    ]);
+    exit;
+}
+
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(400);
     echo json_encode([

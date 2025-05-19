@@ -28,7 +28,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required" for="password">Password</label>
-              <input type="password" class="form-input" id="password" name="password" required>
+              <input type="password" class="form-input" id="password" name="password" required pattern="[a-zA-Z0-9]{6,}" title="La password deve essere alfanumerica e contenere almeno 6 caratteri.">
             </div>
             <div class="form-group">
               <label class="form-label" for="phone">Numero di Telefono</label>
