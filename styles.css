@@ -290,7 +290,7 @@ h1 {
   color: #ecf0f1;
   text-decoration: none;
   font-size: 1.1rem;
-  margin: 0.45rem 0.8rem;
+  margin: 0.3rem 0.5rem;
   border-radius: 0.5em;
   position: relative;
   text-align: center;
@@ -672,7 +672,6 @@ textarea:focus-visible {
     flex-direction: column;
     width: 100%;
     text-align: center;
-    order: 1;
   }
 
   .navigation-menu.active .nav-links {
