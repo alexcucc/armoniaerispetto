@@ -21,7 +21,7 @@
           <?php
           } else {
           ?>
-            <p>Per accedere a questa sezione, effettua il <a href="login.php">login</a> o <a href="register.php">registrati</a>.</p>
+            <p>Per accedere a questa sezione, effettua il <a href="login.php">login</a> o <a href="signup.php">registrati</a>.</p>
           <?php
           }
           ?>

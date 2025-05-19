@@ -16,7 +16,7 @@
           <form id="login-form" action="login_handler.php" method="post">
             <div id="error-message" style="color: red;"></div>
             <div class="form-group">
-              <label class="form-label required" for="login">Username o Email</label>
+              <label class="form-label required" for="login">Email</label>
               <input type="text" class="form-input" id="login" name="login" required>
             </div>
             <div class="form-group">

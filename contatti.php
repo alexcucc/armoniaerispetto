@@ -47,8 +47,6 @@
               </form>
             </div>
             <h2>Oppure contattaci via mail</h2>
-            Segreteria: <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a>
-            <br>
             Informazioni: <a href="mailto:info@armoniaerispetto.it">info@armoniaerispetto.it</a>
           </div>
         </div> 

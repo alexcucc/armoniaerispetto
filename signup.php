@@ -27,10 +27,6 @@
               <input type="email" class="form-input" id="email" name="email" required>
             </div>
             <div class="form-group">
-              <label class="form-label required" for="username">Username</label>
-              <input type="text" class="form-input" id="username" name="username" required>
-            </div>
-            <div class="form-group">
               <label class="form-label required" for="password">Password</label>
               <input type="password" class="form-input" id="password" name="password" required>
             </div>

@@ -4,23 +4,24 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     header("Location: login.php");
     exit;
 }
-$userName = $_SESSION['user_name'] ?? 'Utente';
 ?>
 <!DOCTYPE html>
 <html lang="it">
     <head>
         <?php include 'common-head.php'; ?>
-        <title>Benvenuto <?php echo htmlspecialchars($userName); ?></title>
+        <title>Benvenuto</title>
     </head>
     <body>
         <?php include 'header.php'; ?>
         <main>
             <div class="hero">
                 <div class="title">
-                    <h1>Benvenuto nella tua area riservata</h1>
+                    <h1>Benvenuto <?php echo htmlspecialchars($_SESSION['first_name'] . ' ' . $_SESSION['last_name']); ?></h1>
                 </div>
                 <div class="content-container">
-                    <p>Qui puoi gestire il tuo profilo e accedere a contenuti esclusivi.</p>
+                    <div class="content">
+                        <button onclick="window.location.href='index.php';" class="page-button">Home</button>
+                    </div>
                 </div>
             </div>
         </main>

@@ -28,14 +28,17 @@ if (empty($login) || empty($password)) {
 include_once 'db/common-db.php';
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM user WHERE email = :login OR username = :login LIMIT 1");
+    $stmt = $pdo->prepare("SELECT * FROM user WHERE email = :login LIMIT 1");
     $stmt->execute(['login' => $login]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
+
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['first_name'] = $user['first_name'];
+        $_SESSION['last_name'] = $user['last_name'];
 
         echo json_encode([
             'success' => true,
