@@ -634,11 +634,6 @@ textarea:focus-visible {
 
 @media (max-width: 1440px) {
 
-  .search-container {
-    width: 100%;
-    order: -1;
-  }
-
   .search-form {
     max-width: 300px;
     margin: auto;
