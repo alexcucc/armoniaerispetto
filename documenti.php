@@ -12,7 +12,7 @@
           <h1>Documenti</h1>
         </div>
         <div class="content-container">
-          <button onclick="window.location.href='bandi_e_finanziamenti.php';" class="page-button">Bandi e Finanziamenti</button>
+          <button onclick="window.location.href='bandi_e_finanziamenti.php';" class="page-button">Bandi e Finanziamenti in Corso</button>
           <button onclick="window.location.href='statuto.php';" class="page-button">Statuto</button>
           <button onclick="window.location.href='bilancio_sociale.php';" class="page-button">Bilancio Sociale</button>
         </div>
