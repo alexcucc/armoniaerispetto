@@ -251,6 +251,18 @@ h1 {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.logo-link {
+  min-width: fit-content;
+  min-height: fit-content;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+
 .page-button:hover {
   background-color: #218838; /* Darker green on hover */
   transform: scale(1.05);
@@ -334,7 +346,7 @@ footer {
 }
 
 .main-image {
-  max-height: min(65vh, 600px);
+  max-height: min(80vh, 600px);
   max-width: min(100%, 1200px);
   width: auto;
   height: auto;
