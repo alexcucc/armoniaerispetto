@@ -65,12 +65,11 @@ img {
 }
 
 .search-container {
-  margin-left: 0; /* Remove auto margin */
+  margin-left: 0;
   margin-right: 0;
   margin-top: auto;
   margin-bottom: auto;
-  padding-top: 0.1em;
-  order: 2; /* Move search to end */
+  padding-bottom: 0.2em;
 }
 
 .search-form {
@@ -274,10 +273,48 @@ h1 {
 }
 
 .navigation-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  min-height: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  flex-direction: column;
+  background-color: #2E8B57;
+  z-index: 1000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.search-form {
+  max-width: 300px;
+  margin: auto;
+}
+
+.search-input,
+.search-input:focus {
+  width: 100%;
+}
+
+.navigation-menu.active {
+  max-height: 30em;
+}
+
+.nav-links {
+  flex-direction: column;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.navigation-menu.active .nav-links {
+  opacity: 1;
+  visibility: visible;
+}
+
+.navigation-menu.active ul {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.3rem;
 }
 
 .nav-item {
@@ -289,13 +326,6 @@ h1 {
 .nav-link {
   text-align: center;
   display: block;
-}
-
-.nav-links {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 .nav-links a {
@@ -400,7 +430,7 @@ footer {
 }
 
 .hamburger {
-  display: none;
+  display: block;
   background: none;
   border: none;
   color: white;
@@ -645,67 +675,7 @@ textarea:focus-visible {
       font-size: 1rem;
   }
 
-  .content-container {
-      margin: 0.25em;
-      gap: 0.5em;
-  }
-
-  .title h1 {
-      font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 1440px) {
-
-  .search-form {
-    max-width: 300px;
-    margin: auto;
-  }
-
-  .search-input,
-  .search-input:focus {
-    width: 100%;
-  }
-
-  .hamburger {
-    display: block;
-  }
-
-  .navigation-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    min-height: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
-    flex-direction: column;
-    background-color: #2E8B57;
-    z-index: 1000;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-
-  .navigation-menu.active {
-    max-height: 30em;
-    padding: 1rem;
-  }
-
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    text-align: center;
-  }
-
-  .navigation-menu.active .nav-links {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .navigation-menu.active ul {
-    display: flex;
-  }
-
+  
   .content-container {
     flex-direction: column;
   }
@@ -713,5 +683,14 @@ textarea:focus-visible {
   .content {
     width: 100%;
     max-width: 100%;
+  }
+
+  .content-container {
+      margin: 0.25em;
+      gap: 0.5em;
+  }
+
+  .title h1 {
+      font-size: 1.5rem;
   }
 }

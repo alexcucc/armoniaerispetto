@@ -16,20 +16,6 @@
         <div class="navigation-menu-container">
             <nav class="navigation-menu">
 
-                <div class="nav-item search-container">
-                    <form class="search-form" action="ricerca.php" method="get">
-                        <input type="search" 
-                                name="q"
-                                class="search-input" 
-                                placeholder="Cerca nel sito..."
-                                aria-label="Cerca nel sito"
-                                required>
-                        <button type="submit" class="search-button">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-
                 <div class="nav-links">
                     <ul class="nav-links">
                         <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
@@ -52,6 +38,20 @@
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                         <?php endif; ?>
                     </ul>
+                </div>
+
+                <div class="nav-item search-container">
+                    <form class="search-form" action="ricerca.php" method="get">
+                        <input type="search" 
+                                name="q"
+                                class="search-input" 
+                                placeholder="Cerca nel sito..."
+                                aria-label="Cerca nel sito"
+                                required>
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
                 </div>
             </nav>
         </div>
