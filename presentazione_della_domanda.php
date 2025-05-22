@@ -13,12 +13,15 @@
         </div>
         <div class="content-container">
           <div class="content">
-            <a href="documents/presentazione_della_domanda.pdf" class="page-button" target="_blank">
-              Visualizza file
-            </a>
-            <a href="documents/presentazione_della_domanda.pdf" class="page-button" download>
-              Scarica file
-            </a>
+            <object 
+              data="documents/presentazione_della_domanda.pdf" 
+              type="application/pdf" 
+              class="pdf-viewer">
+              <a href="documents/presentazione_della_domanda.pdf" class="page-button" download>
+                Scarica file
+              </a>
+            </object>
+          </div>
         </div>
       </div>
     </main>
