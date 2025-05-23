@@ -566,7 +566,6 @@ textarea:focus-visible {
   --secondary-color: #3CA76A;
   --background-light: #f9f9f9;
   --spacing-unit: 1rem;
-  --header-height: 70px;
 }
 
 /* Dark Mode Styles */
