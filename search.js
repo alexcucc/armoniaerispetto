@@ -133,7 +133,7 @@ function highlightText(text, query) {
 
 // Initialize search when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Change to check for ricerca.php instead of search.php
+
     if (window.location.pathname.includes('ricerca.php')) {
         console.log('Search page detected, initializing...');
         displayResults();
