@@ -17,9 +17,10 @@ $first_name = trim($_POST['first_name'] ?? '');
 $last_name = trim($_POST['last_name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $password = trim($_POST['password'] ?? '');
+$password_verify = trim($_POST['password_verify'] ?? '');
 $phone = trim($_POST['phone'] ?? '');
 
-if (empty($first_name) || empty($last_name) || empty($email) || empty($password)) {
+if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($password_verify)) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
@@ -28,12 +29,22 @@ if (empty($first_name) || empty($last_name) || empty($email) || empty($password)
     exit;
 }
 
-// Add password validation: must be alphanumeric and at least 6 characters long
-if (!preg_match('/^[a-zA-Z0-9]{6,}$/', $password)) {
+// Check if passwords match
+if ($password !== $password_verify) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
-        'message' => 'La password deve essere alfanumerica e contenere almeno 6 caratteri.'
+        'message' => 'Le password non corrispondono.'
+    ]);
+    exit;
+}
+
+// Add password validation: must be at least 6 characters long
+if (strlen($password) < 6) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'La password deve contenere almeno 6 caratteri.'
     ]);
     exit;
 }
