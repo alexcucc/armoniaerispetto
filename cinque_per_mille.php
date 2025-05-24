@@ -27,7 +27,10 @@
             <p>
               Un piccolo gesto per un grande cambiamento. Grazie per il tuo aiuto!
             </p>
-          <button onclick="window.location.href='statuto.php';" class="page-button">Scarica il file e porta dal commercialista</button>
+            <a href="documents/cinque_per_mille.pdf" class="page-button" download>
+              Scarica il file e porta dal commercialista
+            </a>
+          </div>
         </div>
       </div>
     </main>
