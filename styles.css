@@ -86,6 +86,30 @@ img {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-container .form-input {
+    flex: 1;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: #666;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
 .search-input {
   background: transparent;
   border: none;

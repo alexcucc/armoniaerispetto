@@ -28,7 +28,12 @@
             </div>
             <div class="form-group">
               <label class="form-label required" for="password">Password</label>
-              <input type="password" class="form-input" id="password" name="password" required pattern="[a-zA-Z0-9]{6,}" title="La password deve essere alfanumerica e contenere almeno 6 caratteri.">
+              <div class="password-container">
+                <input type="password" class="form-input" id="password" name="password" required pattern="[a-zA-Z0-9]{6,}" title="La password deve essere alfanumerica e contenere almeno 6 caratteri.">
+                <button type="button" class="toggle-password" aria-label="Mostra/Nascondi password">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
             </div>
             <div class="form-group">
               <label class="form-label" for="phone">Numero di Telefono</label>
@@ -41,6 +46,24 @@
     </main>
     <?php include 'footer.php';?>
     <script>
+
+      // Toggle password visibility
+      document.querySelector('.toggle-password').addEventListener('click', function() {
+          const passwordInput = document.getElementById('password');
+          const icon = this.querySelector('i');
+          
+          if (passwordInput.type === 'password') {
+              passwordInput.type = 'text';
+              icon.classList.remove('fa-eye');
+              icon.classList.add('fa-eye-slash');
+          } else {
+              passwordInput.type = 'password';
+              icon.classList.remove('fa-eye-slash');
+              icon.classList.add('fa-eye');
+          }
+      });
+
+      // Handle form submission
       document.getElementById('signup-form').addEventListener('submit', async function(event) {
           event.preventDefault();
           const errorMessageDiv = document.getElementById('error-message');
