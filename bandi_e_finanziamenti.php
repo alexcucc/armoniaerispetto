@@ -12,8 +12,8 @@
           <h1>Bandi e Finanziamenti</h1>
         </div>
         <div class="content-container">
-          <button onclick="window.location.href='bandi.php';" class="page-button">Bandi</button>
-          <button onclick="window.location.href='premi_e_riconoscimenti.php';" class="page-button">Premi e Riconoscimenti</button>
+          <button onclick="window.location.href='bandi.php';" class="page-button">Bandi in Corso</button>
+          <button onclick="window.location.href='premi_e_riconoscimenti.php';" class="page-button">Premi e Riconoscimenti in Corso</button>
           <button onclick="window.location.href='finanziamenti_e_sussidi.php';" class="page-button">Finanziamenti e Sussidi</button>
         </div>
       </div>
