@@ -17,10 +17,10 @@
               data="documents/bando.pdf" 
               type="application/pdf" 
               class="pdf-viewer">
-              <a href="documents/bando.pdf" class="page-button" download>
-                Scarica file
-              </a>
             </object>
+            <a href="documents/bando.pdf" class="page-button" download>
+              Scarica file
+            </a>
           </div>
         </div>
       </div>

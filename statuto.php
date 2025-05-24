@@ -17,10 +17,10 @@
               data="documents/statuto.pdf" 
               type="application/pdf" 
               class="pdf-viewer">
-              <a href="documents/statuto.pdf" class="page-button" download>
-                Scarica file
-              </a>
             </object>
+            <a href="documents/statuto.pdf" class="page-button" download>
+              Scarica file
+            </a>
           </div>
         </div>
       </div>

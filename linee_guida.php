@@ -17,10 +17,10 @@
               data="documents/linee_guida.pdf" 
               type="application/pdf" 
               class="pdf-viewer">
-              <a href="documents/linee_guida.pdf" class="page-button" download>
-                Scarica file
-              </a>
             </object>
+            <a href="documents/linee_guida.pdf" class="page-button" download>
+              Scarica file
+            </a>
           </div>
         </div>
       </div>
