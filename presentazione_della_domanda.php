@@ -15,14 +15,9 @@
           <?php
           if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
           ?>
-          <object 
-            data="documents/presentazione_della_domanda.pdf" 
-            type="application/pdf" 
-            class="pdf-viewer">
-            <a href="documents/presentazione_della_domanda.pdf" class="page-button" download>
-              Scarica file
-            </a>
-          </object>
+          <a href="documents/presentazione_domanda_bando.zip" class="page-button" download>
+            Scarica file
+          </a>
           <?php
           } else {
           ?>
