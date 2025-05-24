@@ -45,7 +45,7 @@
                         <input type="search" 
                                 name="q"
                                 class="search-input" 
-                                placeholder="Cerca nel sito..."
+                                placeholder="Cerca nel sito"
                                 aria-label="Cerca nel sito"
                                 required>
                         <button type="submit" class="search-button">

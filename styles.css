@@ -95,6 +95,7 @@ img {
   font-size: 0.95rem;
   width: 200px;
   transition: width 0.3s ease;
+  text-align: center;
 }
 
 .search-input:focus {
@@ -110,10 +111,10 @@ img {
   background: transparent;
   border: none;
   color: white;
-  padding: 0.5em 0.8em;
+  padding: 0;
   cursor: pointer;
   transition: transform 0.2s ease;
-  opacity: 0.8;
+  opacity: 0;
 }
 
 .search-button:hover {
