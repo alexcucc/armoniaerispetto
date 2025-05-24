@@ -12,9 +12,10 @@
             </div>
         </div>
 
-
         <div class="navigation-menu-container">
             <nav class="navigation-menu">
+
+                <div class="menu-separator"></div>
 
                 <div class="nav-links">
                     <ul class="nav-links">
@@ -39,6 +40,8 @@
                         <?php endif; ?>
                     </ul>
                 </div>
+
+                <div class="menu-separator"></div>
 
                 <div class="nav-item search-container">
                     <form class="search-form" action="ricerca.php" method="get">
