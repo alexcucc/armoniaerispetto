@@ -20,7 +20,7 @@ $password = trim($_POST['password'] ?? '');
 $password_verify = trim($_POST['password_verify'] ?? '');
 $phone = trim($_POST['phone'] ?? '');
 
-if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($password_verify)) {
+if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($password_verify) || empty($phone)) {
     http_response_code(400);
     echo json_encode([
         'success' => false,

@@ -46,7 +46,7 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="phone">Numero di Telefono</label>
-              <input type="tel" class="form-input" id="phone" name="phone">
+              <input type="tel" class="form-input" id="phone" name="phone" required>
             </div>
             <button type="submit" class="submit-btn">Registrati</button>
           </form>
