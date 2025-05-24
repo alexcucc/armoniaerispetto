@@ -12,7 +12,22 @@
           <h1>Cinque per Mille</h1>
         </div>
         <div class="content-container">
-          In corso di aggiornamento.
+          <div class="content">
+            <h2>Dona il tuo 5X1000 per salvare gli animali</h2>
+            <p>
+              Con un semplice gesto, puoi fare la differenza! Destina il tuo 5x1000 alla Fondazione Armonia e Rispetto e aiutaci a salvare gli animali abbandonati e le specie a rischio di estinzione.
+            </p>
+            <p>
+              Come donare? Nel tuo modello di dichiarazione dei redditi (730, CU o Redditi PF):
+            </p>
+            <ul>
+              <li>Firma nel riquadro "Sostegno degli enti del Terzo settore"</li>
+              <li>Inserisci il nostro codice fiscale: <strong>94090600019</strong>.</li>
+            </ul>
+            <p>
+              Un piccolo gesto per un grande cambiamento. Grazie per il tuo aiuto!
+            </p>
+          <button onclick="window.location.href='statuto.php';" class="page-button">Scarica il file e porta dal commercialista</button>
         </div>
       </div>
     </main>
