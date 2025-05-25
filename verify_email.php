@@ -13,7 +13,7 @@ try {
 
     $stmt = $pdo->prepare("
         SELECT t.*, u.* 
-        FROM email_verification_tokens t
+        FROM email_verification_token t
         JOIN user u ON t.user_id = u.id
         WHERE t.token = :token 
         AND t.expires_at > NOW() 
@@ -33,7 +33,7 @@ try {
     $stmt->execute(['id' => $result['user_id']]);
 
     // Mark token as used
-    $stmt = $pdo->prepare("UPDATE email_verification_tokens SET used_at = NOW() WHERE token = :token");
+    $stmt = $pdo->prepare("UPDATE email_verification_token SET used_at = NOW() WHERE token = :token");
     $stmt->execute(['token' => $token]);
 
     $pdo->commit();

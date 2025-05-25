@@ -100,7 +100,7 @@ try {
     $verification_token = bin2hex(random_bytes(32));
     $expires_at = date('Y-m-d H:i:s', strtotime('+24 hours'));
     
-    $stmt = $pdo->prepare("INSERT INTO email_verification_tokens (user_id, token, expires_at) 
+    $stmt = $pdo->prepare("INSERT INTO email_verification_token (user_id, token, expires_at) 
                           VALUES (:user_id, :token, :expires_at)");
     $stmt->execute([
         'user_id' => $user_id,
