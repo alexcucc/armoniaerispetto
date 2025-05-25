@@ -1,5 +1,7 @@
 <?php
 
+include_once 'mail/config/mail.php';
+
 session_start();
 
 header('Content-Type: application/json');
@@ -74,8 +76,16 @@ try {
         exit;
     }
 
+    // Generate verification token
+    $verification_token = bin2hex(random_bytes(32));
+    $verification_expires = date('Y-m-d H:i:s', strtotime('+24 hours'));
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare("INSERT INTO user (first_name, last_name, email, password, phone) VALUES (:first_name, :last_name, :email, :password, :phone)");
+
+    $pdo->beginTransaction();
+
+        // Insert user first
+    $stmt = $pdo->prepare("INSERT INTO user (first_name, last_name, email, password, phone, email_verified) 
+                          VALUES (:first_name, :last_name, :email, :password, :phone, 0)");
     $stmt->execute([
         'first_name' => $first_name,
         'last_name'  => $last_name,
@@ -84,18 +94,43 @@ try {
         'phone'      => $phone
     ]);
 
-    $_SESSION['logged_in'] = true;
-    $_SESSION['user_id'] = $pdo->lastInsertId();
-    $_SESSION['email'] = $email;
-    $_SESSION['first_name'] = $first_name;
-    $_SESSION['last_name'] = $last_name;
+    $user_id = $pdo->lastInsertId();
+
+    // Create verification token
+    $verification_token = bin2hex(random_bytes(32));
+    $expires_at = date('Y-m-d H:i:s', strtotime('+24 hours'));
+    
+    $stmt = $pdo->prepare("INSERT INTO email_verification_tokens (user_id, token, expires_at) 
+                          VALUES (:user_id, :token, :expires_at)");
+    $stmt->execute([
+        'user_id' => $user_id,
+        'token' => $verification_token,
+        'expires_at' => $expires_at
+    ]);
+
+    $pdo->commit();
+
+    // Send verification email
+    $verification_link = "$url_prefix/verify_email.php?token=" . $verification_token;
+    $to = $email;
+    $subject = "Verifica il tuo indirizzo email";
+    $message = "Ciao $first_name,\n\n";
+    $message .= "Grazie per esserti registrato. Per completare la registrazione, clicca sul seguente link:\n\n";
+    $message .= $verification_link . "\n\n";
+    $message .= "Il link scadrà tra 24 ore.\n\n";
+    $message .= "Cordiali saluti,\nFondazione Armonia e Rispetto";
+    $headers = "From: noreply@armoniaerispetto.it";
+
+    mail($to, $subject, $message, $headers);
 
     echo json_encode([
         'success' => true,
-        'redirect' => 'benvenuto.php'
+        'message' => 'Registrazione completata. Controlla la tua email per verificare il tuo account.',
+        'redirect' => 'verification_pending.php'
     ]);
     exit;
 } catch (PDOException $e) {
+    $pdo->rollBack();
     http_response_code(500);
     error_log('Database error: ' . $e->getMessage());
     echo json_encode([

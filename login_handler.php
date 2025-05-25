@@ -34,6 +34,17 @@ try {
 
     if ($user && password_verify($password, $user['password'])) {
 
+        // Check if email is verified
+        if (!$user['email_verified']) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Per favore verifica il tuo indirizzo email prima di accedere.',
+                'verified' => false
+            ]);
+            exit;
+        }
+
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['email'] = $user['email'];

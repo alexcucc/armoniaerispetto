@@ -22,3 +22,9 @@ services:
     volumes:
       - ../db/migrations:/flyway/sql
     command: -url=jdbc:mysql://mysql:3306/armonia_e_rispetto -user=root -password=root migrate
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web interface port
