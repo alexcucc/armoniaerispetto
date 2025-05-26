@@ -19,8 +19,9 @@
               class="pdf-viewer">
             </object>
             <a href="documents/bando.pdf" class="page-button" download>
-              Scarica file
+              Scarica il bando
             </a>
+            <button onclick="window.location.href='presentazione_della_domanda.php';" class="page-button">Presentazione della domanda</button>
           </div>
         </div>
       </div>

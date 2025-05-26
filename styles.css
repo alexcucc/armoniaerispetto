@@ -260,7 +260,7 @@ h1 {
   text-align: center;
   width: min(15em, 100%);
   display: block;
-  margin: auto;
+  margin: 0.5em auto;
   padding: 1em;
   font-size: 18px;
   font-weight: bold;
@@ -624,7 +624,6 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 2rem;
 }
 
 .image-loading {

@@ -12,10 +12,9 @@
           <h1>Documenti</h1>
         </div>
         <div class="content-container">
-          <button onclick="window.location.href='presentazione_della_domanda.php';" class="page-button">Presentazione della Domanda</button>
           <button onclick="window.location.href='statuto.php';" class="page-button">Statuto</button>
+          <button onclick="window.location.href='bilancio.php';" class="page-button">Bilancio</button>
           <button onclick="window.location.href='bilancio_sociale.php';" class="page-button">Bilancio Sociale</button>
-          <button onclick="window.location.href='linee_guida.php';" class="page-button">Linee Guida</button>
         </div>
       </div>
     </main>

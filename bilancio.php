@@ -2,17 +2,17 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Bandi</title>
+    <title>Bilancio</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Bandi</h1>
+          <h1>Bilancio</h1>
         </div>
         <div class="content-container">
-            <button onclick="window.location.href='testo_del_bando.php';" class="page-button">Bando Armonia e Rispetto I edizione</button>
+          In corso di aggiornamento
         </div>
       </div>
     </main>
