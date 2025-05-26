@@ -17,12 +17,13 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
 $first_name = trim($_POST['first_name'] ?? '');
 $last_name = trim($_POST['last_name'] ?? '');
+$organization = trim($_POST['organization'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $password = trim($_POST['password'] ?? '');
 $password_verify = trim($_POST['password_verify'] ?? '');
 $phone = trim($_POST['phone'] ?? '');
 
-if (empty($first_name) || empty($last_name) || empty($email) || empty($password) || empty($password_verify) || empty($phone)) {
+if (empty($first_name) || empty($last_name) || empty($organization) || empty($email) || empty($password) || empty($password_verify) || empty($phone)) {
     http_response_code(400);
     echo json_encode([
         'success' => false,
@@ -83,12 +84,13 @@ try {
 
     $pdo->beginTransaction();
 
-        // Insert user first
-    $stmt = $pdo->prepare("INSERT INTO user (first_name, last_name, email, password, phone, email_verified) 
-                          VALUES (:first_name, :last_name, :email, :password, :phone, 0)");
+    // Insert user first
+    $stmt = $pdo->prepare("INSERT INTO user (first_name, last_name, organization, email, password, phone, email_verified) 
+                          VALUES (:first_name, :last_name, :organization, :email, :password, :phone, 0)");
     $stmt->execute([
         'first_name' => $first_name,
         'last_name'  => $last_name,
+        'organization' => $organization,
         'email'      => $email,
         'password'   => $hashed_password,
         'phone'      => $phone

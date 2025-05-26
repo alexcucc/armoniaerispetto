@@ -23,6 +23,10 @@
               <input type="text" class="form-input" id="last_name" name="last_name" required>
             </div>
             <div class="form-group">
+              <label class="form-label required" for="organization">Organizzazione</label>
+              <input type="text" class="form-input" id="organization" name="organization" required>
+            </div>
+            <div class="form-group">
               <label class="form-label required" for="email">Email</label>
               <input type="email" class="form-input" id="email" name="email" required>
             </div>

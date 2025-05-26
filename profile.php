@@ -17,10 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_profile'])) {
         $first_name = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
         $last_name = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
+        $organization = filter_input(INPUT_POST, 'organization', FILTER_SANITIZE_STRING);
         $new_password = filter_input(INPUT_POST, 'new_password', FILTER_SANITIZE_STRING);
 
-        $sql = "UPDATE user SET first_name = ?, last_name = ?";
-        $params = [$first_name, $last_name];
+        $sql = "UPDATE user SET first_name = ?, last_name = ?, organization = ?";
+        $params = [$first_name, $last_name, $organization];
 
         if (!empty($new_password)) {
             $sql .= ", password = ?";
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get user data
-$stmt = $pdo->prepare("SELECT first_name, last_name, email FROM user WHERE id = ?");
+$stmt = $pdo->prepare("SELECT first_name, last_name, email, organization FROM user WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
@@ -81,6 +82,12 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     <label class="form-label required" for="last_name">Cognome</label>
                     <input type="text" id="last_name" name="last_name" class="form-input" 
                            value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required" for="organization">Organizzazione</label>
+                    <input type="text" id="organization" name="organization" class="form-input" 
+                           value="<?php echo htmlspecialchars($user['organization']); ?>" required>
                 </div>
 
                 <div class="form-group">
