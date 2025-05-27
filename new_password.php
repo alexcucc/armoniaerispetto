@@ -7,7 +7,7 @@ $valid = false;
 
 if ($token) {
     try {
-        $stmt = $pdo->prepare("SELECT user_id, expires_at FROM password_resets WHERE token = :token AND used = 0 LIMIT 1");
+        $stmt = $pdo->prepare("SELECT user_id, expires_at FROM password_reset WHERE token = :token AND used = 0 LIMIT 1");
         $stmt->execute(['token' => $token]);
         $reset = $stmt->fetch(PDO::FETCH_ASSOC);
 

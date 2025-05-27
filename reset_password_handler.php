@@ -35,7 +35,7 @@ try {
     $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
     // Store reset token
-    $stmt = $pdo->prepare("INSERT INTO password_resets (user_id, token, expires_at) VALUES (:user_id, :token, :expires)");
+    $stmt = $pdo->prepare("INSERT INTO password_reset (user_id, token, expires_at) VALUES (:user_id, :token, :expires)");
     $stmt->execute([
         'user_id' => $user['id'],
         'token' => $token,

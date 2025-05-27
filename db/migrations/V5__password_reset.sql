@@ -1,4 +1,4 @@
-CREATE TABLE password_resets (
+CREATE TABLE password_reset (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     token VARCHAR(64) NOT NULL,
