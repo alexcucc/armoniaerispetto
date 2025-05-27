@@ -29,6 +29,9 @@
               </div>
             </div>
             <button type="submit" class="submit-btn">Login</button>
+            <div class="forgot-password">
+                <a href="reset-password.php">Password dimenticata?</a>
+            </div>
           </form>
         </div>
       </div>
