@@ -17,6 +17,7 @@
               data="documents/bando.pdf" 
               type="application/pdf" 
               class="pdf-viewer">
+              <p>Il tuo browser non supporta la visualizzazione di PDF. Puoi scaricare il file usando il pulsante qui sotto.</p>
             </object>
             <a href="documents/bando.pdf" class="page-button" download>
               Scarica il bando

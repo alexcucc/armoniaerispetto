@@ -17,6 +17,7 @@
               data="documents/statuto.pdf" 
               type="application/pdf" 
               class="pdf-viewer">
+              <p>Il tuo browser non supporta la visualizzazione di PDF. Puoi scaricare il file usando il pulsante qui sotto.</p>
             </object>
             <a href="documents/statuto.pdf" class="page-button" download>
               Scarica file
