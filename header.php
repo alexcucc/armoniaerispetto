@@ -39,6 +39,9 @@
                             <li class="nav-item"><a class="nav-link" href="profile.php">Profilo</a></li>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                         <?php endif; ?>
+                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                            <li class="nav-item"><a class="nav-link" href="users.php">Gestione Utenti</a></li>
+                        <?php endif; ?>
                     </ul>
                 </div>
 

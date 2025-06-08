@@ -641,6 +641,102 @@ textarea:focus-visible {
   --spacing-unit: 1rem;
 }
 
+.users-table-container {
+    width: 100%;
+    max-width: fit-content;
+    margin: 0 auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: thin;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    border-radius: 0.5em;
+    min-width: 600px; /* Ensure minimum width for scrolling */
+}
+
+.users-table th,
+.users-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.users-table th {
+    background-color: #2E8B57;
+    color: white;
+    font-weight: bold;
+}
+
+.users-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 0.3em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    width: fit-content;
+}
+
+.users-table-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.users-table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.users-table-container::-webkit-scrollbar-thumb {
+    background: #2E8B57;
+    border-radius: 3px;
+}
+
+.users-table-container::-webkit-scrollbar-thumb:hover {
+    background: #3CA76A;
+}
+
+.verification-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25em 0.75em;
+    border-radius: 1em;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.verification-status.verified {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.verification-status.unverified {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -692,4 +788,37 @@ textarea:focus-visible {
   .title h1 {
       font-size: 1.5rem;
   }
+
+  .users-table th,
+    .users-table td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+
+    .users-table-container {
+        margin: 0.5em -0.5em;
+        border-radius: 0;
+    }
+
+    .delete-btn {
+        padding: 0.3em 0.6em;
+        font-size: 0.9rem;
+    }
+
+    /* Add horizontal scroll indicator */
+    .users-table-container::after {
+        content: '← Scroll →';
+        display: block;
+        text-align: center;
+        padding: 0.5em;
+        color: #666;
+        font-size: 0.8rem;
+        background: #f5f5f5;
+        border-radius: 0 0 0.5em 0.5em;
+    }
+
+    .verification-status {
+        padding: 0.2em 0.5em;
+        font-size: 0.8em;
+    }
 }
