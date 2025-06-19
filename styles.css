@@ -259,7 +259,12 @@ h1 {
 .page-button {
   text-align: center;
   width: min(15em, 100%);
-  display: block;
+  display: flex;          /* Change from block to flex */
+  align-items: center;    /* Vertical centering */
+  justify-content: center; /* Horizontal centering */
+  text-align: center;     /* Ensure text is centered if wraps to multiple lines */
+  line-height: 1.2;       /* Optimal line height for readability */
+  min-height: 2.5em;      /* Ensure consistent height with other buttons */
   margin: 0.5em auto;
   padding: 1em;
   font-size: 1.1em;
@@ -271,6 +276,21 @@ h1 {
   cursor: pointer;
   text-decoration: none;
   transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button-container {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1em 0;
+}
+
+.button-container .page-button {
+  margin: 0;
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
 }
 
 .logo-link {
@@ -642,99 +662,99 @@ textarea:focus-visible {
 }
 
 .users-table-container {
-    width: 100%;
-    max-width: fit-content;
-    margin: 0 auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    scrollbar-width: thin;
+  width: 100%;
+  max-width: fit-content;
+  margin: 0 auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin;
 }
 
 .users-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1em 0;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    border-radius: 0.5em;
-    min-width: 600px; /* Ensure minimum width for scrolling */
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border-radius: 0.5em;
+  min-width: 600px; /* Ensure minimum width for scrolling */
 }
 
 .users-table th,
 .users-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
 }
 
 .users-table th {
-    background-color: #2E8B57;
-    color: white;
-    font-weight: bold;
+  background-color: #2E8B57;
+  color: white;
+  font-weight: bold;
 }
 
 .users-table tr:hover {
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
 .delete-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 0.5em 1em;
-    border-radius: 0.3em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+  background-color: #c82333;
 }
 
 .message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    width: fit-content;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  width: fit-content;
 }
 
 .users-table-container::-webkit-scrollbar {
-    height: 6px;
+  height: 6px;
 }
 
 .users-table-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
+  background: #f1f1f1;
+  border-radius: 3px;
 }
 
 .users-table-container::-webkit-scrollbar-thumb {
-    background: #2E8B57;
-    border-radius: 3px;
+  background: #2E8B57;
+  border-radius: 3px;
 }
 
 .users-table-container::-webkit-scrollbar-thumb:hover {
-    background: #3CA76A;
+  background: #3CA76A;
 }
 
 .verification-status {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25em 0.75em;
-    border-radius: 1em;
-    font-size: 0.9em;
-    font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25em 0.75em;
+  border-radius: 1em;
+  font-size: 0.9em;
+  font-weight: 600;
 }
 
 .verification-status.verified {
-    background-color: #d4edda;
-    color: #155724;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .verification-status.unverified {
-    background-color: #f8d7da;
-    color: #721c24;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 @keyframes shimmer {
@@ -746,30 +766,39 @@ textarea:focus-visible {
   .page-button,
   .navigation-menu,
   .hamburger {
-      display: none;
+    display: none;
   }
 
   body {
-      color: #000;
-      background: #fff;
+    color: #000;
+    background: #fff;
   }
 
   a {
-      text-decoration: none;
-      color: #000;
+    text-decoration: none;
+    color: #000;
   }
 
   .main-image {
-      max-width: 500px;
+    max-width: 500px;
   }
 }
 
 @media (max-width: 768px) {
 
   html {
-      font-size: 1rem;
+    font-size: 1rem;
   }
 
+  .button-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .button-container .page-button {
+    margin: 0.5em 0;
+    max-width: none;
+  }
   
   .content-container {
     flex-direction: column;
