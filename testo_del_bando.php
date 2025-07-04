@@ -14,9 +14,10 @@
         <div class="content-container">
           <div class="content">
             <object 
-              data="documents/bando.pdf" 
+              data="documents/bando.pdf#toolbar=0&navpanes=0&scrollbar=1&view=FitH&page=1" 
               type="application/pdf" 
-              class="pdf-viewer">
+              class="pdf-viewer"
+              loading="lazy">
               <p>Il tuo browser non supporta la visualizzazione di PDF. Puoi scaricare il file usando il pulsante qui sotto.</p>
             </object>
             <div class="button-container">

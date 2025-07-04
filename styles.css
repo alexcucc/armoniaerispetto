@@ -266,7 +266,7 @@ h1 {
   line-height: 1.2;       /* Optimal line height for readability */
   min-height: 2.5em;      /* Ensure consistent height with other buttons */
   margin: 0.5em auto;
-  padding: 1em;
+  padding: 0.5em;
   font-size: 1.1em;
   font-weight: bold;
   color: #fff;
@@ -278,12 +278,24 @@ h1 {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.footer-title {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.footer-info {
+  font-size: 0.7em;
+  color: #666;
+  margin: 0;
+}
+
 .button-container {
   display: flex;
   gap: 1em;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 1em 0;
+  margin: 0.5em 0;
 }
 
 .button-container .page-button {
