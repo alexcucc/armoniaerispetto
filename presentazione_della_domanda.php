@@ -16,8 +16,8 @@
             <?php
             if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             ?>
-            <p>Per rispondere al bando e presentare una domanda di finanziamento è  necessario scaricare e compilare i seguenti 3 Form e prendere visione delle "Linee guida alla rendicontazione"</p>
-            <p>I tre moduli compilati dovranno essere inviati a <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a> assieme ad eventuali vostre integrazioni o proposte.</p>
+            <p>Per rispondere al bando e presentare una domanda di finanziamento è necessario scaricare e compilare i seguenti 4 documenti e prendere visione delle "Linee guida alla rendicontazione"</p>
+            <p>I quattro moduli compilati dovranno essere inviati a <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a> assieme ad eventuali vostre integrazioni o proposte.</p>
             <p>Sempre allo stesso indirizzo email è possibile indirizzare richieste di informazioni o chiarimenti sul bando e su come parteciparvi.</p>
             <a href="documents/presentazione_domanda_bando.zip" class="page-button" download>
               Scarica file

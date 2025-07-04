@@ -219,7 +219,7 @@ img {
 }
 
 .hero {
-  margin: 0.5rem;
+  margin: 0.2rem;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -227,8 +227,8 @@ img {
 }
 
 .logo {
-  height: 4rem;
-  width: 4rem;
+  height: 3rem;
+  width: 3rem;
   margin-right: 1em;
 }
 
@@ -258,7 +258,7 @@ h1 {
 
 .page-button {
   text-align: center;
-  width: min(15em, 100%);
+  /*width: min(15em, 100%);*/
   display: flex;          /* Change from block to flex */
   align-items: center;    /* Vertical centering */
   justify-content: center; /* Horizontal centering */
@@ -266,8 +266,8 @@ h1 {
   line-height: 1.2;       /* Optimal line height for readability */
   min-height: 2.5em;      /* Ensure consistent height with other buttons */
   margin: 0.5em auto;
-  padding: 0.5em;
-  font-size: 1.1em;
+  padding: 0.1em 0.8em;
+  font-size: 1em;
   font-weight: bold;
   color: #fff;
   background-color: #28a745; /* Green shade */
@@ -285,9 +285,19 @@ h1 {
 }
 
 .footer-info {
-  font-size: 0.7em;
-  color: #666;
+  font-size: 0.8em;
   margin: 0;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin-bottom: 0.2em;
+}
+
+.footer-title,
+.footer-info {
+  line-height: 1.05; /* Reduce line spacing */
 }
 
 .button-container {
@@ -296,13 +306,14 @@ h1 {
   justify-content: center;
   flex-wrap: wrap;
   margin: 0.5em 0;
+  margin-bottom: 0em;
 }
 
 .button-container .page-button {
   margin: 0;
   flex: 1;
   min-width: 200px;
-  max-width: 300px;
+  max-width: 400px;
 }
 
 .logo-link {
@@ -451,21 +462,22 @@ h1 {
 footer {
   text-align: center;
   font-size: 0.8em;
+  padding: 0;
 }
 
 .footer {
-  margin-bottom: 0.2em
+  margin-bottom: 0em;
 }
 
 .footer-text {
-  padding-left: 1em;
-  padding-right: 1em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .content-container {
   display: flex;
   gap: 1em;
-  margin: 0.5em;
+  margin: 0.2em;
   align-items: center;
   justify-content: center;
   height: 100%;

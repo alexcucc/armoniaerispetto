@@ -8,9 +8,6 @@
     <?php include 'header.php';?>
     <main>
       <div class="hero">
-        <div class="title">
-          <h1>Testo del Bando</h1>
-        </div>
         <div class="content-container">
           <div class="content">
             <object 
