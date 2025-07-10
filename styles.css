@@ -309,6 +309,45 @@ hr {
   margin-bottom: 0em;
 }
 
+/* Login Success Modal Styles */
+.login-success-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(46,139,87,0.15);
+}
+
+.login-success-modal-content {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  max-width: 350px;
+  margin: 12vh auto 0 auto;
+  padding: 2.5em 2em 2em 2em;
+  text-align: center;
+  position: relative;
+  animation: fadeIn 0.5s;
+}
+
+.login-success-modal-icon {
+  font-size: 2.5em;
+  color: #2e8b57;
+  margin-bottom: 0.3em;
+}
+
+.login-success-modal-content h2 {
+  margin: 0 0 0.5em 0;
+  color: #2e8b57;
+}
+
+.login-success-modal-content p {
+  margin-bottom: 1.5em;
+}
+
 .button-container .page-button {
   margin: 0;
   flex: 1;

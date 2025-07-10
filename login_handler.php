@@ -58,7 +58,7 @@ try {
 
         echo json_encode([
             'success' => true,
-            'redirect' => 'benvenuto.php'
+            'redirect' => 'index.php'
         ]);
         exit;
     } else {
