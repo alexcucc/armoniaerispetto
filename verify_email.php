@@ -45,7 +45,7 @@ try {
     $_SESSION['first_name'] = $result['first_name'];
     $_SESSION['last_name'] = $result['last_name'];
 
-    header('Location: benvenuto.php');
+    header('Location: index.php');
     exit;
 
 } catch (Exception $e) {
