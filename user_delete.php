@@ -2,13 +2,14 @@
 session_start();
 header('Content-Type: application/json');
 
+require_once 'db/common-db.php';
+$rolePermissionManager = new RolePermissionManager($pdo);
+
 // Check if user is logged in and is admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['USER_DELETE'])) {
     echo json_encode(['success' => false, 'message' => 'Accesso non autorizzato']);
     exit();
 }
-
-require_once 'db/common-db.php';
 
 // Get and decode JSON data
 $data = json_decode(file_get_contents('php://input'), true);

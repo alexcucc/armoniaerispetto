@@ -51,11 +51,6 @@ try {
         $_SESSION['first_name'] = $user['first_name'];
         $_SESSION['last_name'] = $user['last_name'];
 
-        // TODO - Implement user roles and permissions
-        if ($login === 'alex.cucc@hotmail.it' || $login === 'mthcucco@gmail.com') {
-            $_SESSION['role'] = 'admin';
-        }
-
         echo json_encode([
             'success' => true,
             'redirect' => 'index.php'

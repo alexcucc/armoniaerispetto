@@ -1,12 +1,13 @@
 <?php
 session_start();
-// Check if user is logged in and is admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+
+require_once 'db/common-db.php';
+include_once 'RolePermissionManager.php';
+$rolePermissionManager = new RolePermissionManager($pdo);
+if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['USER_LIST'])) {
     header('Location: login.php');
     exit();
 }
-
-require_once 'db/common-db.php';
 
 // Get all users from database
 $stmt = $pdo->prepare("SELECT id, email, first_name, last_name, phone, organization, created_at, email_verified FROM user");

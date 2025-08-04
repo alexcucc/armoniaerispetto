@@ -32,6 +32,9 @@
                         <li class="nav-item"><a class="nav-link" href="dona_ora.php">Dona Ora</a></li>
                         <?php
                         session_start();
+                        include_once 'db/common-db.php';
+                        require_once 'RolePermissionManager.php';
+                        $rolePermissionManager = new RolePermissionManager($pdo);
                         if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true): ?>
                             <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                             <li class="nav-item"><a class="nav-link" href="signup.php">Registrati</a></li>
@@ -39,7 +42,10 @@
                             <li class="nav-item"><a class="nav-link" href="profile.php">Profilo</a></li>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                         <?php endif; ?>
-                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW'])): ?>
+                            <li class="nav-item"><a class="nav-link" href="my_evaluations.php">Le mie Valutazioni</a></li>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['USER_LIST'])): ?>
                             <li class="nav-item"><a class="nav-link" href="users.php">Gestione Utenti</a></li>
                         <?php endif; ?>
                     </ul>
