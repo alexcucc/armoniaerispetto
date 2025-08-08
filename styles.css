@@ -268,8 +268,8 @@ img {
 
 .hero {
   margin: 0.2rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-left: 5%;
+  margin-right: 5%;
   height: 100%;
   display: flex;
   flex-direction: column;
