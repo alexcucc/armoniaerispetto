@@ -48,7 +48,7 @@
         <div class="content-container">
           <div class="overlay-wrapper">
             <div class="overlay-text-left">
-              <p>Dove l’uomo distrugge, la natura tenta di rinascere: ma non può farlo da sola. <b>Le nostre azioni quotidiane sono semi:</b> da esse può nascere un mondo più gentile.</p>
+              <p>Dove l'uomo distrugge, la natura tenta di rinascere: ma non può farlo da sola. <b>Le nostre azioni quotidiane sono semi:</b> da esse può nascere un mondo più gentile.</p>
               <p>Ogni nostra scelta quotidiana può diventare un atto di difesa per il pianeta e chi lo abita.​</p>
               <p>Promuoviamo stili di vita consapevoli, dall’alimentazione all’uso delle risorse, per incentivare comportamenti concreti a tutela dell’ambiente.</p>
             </div>

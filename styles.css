@@ -219,6 +219,7 @@ img {
 }
 
 .overlay-wrapper {
+  z-index: -1;
   display: flex;
   position: relative;
   align-items: center;
@@ -238,32 +239,32 @@ img {
 }
 
 .overlay-image img.fade-right {
-  -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
-  mask-image: linear-gradient(to right, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 50%, transparent 100%);
+  mask-image: linear-gradient(to right, black 50%, transparent 100%);
   margin-left: 0;
   margin-right: auto;
 }
 
 .overlay-image img.fade-left {
-  -webkit-mask-image: linear-gradient(to left, black 70%, transparent 100%);
-  mask-image: linear-gradient(to left, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, black 50%, transparent 100%);
+  mask-image: linear-gradient(to left, black 50%, transparent 100%);
   margin-left: auto;
   margin-right: 0;
 }
 
 .overlay-text-right,
 .overlay-text-left {
-    flex: 1;
+    flex: 2;
     padding: 1em;
     z-index: 1;
 }
 
 .overlay-text-right {
-    margin-left: -10%; 
+    margin-left: -20%; 
 }
 
 .overlay-text-left {
-    margin-right: -10%; 
+    margin-right: -20%; 
 }
 
 .hero {
