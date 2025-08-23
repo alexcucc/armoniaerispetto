@@ -31,12 +31,12 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
                 <input type="text" id="type" name="type" class="form-input" required>
             </div>
             <div class="form-group">
-                <label class="form-label" for="incorporation_date">Data di costituzione</label>
-                <input type="date" id="incorporation_date" name="incorporation_date" class="form-input">
+                <label class="form-label" for="incorporation_year">Anno di costituzione</label>
+                <input type="number" id="incorporation_year" name="incorporation_year" class="form-input">
             </div>
             <div class="form-group">
-                <label class="form-label" for="full_address">Indirizzo completo</label>
-                <input type="text" id="full_address" name="full_address" class="form-input">
+                <label class="form-label" for="location">Località</label>
+                <input type="text" id="location" name="location" class="form-input">
             </div>
             <div class="form-group">
                 <button type="submit" class="page-button">Aggiungi</button>

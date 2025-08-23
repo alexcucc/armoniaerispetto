@@ -17,16 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
 $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
-$incorporation_date = filter_input(INPUT_POST, 'incorporation_date', FILTER_SANITIZE_STRING);
-$full_address = filter_input(INPUT_POST, 'full_address', FILTER_SANITIZE_STRING);
+$incorporation_year = filter_input(INPUT_POST, 'incorporation_year', FILTER_SANITIZE_STRING);
+$location = filter_input(INPUT_POST, 'location', FILTER_SANITIZE_STRING);
 
-$stmt = $pdo->prepare("INSERT INTO organization (name, type, incorporation_date, full_address) VALUES (:name, :type, :incorporation_date, :full_address)");
+$stmt = $pdo->prepare("INSERT INTO organization (name, type, incorporation_year, location) VALUES (:name, :type, :incorporation_year, :location)");
 
 $stmt->execute([
     ':name' => $name,
     ':type' => $type,
-    ':incorporation_date' => $incorporation_date ?: null,
-    ':full_address' => $full_address
+    ':incorporation_year' => $incorporation_year,
+    ':location' => $location
 ]);
 
 header('Location: organizations.php');

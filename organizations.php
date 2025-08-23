@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
 }
 
 // Fetch all organizations
-$stmt = $pdo->prepare("SELECT id, name, type, incorporation_date, full_address, created_at, updated_at FROM organization");
+$stmt = $pdo->prepare("SELECT id, name, type, incorporation_year, location AS location, created_at, updated_at FROM organization");
 $stmt->execute();
 $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -38,8 +38,8 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tr>
                             <th>Nome</th>
                             <th>Tipo</th>
-                            <th>Data di costituzione</th>
-                            <th>Indirizzo completo</th>
+                            <th>Anno di costituzione</th>
+                            <th>Località</th>
                             <th>Creato il</th>
                             <th>Aggiornato il</th>
                             <th>Azioni</th>
@@ -50,8 +50,8 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <tr>
                                 <td><?php echo htmlspecialchars($org['name']); ?></td>
                                 <td><?php echo htmlspecialchars($org['type']); ?></td>
-                                <td><?php echo $org['incorporation_date'] ? htmlspecialchars(date('d/m/Y', strtotime($org['incorporation_date']))) : ''; ?></td>
-                                <td><?php echo htmlspecialchars($org['full_address']); ?></td>
+                                <td><?php echo htmlspecialchars($org['incorporation_year']); ?></td>
+                                <td><?php echo htmlspecialchars($org['location']); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['created_at']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['updated_at']))); ?></td>
                                 <td>
