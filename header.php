@@ -46,7 +46,10 @@
                             <li class="nav-item"><a class="nav-link" href="my_evaluations.php">Le mie Valutazioni</a></li>
                         <?php endif; ?>
                         <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['USER_LIST'])): ?>
-                            <li class="nav-item"><a class="nav-link" href="users.php">Gestione Utenti</a></li>
+                            <li class="nav-item"><a class="nav-link" href="users.php">Utenti</a></li>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_LIST'])): ?>
+                            <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
                         <?php endif; ?>
                     </ul>
                 </div>

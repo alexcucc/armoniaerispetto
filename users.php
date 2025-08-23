@@ -19,14 +19,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="it">
 <head>
     <?php include 'common-head.php';?>
-    <title>Gestione Utenti - Admin</title>
+    <title>Utenti - Admin</title>
 </head>
 <body>
     <?php include 'header.php';?>
     <main>
         <div class="hero">
             <div class="title">
-                <h1>Gestione Utenti</h1>
+                <h1>Utenti</h1>
             </div>
             <div class="content-container">
                 <div class = "content">

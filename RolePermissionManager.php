@@ -13,18 +13,30 @@ class RolePermissionManager
      * @var array
      */
     public static $PERMISSIONS = [
-        'EVALUATION_CREATE' => 'evaluation:create',
-        'EVALUATION_UPDATE' => 'evaluation:update',
-        'EVALUATION_DELETE' => 'evaluation:delete',
-        'EVALUATION_VIEW'   => 'evaluation:view',
-        'USER_READ'         => 'user:read',
-        'USER_DELETE'       => 'user:delete',
-        'USER_LIST'         => 'user:list',
-        'ROLE_CREATE'       => 'role:create',
-        'ROLE_UPDATE'       => 'role:update',
-        'ROLE_READ'         => 'role:read',
-        'ROLE_DELETE'       => 'role:delete',
-        'ROLE_LIST'         => 'role:list'
+
+        # evaluations
+        'EVALUATION_CREATE'   => 'evaluation:create',
+        'EVALUATION_UPDATE'   => 'evaluation:update',
+        'EVALUATION_DELETE'   => 'evaluation:delete',
+        'EVALUATION_VIEW'     => 'evaluation:view',
+
+        # users
+        'USER_READ'           => 'user:read',
+        'USER_DELETE'         => 'user:delete',
+        'USER_LIST'           => 'user:list',
+
+        # roles
+        'ROLE_CREATE'         => 'role:create',
+        'ROLE_UPDATE'         => 'role:update',
+        'ROLE_READ'           => 'role:read',
+        'ROLE_DELETE'         => 'role:delete',
+        'ROLE_LIST'           => 'role:list',
+
+        # organizations
+        'ORGANIZATION_CREATE' => 'organization:create',
+        'ORGANIZATION_UPDATE' => 'organization:update',
+        'ORGANIZATION_DELETE' => 'organization:delete',
+        'ORGANIZATION_LIST'   => 'organization:list'
     ];
 
     /**
