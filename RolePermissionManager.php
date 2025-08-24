@@ -25,6 +25,11 @@ class RolePermissionManager
         'USER_DELETE'         => 'user:delete',
         'USER_LIST'           => 'user:list',
 
+        # evaluators
+        'EVALUATOR_CREATE'   => 'evaluator:create',
+        'EVALUATOR_DELETE'   => 'evaluator:delete',
+        'EVALUATOR_LIST'     => 'evaluator:list',
+
         # roles
         'ROLE_CREATE'         => 'role:create',
         'ROLE_UPDATE'         => 'role:update',

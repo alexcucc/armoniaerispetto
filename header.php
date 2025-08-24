@@ -51,6 +51,9 @@
                         <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_LIST'])): ?>
                             <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
                         <?php endif; ?>
+                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATOR_LIST'])): ?>
+                            <li class="nav-item"><a class="nav-link" href="evaluators.php">Valutatori</a></li>
+                        <?php endif; ?>
                     </ul>
                 </div>
 

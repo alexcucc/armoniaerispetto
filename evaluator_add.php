@@ -1,0 +1,45 @@
+<?php
+session_start();
+
+require_once 'db/common-db.php';
+include_once 'RolePermissionManager.php';
+
+$rolePermissionManager = new RolePermissionManager($pdo);
+if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATOR_CREATE'])) {
+    header('Location: index.php');
+    exit();
+}
+
+$stmt = $pdo->prepare("SELECT id, first_name, last_name, email FROM user");
+$stmt->execute();
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <?php include 'common-head.php'; ?>
+    <title>Aggiungi Valutatore</title>
+</head>
+<body>
+<?php include 'header.php'; ?>
+<main>
+    <div class="contact-form-container">
+        <h2>Aggiungi Valutatore</h2>
+        <form class="contact-form" action="evaluator_add_handler.php" method="POST">
+            <div class="form-group">
+                <label class="form-label required" for="user_id">Utente</label>
+                <select id="user_id" name="user_id" class="form-input" required>
+                    <?php foreach ($users as $user): ?>
+                        <option value="<?php echo $user['id']; ?>"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name'] . ' (' . $user['email'] . ')'); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="page-button">Aggiungi</button>
+            </div>
+        </form>
+    </div>
+</main>
+<?php include 'footer.php'; ?>
+</body>
+</html>
