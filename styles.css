@@ -855,6 +855,8 @@ textarea:focus-visible {
   max-width: fit-content;
   margin: 0 auto;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 60vh;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   scrollbar-width: thin;
 }
@@ -881,6 +883,9 @@ textarea:focus-visible {
   background-color: #2E8B57;
   color: white;
   font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .users-table tr:hover {
