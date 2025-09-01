@@ -41,7 +41,13 @@ class RolePermissionManager
         'ORGANIZATION_CREATE' => 'organization:create',
         'ORGANIZATION_UPDATE' => 'organization:update',
         'ORGANIZATION_DELETE' => 'organization:delete',
-        'ORGANIZATION_LIST'   => 'organization:list'
+        'ORGANIZATION_LIST'   => 'organization:list',
+
+        # call for proposals
+        'CALL_FOR_PROPOSAL_CREATE' => 'call_for_proposal:create',
+        'CALL_FOR_PROPOSAL_UPDATE' => 'call_for_proposal:update',
+        'CALL_FOR_PROPOSAL_DELETE' => 'call_for_proposal:delete',
+        'CALL_FOR_PROPOSAL_LIST'   => 'call_for_proposal:list'
     ];
 
     /**

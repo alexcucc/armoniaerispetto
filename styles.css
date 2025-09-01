@@ -578,6 +578,20 @@ th {
   align-items: center;
 }
 
+.modify-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modify-btn:hover {
+  background-color: #0069d9;
+}
+
 .nav-link {
   text-align: center;
   display: block;
@@ -1021,7 +1035,8 @@ textarea:focus-visible {
         border-radius: 0;
     }
 
-    .delete-btn {
+    .delete-btn,
+    .modify-btn {
         padding: 0.3em 0.6em;
         font-size: 0.9rem;
     }
