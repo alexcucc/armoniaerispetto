@@ -25,6 +25,15 @@ if (!$callForProposalId) {
 }
 
 try {
+    $stmt = $pdo->prepare('SELECT pdf_path FROM call_for_proposal WHERE id = ?');
+    $stmt->execute([$callForProposalId]);
+    $pdfPath = $stmt->fetchColumn();
+
+    if ($pdfPath && file_exists($pdfPath)) {
+        unlink($pdfPath);
+        @rmdir(dirname($pdfPath));
+    }
+
     $stmt = $pdo->prepare('DELETE FROM call_for_proposal WHERE id = ?');
     $stmt->execute([$callForProposalId]);
 
