@@ -36,7 +36,7 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <table class="users-table">
                         <thead>
                         <tr>
-                            <th>Nome</th>
+                            <th>Denominazione</th>
                             <th>Tipo</th>
                             <th>Anno di costituzione</th>
                             <th>Località</th>
@@ -55,6 +55,11 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['created_at']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['updated_at']))); ?></td>
                                 <td>
+                                    <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_UPDATE'])): ?>
+                                    <a class="modify-btn" href="organization_edit.php?id=<?php echo $org['id']; ?>">
+                                        <i class="fas fa-edit"></i> Modifica
+                                    </a>
+                                    <?php endif; ?>
                                     <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_DELETE'])): ?>
                                     <button class="delete-btn" data-id="<?php echo $org['id']; ?>">
                                         <i class="fas fa-trash"></i> Elimina

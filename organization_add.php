@@ -23,7 +23,7 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
         <h2>Aggiungi Ente</h2>
         <form class="contact-form" action="organization_add_handler.php" method="POST">
             <div class="form-group">
-                <label class="form-label required" for="name">Nome</label>
+                <label class="form-label required" for="name">Denominazione</label>
                 <input type="text" id="name" name="name" class="form-input" required>
             </div>
             <div class="form-group">
