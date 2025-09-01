@@ -17,6 +17,17 @@ body {
   text-justify: inter-word;
 }
 
+.users-table th a {
+  color: white;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.users-table th a .sort-icon {
+  margin-left: 5px;
+}
+
 html {
   font-family: 'Source Sans Pro', system-ui, -apple-system, sans-serif;
   line-height: 1.6;

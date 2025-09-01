@@ -24,7 +24,7 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
         <form class="contact-form" action="organization_add_handler.php" method="POST">
             <div class="form-group">
                 <label class="form-label required" for="name">Denominazione</label>
-                <input type="text" id="name" name="name" class="form-input" required>
+                <input type="text" id="name" name="name" class="form-input" required autofocus>
             </div>
             <div class="form-group">
                 <label class="form-label required" for="type">Tipo</label>
