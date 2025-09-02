@@ -54,7 +54,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                 <td>
                                     <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
-                                    <a class="modify-btn" href="call_for_proposal_edit.php?id=<?php echo $cfp['id']; ?>"><i class="fas fa-edit"></i> Modifica</a>
+                                    <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?= $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
                                     <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
                                 </td>
                             </tr>
