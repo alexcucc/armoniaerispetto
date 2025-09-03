@@ -49,7 +49,7 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tr>
                             <?php
                             $columns = [
-                                'name' => 'Nome',
+                                'name' => 'Denominazione',
                                 'type' => 'Tipo',
                                 'incorporation_year' => 'Anno di costituzione',
                                 'location' => 'Località',
@@ -79,9 +79,9 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['updated_at']))); ?></td>
                                 <td>
                                     <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_UPDATE'])): ?>
-                                    <a class="modify-btn" href="organization_edit.php?id=<?php echo $org['id']; ?>">
+                                    <button class="modify-btn" onclick="window.location.href='organization_edit.php?id=<?php echo $org['id']; ?>'">
                                         <i class="fas fa-edit"></i> Modifica
-                                    </a>
+                                    </button>
                                     <?php endif; ?>
                                     <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_DELETE'])): ?>
                                     <button class="delete-btn" data-id="<?php echo $org['id']; ?>">
