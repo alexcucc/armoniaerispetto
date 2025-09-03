@@ -20,8 +20,8 @@ $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
 $start_date_input = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
 $end_date_input = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
 
-$start_date = DateTime::createFromFormat('Y-m-d\\TH:i', $start_date_input);
-$end_date = DateTime::createFromFormat('Y-m-d\\TH:i', $end_date_input);
+$start_date = DateTime::createFromFormat('Y-m-d', $start_date_input);
+$end_date = DateTime::createFromFormat('Y-m-d', $end_date_input);
 
 $pdf_uploaded = isset($_FILES['pdf']) && $_FILES['pdf']['error'] === UPLOAD_ERR_OK;
 if (!$title || !$description || !$start_date || !$end_date || !$pdf_uploaded) {
@@ -44,8 +44,8 @@ try {
     $stmt->execute([
         ':title' => $title,
         ':description' => $description,
-        ':start_date' => $start_date->format('Y-m-d H:i:s'),
-        ':end_date' => $end_date->format('Y-m-d H:i:s')
+        ':start_date' => $start_date->format('Y-m-d 00:00:00'),
+        ':end_date' => $end_date->format('Y-m-d 00:00:00')
     ]);
     $call_for_proposal_id = $pdo->lastInsertId();
 
