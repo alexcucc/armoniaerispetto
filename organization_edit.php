@@ -56,6 +56,7 @@ if (!$org) {
             </div>
             <div class="form-group">
                 <button type="submit" class="page-button">Aggiorna</button>
+                <button type="button" class="page-button" onclick="window.history.back();">Indietro</button>
             </div>
         </form>
     </div>
