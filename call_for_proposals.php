@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Fetch all call for proposals
-$stmt = $pdo->prepare("SELECT id, title, start_date, end_date, pdf_path, created_at, updated_at FROM call_for_proposal");
+$stmt = $pdo->prepare("SELECT id, title, description, start_date, end_date, pdf_path, created_at, updated_at FROM call_for_proposal");
 $stmt->execute();
 $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -37,6 +37,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <thead>
                         <tr>
                             <th>Titolo</th>
+                            <th>Descrizione</th>
                             <th>Inizio</th>
                             <th>Fine</th>
                             <th>Creato il</th>
@@ -48,6 +49,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php foreach ($calls as $cfp): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($cfp['title']); ?></td>
+                                <td><?php echo htmlspecialchars($cfp['description']); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['start_date']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['end_date']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
