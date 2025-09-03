@@ -36,11 +36,11 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
             </div>
             <div class="form-group">
                 <label class="form-label required" for="start_date">Data Inizio</label>
-                <input type="datetime-local" id="start_date" name="start_date" class="form-input" required>
+                <input type="date" id="start_date" name="start_date" class="form-input" required>
             </div>
             <div class="form-group">
                 <label class="form-label required" for="end_date">Data Fine</label>
-                <input type="datetime-local" id="end_date" name="end_date" class="form-input" required>
+                <input type="date" id="end_date" name="end_date" class="form-input" required>
             </div>
             <div class="form-group">
                 <button type="submit" class="page-button">Aggiungi</button>
