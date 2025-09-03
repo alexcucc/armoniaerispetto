@@ -897,7 +897,6 @@ textarea:focus-visible {
   text-align: center;
 }
 
-.users-table th:first-child,
 .users-table td:first-child {
   text-align: left;
 }
