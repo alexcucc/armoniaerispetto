@@ -30,7 +30,9 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="content-container">
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
-                <a class="page-button" href="evaluator_add.php" style="margin-bottom: 20px; display: inline-block;">Aggiungi Valutatore</a>
+                <div class="button-container">
+                    <a class="page-button" href="evaluator_add.php">Aggiungi Valutatore</a>
+                </div>                
                 <div class="users-table-container">
                     <table class="users-table">
                         <thead>

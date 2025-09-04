@@ -12,10 +12,8 @@
           <h1>I nostri Progetti</h1>
         </div>
         <div class="content-container">
-          <div class="content">
+          <div class="button-container">
             <button onclick="window.location.href='catalogo_progetti.php';" class="page-button">Catalogo Progetti</button>
-          </div>
-          <div class="content">
             <button onclick="window.location.href='progetti_in_corso.php';" class="page-button">Progetti in Corso</button>
           </div>
         </div>

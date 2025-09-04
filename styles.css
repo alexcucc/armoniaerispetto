@@ -320,6 +320,7 @@ h1 {
 
 .page-button {
   text-align: center;
+  width: fit-content;
   /*width: min(15em, 100%);*/
   display: flex;          /* Change from block to flex */
   align-items: center;    /* Vertical centering */

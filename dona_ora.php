@@ -12,10 +12,8 @@
           <h1>Dona Ora</h1>
         </div>
         <div class="content-container">
-          <div class="content">
+          <div class="button-container">
             <button onclick="window.location.href='cinque_per_mille.php';" class="page-button">Cinque per Mille</button>
-          </div>
-          <div class="content">
             <button onclick="window.location.href='donazioni_e_lasciti.php';" class="page-button">Donazioni e Lasciti</button>
           </div>
         </div>

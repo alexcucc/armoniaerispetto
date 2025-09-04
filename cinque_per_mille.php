@@ -27,9 +27,11 @@
             <p>
               Un piccolo gesto per un grande cambiamento. Grazie per il tuo aiuto!
             </p>
-            <a href="documents/cinque_per_mille.pdf" class="page-button" download>
-              Scarica il file e porta dal commercialista
-            </a>
+            <div class="button-container">
+              <a href="documents/cinque_per_mille.pdf" class="page-button" download>
+                Scarica il file e porta dal commercialista
+              </a>
+            </div>
           </div>
         </div>
       </div>

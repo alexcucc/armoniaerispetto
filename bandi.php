@@ -12,7 +12,9 @@
           <h1>Bandi</h1>
         </div>
         <div class="content-container">
+          <div class="button-container">
             <button onclick="window.location.href='testo_del_bando.php';" class="page-button">Bando Armonia e Rispetto I edizione</button>
+          </div>
         </div>
       </div>
     </main>

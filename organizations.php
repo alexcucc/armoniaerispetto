@@ -42,7 +42,9 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="content-container">
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
-                <a class="page-button" href="organization_add.php" style="margin-bottom: 20px; display: inline-block;">Aggiungi Ente</a>
+                <div class="button-container">
+                    <a class="page-button" href="organization_add.php">Aggiungi Ente</a>
+                </div>
                 <div class="users-table-container">
                     <table class="users-table">
                         <thead>
