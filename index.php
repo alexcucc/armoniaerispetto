@@ -46,12 +46,6 @@
               Perché <b>l'anima di un popolo si riconosce da come tratta chi non ha voce.</b>
               <br>
               E se sapremo prenderci cura degli esseri più vulnerabili, allora forse impareremo anche a prenderci cura di noi stessi e del mondo che ci contiene.</p>
-              <p>Promuoviamo progetti concreti:
-              <ul>
-                <li>Sostegno ad associazioni per il salvataggio, la riabilitazione di animali maltrattati e per la tutela delle specie a rischio</li>
-                <li>Educazione al rispetto nelle scuole</li>
-                <li>Sostegno a rifugi, centri di recupero, e realtà che operano ogni giorno in silenzio e con amore</li>
-              </ul></p>
               <p>Ma il nostro scopo va oltre l'azione immediata.
               <br>
               <b>Vogliamo trasformare la coscienza.</b>
@@ -92,15 +86,11 @@
           <div class="overlay-wrapper">
             <div class="overlay-text-left">
               <h2 style="text-align:justify">🌱 Il nostro impegno è il nostro volto</h2>
-              <p>Ogni progetto che sosteniamo, ogni animale salvato, ogni voce amplificata è parte di una visione più grande.
-              <br>
-              Non ci muove la rabbia, ma l'amore.
-              <br>
-              Non l'indignazione sterile, ma <b>il desiderio profondo di cambiare le cose, davvero, giorno dopo giorno.</b></p>
-              <p>
-              Perché <b>coabitare questa Terra significa condividere il destino</b>, e solo un destino condiviso può essere giusto.
-              <br>
-              Non ci sarà salvezza per l'uomo se non ci sarà salvezza per gli animali, per le foreste, per i mari, per ogni essere che abita con noi questa fragile meraviglia che chiamiamo casa.</p>
+              <p>Ogni progetto che sosteniamo, ogni animale salvato, ogni voce amplificata è parte di una visione più grande.</p>
+              <p>Non ci muove la rabbia, ma l'amore.</p>
+              <p>Non l'indignazione sterile, ma <b>il desiderio profondo di cambiare le cose, davvero, giorno dopo giorno.</b></p>
+              <p>Perché <b>coabitare questa Terra significa condividere il destino</b>, e solo un destino condiviso può essere giusto.</p>
+              <p>Non ci sarà salvezza per l'uomo se non ci sarà salvezza per gli animali, per le foreste, per i mari, per ogni essere che abita con noi questa fragile meraviglia che chiamiamo casa.</p>
             </div>
             <div class="overlay-image">
               <img class="image fade-left" src="images/boy_drinking.jpg">
