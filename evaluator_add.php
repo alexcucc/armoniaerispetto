@@ -34,7 +34,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="form-group">
+            <div class="button-container">
+                <a href="evaluators.php" class="page-button" style="background-color: #007bff;">Indietro</a>
                 <button type="submit" class="page-button">Aggiungi</button>
             </div>
         </form>

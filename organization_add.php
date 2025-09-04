@@ -38,7 +38,8 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
                 <label class="form-label" for="location">Località</label>
                 <input type="text" id="location" name="location" class="form-input">
             </div>
-            <div class="form-group">
+            <div class="button-container">
+                <a href="organizations.php" class="page-button" style="background-color: #007bff;">Indietro</a>
                 <button type="submit" class="page-button">Aggiungi</button>
             </div>
         </form>
