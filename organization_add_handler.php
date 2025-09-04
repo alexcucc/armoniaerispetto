@@ -20,6 +20,14 @@ $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
 $incorporation_year = filter_input(INPUT_POST, 'incorporation_year', FILTER_SANITIZE_STRING);
 $location = filter_input(INPUT_POST, 'location', FILTER_SANITIZE_STRING);
 
+if ($incorporation_year === '') {
+    $incorporation_year = null;
+}
+
+if ($location === '') {
+    $location = null;
+}
+
 $stmt = $pdo->prepare("INSERT INTO organization (name, type, incorporation_year, location) VALUES (:name, :type, :incorporation_year, :location)");
 
 $stmt->execute([

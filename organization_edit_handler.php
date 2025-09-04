@@ -26,6 +26,14 @@ if (!$id || !$name || !$type) {
     exit();
 }
 
+if ($incorporation_year === '') {
+    $incorporation_year = null;
+}
+
+if ($location === '') {
+    $location = null;
+}
+
 $stmt = $pdo->prepare('UPDATE organization SET name = :name, type = :type, incorporation_year = :incorporation_year, location = :location WHERE id = :id');
 $stmt->execute([
     ':name' => $name,
