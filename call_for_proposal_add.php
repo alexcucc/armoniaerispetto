@@ -42,7 +42,8 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
                 <label class="form-label required" for="end_date">Data Fine</label>
                 <input type="date" id="end_date" name="end_date" class="form-input" required>
             </div>
-            <div class="form-group">
+            <div class="button-container">
+                <a href="call_for_proposals.php" class="page-button" style="background-color: #007bff;">Indietro</a>
                 <button type="submit" class="page-button">Aggiungi</button>
             </div>
         </form>

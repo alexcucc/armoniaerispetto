@@ -901,6 +901,18 @@ textarea:focus-visible {
   text-align: left;
 }
 
+.page-button.back-button {
+  background-color: #007bff;
+}
+
+.page-button.back-button:hover {
+  background-color: #0069d9;
+}
+
+.page-button.back-button:active {
+  background-color: #005cbf;
+}
+
 .users-table th {
   background-color: #2E8B57;
   color: white;
