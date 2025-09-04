@@ -16,12 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
   hamburger.addEventListener('click', () => {
     navigationMenu.classList.toggle('active');
   });
-  
-  const manageToggle = document.querySelector('.manage-toggle');
-  if (manageToggle) {
-    manageToggle.addEventListener('click', (event) => {
-      event.preventDefault();
-      manageToggle.parentElement.classList.toggle('open');
+
+  document.querySelectorAll('.manage-toggle').forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      const navItem = toggle.closest('.nav-item.dropdown');
+      const submenu = navItem.querySelector('.submenu');
+      navItem.classList.toggle('open');
+      if (navItem.classList.contains('open')) {
+        submenu.style.maxHeight = `${submenu.scrollHeight}px`;
+      } else {
+        submenu.style.maxHeight = '0';
+      }
     });
-  }
+  });
 });

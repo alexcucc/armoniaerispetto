@@ -644,6 +644,18 @@ th {
   transform: translateY(-2px);
 }
 
+.nav-item.dropdown .submenu {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-item.dropdown.open .submenu {
+  max-height: 500px;
+  opacity: 1;
+}
+
 .nav-item.dropdown {
   flex-direction: column;
   position: relative;
