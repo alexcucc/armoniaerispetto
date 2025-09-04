@@ -45,17 +45,46 @@
                         <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW'])): ?>
                             <li class="nav-item"><a class="nav-link" href="my_evaluations.php">Le mie Valutazioni</a></li>
                         <?php endif; ?>
-                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['USER_LIST'])): ?>
-                            <li class="nav-item"><a class="nav-link" href="users.php">Gestione Utenti</a></li>
-                        <?php endif; ?>
-                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_LIST'])): ?>
-                            <li class="nav-item"><a class="nav-link" href="organizations.php">Gestione Enti</a></li>
-                        <?php endif; ?>
-                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATOR_LIST'])): ?>
-                            <li class="nav-item"><a class="nav-link" href="evaluators.php">Gestione Valutatori</a></li>
-                        <?php endif; ?>
-                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_LIST'])): ?>
-                            <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Gestione Bandi</a></li>
+                        <?php
+                        $canUserList = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['USER_LIST']
+                        );
+                        $canOrganizationList = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['ORGANIZATION_LIST']
+                        );
+                        $canEvaluatorList = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['EVALUATOR_LIST']
+                        );
+                        $canCallForProposalList = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_LIST']
+                        );
+                        if (
+                            $canUserList ||
+                            $canOrganizationList ||
+                            $canEvaluatorList ||
+                            $canCallForProposalList
+                        ): ?>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link manage-toggle">Gestione</a>
+                                <ul class="submenu">
+                                    <?php if ($canUserList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="users.php">Gestione Utenti</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canOrganizationList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="organizations.php">Gestione Enti</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canEvaluatorList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="evaluators.php">Gestione Valutatori</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canCallForProposalList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Gestione Bandi</a></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </li>
                         <?php endif; ?>
                     </ul>
                 </div>

@@ -16,4 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   hamburger.addEventListener('click', () => {
     navigationMenu.classList.toggle('active');
   });
+  
+  const manageToggle = document.querySelector('.manage-toggle');
+  if (manageToggle) {
+    manageToggle.addEventListener('click', (event) => {
+      event.preventDefault();
+      manageToggle.parentElement.classList.toggle('open');
+    });
+  }
 });

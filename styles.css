@@ -644,6 +644,37 @@ th {
   transform: translateY(-2px);
 }
 
+.nav-item.dropdown {
+  flex-direction: column;
+  position: relative;
+}
+
+.manage-toggle {
+  cursor: pointer;
+}
+
+.nav-item.dropdown .submenu {
+  display: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item.dropdown.open .submenu {
+  display: block;
+}
+
+.nav-item.dropdown .manage-toggle::after {
+  content: "\25BC";
+  margin-left: 0.3em;
+  font-size: 0.8em;
+  transition: transform 0.3s ease;
+}
+
+.nav-item.dropdown.open .manage-toggle::after {
+  transform: rotate(180deg);
+}
+
 footer {
   text-align: center;
   font-size: 0.8em;
