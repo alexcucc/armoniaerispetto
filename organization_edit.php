@@ -54,9 +54,9 @@ if (!$org) {
                 <label class="form-label" for="location">Località</label>
                 <input type="text" id="location" name="location" class="form-input" value="<?php echo htmlspecialchars($org['location']); ?>">
             </div>
-            <div class="form-group">
+            <div class="button-container">
+                <a href="organizations.php" class="page-button" style="background-color: #007bff;">Indietro</a>
                 <button type="submit" class="page-button">Aggiorna</button>
-                <button type="button" class="page-button" onclick="window.history.back();">Indietro</button>
             </div>
         </form>
     </div>

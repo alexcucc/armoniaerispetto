@@ -58,9 +58,9 @@ if (!$proposal) {
                 <label class="form-label" for="pdf">PDF (opzionale)</label>
                 <input type="file" id="pdf" name="pdf" class="form-input" accept="application/pdf">
             </div>
-            <div class="form-group">
+            <div class="button-container">
+                <a href="call_for_proposals.php" class="page-button" style="background-color: #007bff;">Indietro</a>
                 <button type="submit" class="page-button">Aggiorna</button>
-                <button type="button" class="page-button" onclick="window.history.back();">Indietro</button>
             </div>
         </form>
     </div>
