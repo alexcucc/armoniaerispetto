@@ -18,8 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
 $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
-$start_date = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
-$end_date = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
+$start_date_input = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
+$end_date_input = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
+
+$start_date = DateTime::createFromFormat('Y-m-d', $start_date_input);
+$end_date = DateTime::createFromFormat('Y-m-d', $end_date_input);
 
 if (!$id || !$title || !$description || !$start_date || !$end_date) {
     header('Location: call_for_proposal_edit.php?id=' . urlencode($id));
@@ -69,8 +72,8 @@ try {
 
         $pdfPath = $destination_path;
     }
-    $start_date_dt = date('Y-m-d H:i:s', strtotime($start_date));
-    $end_date_dt = date('Y-m-d H:i:s', strtotime($end_date));
+    $start_date_dt = $start_date->format('Y-m-d 00:00:00');
+    $end_date_dt = $end_date->format('Y-m-d 00:00:00');
 
     $stmt = $pdo->prepare('UPDATE call_for_proposal SET title = :title, description = :description, start_date = :start_date, end_date = :end_date, pdf_path = :pdf_path WHERE id = :id');
     $stmt->execute([

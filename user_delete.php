@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 require_once 'db/common-db.php';
+include_once 'RolePermissionManager.php';
 $rolePermissionManager = new RolePermissionManager($pdo);
 
 // Check if user is logged in and is admin

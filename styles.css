@@ -17,6 +17,17 @@ body {
   text-justify: inter-word;
 }
 
+.users-table th a {
+  color: white;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.users-table th a .sort-icon {
+  margin-left: 5px;
+}
+
 html {
   font-family: 'Source Sans Pro', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
@@ -578,18 +589,37 @@ th {
   align-items: center;
 }
 
-.modify-btn {
-  background-color: #007bff;
+.modify-btn,
+.delete-btn {
   color: white;
   border: none;
   padding: 0.5em 1em;
   border-radius: 0.3em;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  width: 110px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.modify-btn {
+  background-color: #007bff;
 }
 
 .modify-btn:hover {
   background-color: #0069d9;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
 }
 
 .nav-link {
@@ -844,6 +874,8 @@ textarea:focus-visible {
   max-width: fit-content;
   margin: 0 auto;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 60vh;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   scrollbar-width: thin;
 }
@@ -861,33 +893,25 @@ textarea:focus-visible {
 .users-table th,
 .users-table td {
   padding: 12px 15px;
-  text-align: left;
   border-bottom: 1px solid #ddd;
   text-align: center;
+}
+
+.users-table td:first-child {
+  text-align: left;
 }
 
 .users-table th {
   background-color: #2E8B57;
   color: white;
   font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .users-table tr:hover {
   background-color: #f5f5f5;
-}
-
-.delete-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5em 1em;
-  border-radius: 0.3em;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.delete-btn:hover {
-  background-color: #c82333;
 }
 
 .message.success {
@@ -1039,6 +1063,7 @@ textarea:focus-visible {
     .modify-btn {
         padding: 0.3em 0.6em;
         font-size: 0.9rem;
+        width: 110px;
     }
 
     /* Add horizontal scroll indicator */
