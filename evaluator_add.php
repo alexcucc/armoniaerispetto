@@ -10,7 +10,12 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     exit();
 }
 
-$stmt = $pdo->prepare("SELECT id, first_name, last_name, email FROM user");
+$stmt = $pdo->prepare(
+    "SELECT u.id, u.first_name, u.last_name, u.email " .
+    "FROM user u " .
+    "LEFT JOIN evaluator e ON u.id = e.user_id " .
+    "WHERE e.user_id IS NULL"
+);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
