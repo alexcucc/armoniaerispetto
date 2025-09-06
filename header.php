@@ -72,16 +72,16 @@
                                 <a href="#" class="nav-link manage-toggle">Gestione</a>
                                 <ul class="submenu">
                                     <?php if ($canUserList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="users.php">Gestione Utenti</a></li>
-                                    <?php endif; ?>
-                                    <?php if ($canOrganizationList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="organizations.php">Gestione Enti</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="users.php">Utenti</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluatorList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="evaluators.php">Gestione Valutatori</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="evaluators.php">Valutatori</a></li>
                                     <?php endif; ?>
                                     <?php if ($canCallForProposalList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Gestione Bandi</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Bandi</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canOrganizationList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
                                     <?php endif; ?>
                                 </ul>
                             </li>
