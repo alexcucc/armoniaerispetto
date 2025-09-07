@@ -15,10 +15,10 @@ $message = '';
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_profile'])) {
-        $first_name = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
-        $last_name = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
-        $organization = filter_input(INPUT_POST, 'organization', FILTER_SANITIZE_STRING);
-        $new_password = filter_input(INPUT_POST, 'new_password', FILTER_SANITIZE_STRING);
+        $first_name = trim(filter_input(INPUT_POST, 'first_name', FILTER_UNSAFE_RAW));
+        $last_name = trim(filter_input(INPUT_POST, 'last_name', FILTER_UNSAFE_RAW));
+        $organization = trim(filter_input(INPUT_POST, 'organization', FILTER_UNSAFE_RAW));
+        $new_password = trim(filter_input(INPUT_POST, 'new_password', FILTER_UNSAFE_RAW));
 
         $sql = "UPDATE user SET first_name = ?, last_name = ?, organization = ?";
         $params = [$first_name, $last_name, $organization];
@@ -66,25 +66,25 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 <div class="form-group">
                     <label class="form-label required" for="first_name">Nome</label>
                     <input type="text" id="first_name" name="first_name" class="form-input" 
-                           value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
+                           value="<?php echo htmlspecialchars($user['first_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label required" for="last_name">Cognome</label>
                     <input type="text" id="last_name" name="last_name" class="form-input" 
-                           value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
+                           value="<?php echo htmlspecialchars($user['last_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label required" for="organization">Organizzazione</label>
                     <input type="text" id="organization" name="organization" class="form-input" 
-                           value="<?php echo htmlspecialchars($user['organization']); ?>" required>
+                           value="<?php echo htmlspecialchars($user['organization'], ENT_QUOTES, 'UTF-8'); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="email">Email</label>
                     <input type="email" id="email" name="email" class="form-input" 
-                           value="<?php echo htmlspecialchars($user['email']); ?>" readonly disabled>
+                           value="<?php echo htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
                 </div>
 
                 <div class="form-group">

@@ -18,8 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $callId = filter_input(INPUT_POST, 'call_id', FILTER_VALIDATE_INT);
 $organizationId = filter_input(INPUT_POST, 'organization_id', FILTER_VALIDATE_INT);
 $supervisorId = filter_input(INPUT_POST, 'supervisor_id', FILTER_VALIDATE_INT);
-$projectName = trim(filter_input(INPUT_POST, 'project_name', FILTER_SANITIZE_STRING));
-$projectDescription = trim(filter_input(INPUT_POST, 'project_description', FILTER_SANITIZE_STRING));
+$projectName = trim(filter_input(INPUT_POST, 'project_name', FILTER_UNSAFE_RAW));
+$projectDescription = trim(filter_input(INPUT_POST, 'project_description', FILTER_UNSAFE_RAW));
 
 if (!$callId || !$organizationId || !$supervisorId || !$projectName || !$projectDescription) {
     header('Location: applications.php');

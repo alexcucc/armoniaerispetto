@@ -16,10 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-$title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
-$description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
-$start_date_input = filter_input(INPUT_POST, 'start_date', FILTER_SANITIZE_STRING);
-$end_date_input = filter_input(INPUT_POST, 'end_date', FILTER_SANITIZE_STRING);
+$title = trim(filter_input(INPUT_POST, 'title', FILTER_UNSAFE_RAW));
+$description = trim(filter_input(INPUT_POST, 'description', FILTER_UNSAFE_RAW));
+$start_date_input = trim(filter_input(INPUT_POST, 'start_date', FILTER_UNSAFE_RAW));
+$end_date_input = trim(filter_input(INPUT_POST, 'end_date', FILTER_UNSAFE_RAW));
 
 $start_date = DateTime::createFromFormat('Y-m-d', $start_date_input);
 $end_date = DateTime::createFromFormat('Y-m-d', $end_date_input);
