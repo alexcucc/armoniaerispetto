@@ -1078,9 +1078,13 @@ textarea:focus-visible {
 
   /* Disabilita le strutture overlay */
     .overlay-wrapper {
-        display: block;
+        display: flex;
         position: static;
         flex-direction: column;
+    }
+    /* Alterna immagine e testo */
+    .content-container:nth-of-type(odd) .overlay-wrapper {
+        flex-direction: column-reverse;
     }
     .overlay-image,
     .overlay-text-right,
