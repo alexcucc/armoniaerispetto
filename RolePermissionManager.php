@@ -52,7 +52,13 @@ class RolePermissionManager
         'CALL_FOR_PROPOSAL_CREATE' => 'call_for_proposal:create',
         'CALL_FOR_PROPOSAL_UPDATE' => 'call_for_proposal:update',
         'CALL_FOR_PROPOSAL_DELETE' => 'call_for_proposal:delete',
-        'CALL_FOR_PROPOSAL_LIST'   => 'call_for_proposal:list'
+        'CALL_FOR_PROPOSAL_LIST'   => 'call_for_proposal:list',
+        
+        # applications
+        'APPLICATION_CREATE'       => 'application:create',
+        'APPLICATION_UPDATE'       => 'application:update',
+        'APPLICATION_DELETE'       => 'application:delete',
+        'APPLICATION_LIST'         => 'application:list'
     ];
 
     /**

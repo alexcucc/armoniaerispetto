@@ -40,6 +40,9 @@
                             <li class="nav-item"><a class="nav-link" href="signup.php">Registrati</a></li>
                         <?php else: ?>
                             <li class="nav-item"><a class="nav-link" href="profile.php">Profilo</a></li>
+                            <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_LIST'])): ?>
+                                <li class="nav-item"><a class="nav-link" href="applications.php">Le mie Domande</a></li>
+                            <?php endif; ?>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                         <?php endif; ?>
                         <?php
