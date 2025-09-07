@@ -14,6 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 $stmt = $pdo->prepare("SELECT id, title, description, start_date, end_date, pdf_path, created_at, updated_at FROM call_for_proposal");
 $stmt->execute();
 $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html lang="it">
