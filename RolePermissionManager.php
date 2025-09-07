@@ -30,6 +30,11 @@ class RolePermissionManager
         'EVALUATOR_DELETE'   => 'evaluator:delete',
         'EVALUATOR_LIST'     => 'evaluator:list',
 
+        # supervisors
+        'SUPERVISOR_CREATE'     => 'supervisor:create',
+        'SUPERVISOR_DELETE'     => 'supervisor:delete',
+        'SUPERVISOR_LIST'       => 'supervisor:list',
+
         # roles
         'ROLE_CREATE'         => 'role:create',
         'ROLE_UPDATE'         => 'role:update',
