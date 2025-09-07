@@ -29,15 +29,14 @@ if (!$id || !$callId || !$organizationId || !$supervisorId || !$projectName || !
 
 $userId = $_SESSION['user_id'];
 
-$stmt = $pdo->prepare('UPDATE application SET call_for_proposal_id = :call_id, organization_id = :org_id, supervisor_id = :sup_id, project_name = :name, project_description = :description WHERE id = :id AND user_id = :user_id');
+$stmt = $pdo->prepare('UPDATE application SET call_for_proposal_id = :call_id, organization_id = :org_id, supervisor_id = :sup_id, project_name = :name, project_description = :description WHERE id = :id');
 $stmt->execute([
     ':call_id' => $callId,
     ':org_id' => $organizationId,
     ':sup_id' => $supervisorId,
     ':name' => $projectName,
     ':description' => $projectDescription,
-    ':id' => $id,
-    ':user_id' => $userId
+    ':id' => $id
 ]);
 
 header('Location: applications.php');
