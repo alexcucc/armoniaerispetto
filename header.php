@@ -42,10 +42,11 @@
                             <li class="nav-item"><a class="nav-link" href="profile.php">Profilo</a></li>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                         <?php endif; ?>
-                        <?php if (isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW'])): ?>
-                            <li class="nav-item"><a class="nav-link" href="my_evaluations.php">Le mie Valutazioni</a></li>
-                        <?php endif; ?>
                         <?php
+                        $canEvaluationView = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']
+                        );
                         $canUserList = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['USER_LIST']
@@ -71,7 +72,8 @@
                             $canOrganizationList ||
                             $canEvaluatorList ||
                             $canSupervisorList ||
-                            $canCallForProposalList
+                            $canCallForProposalList ||
+                            $canEvaluationView
                         ): ?>
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link manage-toggle">Gestione</a>
@@ -91,6 +93,10 @@
                                     <?php if ($canOrganizationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
                                     <?php endif; ?>
+                                    <?php if ($canEvaluationView): ?>
+                                        <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>
+                                    <?php endif; ?>
+
                                 </ul>
                             </li>
                         <?php endif; ?>
