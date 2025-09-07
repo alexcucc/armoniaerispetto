@@ -29,7 +29,7 @@ if (!$callId || !$organizationId || !$supervisorId || !$projectName || !$project
 $userId = $_SESSION['user_id'];
 
 try {
-    $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, status) VALUES (:call_id, :org_id, :sup_id, :name, :description, "submitted")');
+    $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, status) VALUES (:call_id, :org_id, :sup_id, :name, :description, "SUBMITTED")');
     $insertStmt->execute([
         'call_id' => $callId,
         'org_id' => $organizationId,
