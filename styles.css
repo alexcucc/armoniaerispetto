@@ -70,6 +70,23 @@ img {
   height: auto;
 }
 
+.intro-image-wrapper {
+  width: 100%;
+  height: calc(90vh - var(--header-height, 70px));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: 1rem;
+}
+
 ::selection {
   background: rgba(46, 139, 87, 0.3);
   color: #2D3748;

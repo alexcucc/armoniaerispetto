@@ -11,6 +11,9 @@
         <div class="title">
           <h1>🌿 Armonia e Rispetto - Fondazione per la salvaguardia e il benessere animale.</h1>
         </div>
+        <div class="intro-image-wrapper">
+          <img src="images/elephant_and_man.png" alt="Elefante e uomo" class="intro-image">
+        </div>
         <div class="content-container">
           <div class="overlay-wrapper">
             <div class="overlay-image">
