@@ -29,19 +29,14 @@ if (!$callId || !$organizationId || !$supervisorId || !$projectName || !$project
 $userId = $_SESSION['user_id'];
 
 try {
-    $checkStmt = $pdo->prepare('SELECT COUNT(*) FROM application WHERE user_id = :user_id AND call_for_proposal_id = :call_id');
-    $checkStmt->execute(['user_id' => $userId, 'call_id' => $callId]);
-    if ($checkStmt->fetchColumn() == 0) {
-        $insertStmt = $pdo->prepare('INSERT INTO application (user_id, call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, status) VALUES (:user_id, :call_id, :org_id, :sup_id, :name, :description, "submitted")');
-        $insertStmt->execute([
-            'user_id' => $userId,
-            'call_id' => $callId,
-            'org_id' => $organizationId,
-            'sup_id' => $supervisorId,
-            'name' => $projectName,
-            'description' => $projectDescription
-        ]);
-    }
+    $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, status) VALUES (:call_id, :org_id, :sup_id, :name, :description, "submitted")');
+    $insertStmt->execute([
+        'call_id' => $callId,
+        'org_id' => $organizationId,
+        'sup_id' => $supervisorId,
+        'name' => $projectName,
+        'description' => $projectDescription
+    ]);
 } catch (PDOException $e) {
     // Handle errors if necessary
 }

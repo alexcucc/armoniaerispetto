@@ -31,13 +31,13 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="it">
   <head>
     <?php include 'common-head.php'; ?>
-    <title>Invia Domanda</title>
+    <title>Invia Risposta al bando</title>
   </head>
   <body>
     <?php include 'header.php'; ?>
     <main>
       <div class="contact-form-container">
-        <h2>Invia Domanda</h2>
+        <h2>Invia risposta al bando</h2>
         <form class="contact-form" action="application_submit_handler.php" method="POST">
           <div class="form-group">
             <label class="form-label required" for="call_id">Bando</label>
@@ -73,6 +73,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             <textarea id="project_description" name="project_description" class="form-input" required></textarea>
           </div>
           <div class="button-container">
+            <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
             <button type="submit" class="page-button">Invia</button>
           </div>
         </form>
