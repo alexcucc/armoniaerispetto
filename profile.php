@@ -37,15 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = "Errore durante l'aggiornamento del profilo.";
         }
-    } elseif (isset($_POST['delete_account'])) {
-        $stmt = $pdo->prepare("DELETE FROM user WHERE id = ?");
-        if ($stmt->execute([$user_id])) {
-            session_destroy();
-            header('Location: index.php');
-            exit();
-        } else {
-            $message = "Errore durante l'eliminazione dell'account.";
-        }
     }
 }
 
@@ -108,14 +99,6 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 <div class="form-group">
                     <button type="submit" name="update_profile" class="page-button">Aggiorna Profilo</button>
-                </div>
-            </form>
-
-            <form class="contact-form" method="POST" onsubmit="return confirm('Sei sicuro di voler eliminare il tuo account? Questa azione non può essere annullata.');">
-                <div class="form-group">
-                    <button type="submit" name="delete_account" class="page-button" style="background-color: #dc3545;">
-                        Elimina Account
-                    </button>
                 </div>
             </form>
         </div>
