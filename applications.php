@@ -42,6 +42,9 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="content-container">
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
+                <div class="button-container">
+                    <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
+                </div>
                 <div class="users-table-container">
                     <table class="users-table">
                         <thead>
@@ -91,9 +94,6 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                </div>
-                <div class="button-container">
-                    <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
                 </div>
             </div>
         </div>
