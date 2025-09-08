@@ -92,14 +92,14 @@
                                     <?php if ($canCallForProposalList): ?>
                                         <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Bandi</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canApplicationList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
+                                    <?php if ($canOrganizationList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
                                     <?php endif; ?>
                                     <?php if ($canSupervisorList): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisors.php">Relatori</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canOrganizationList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
+                                    <?php if ($canApplicationList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluationView): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>
