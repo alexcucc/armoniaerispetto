@@ -65,6 +65,9 @@ $pending = $stmt->fetchAll();
     <?php include 'header.php'; ?>
     <main>
       <div style="max-width:1500px; margin:2em auto;">
+        <div class="button-container">
+          <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+        </div>
         <h2>Valutazioni Inviate</h2>
         <?php if (count($submitted) > 0): ?>
           <table>

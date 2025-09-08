@@ -43,6 +43,7 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
                 <div class="button-container">
+                    <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
                     <a class="page-button" href="organization_add.php">Aggiungi Ente</a>
                 </div>
                 <div class="users-table-container">

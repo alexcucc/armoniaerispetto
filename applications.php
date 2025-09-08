@@ -43,6 +43,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
                 <div class="button-container">
+                    <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
                     <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
                 </div>
                 <div class="users-table-container">

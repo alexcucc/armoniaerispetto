@@ -31,6 +31,7 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
                 <div class="button-container">
+                    <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
                     <a class="page-button" href="supervisor_add.php">Aggiungi Relatore</a>
                 </div>
                 <div class="users-table-container">
