@@ -93,7 +93,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </table>
                 </div>
                 <div class="button-container">
-                    <a href="application_submit.php" class="page-button">Presenta nuova risposta al bando</a>
+                    <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
                 </div>
             </div>
         </div>
