@@ -42,7 +42,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="call_id">Bando</label>
             <select id="call_id" name="call_id" class="form-input" required>
-              <option value="" disabled <?php echo $selectedCallId ? '' : 'selected'; ?>>Seleziona un bando</option>
+              <option value="" disabled selected></option>
               <?php foreach ($availableCalls as $call): ?>
               <option value="<?php echo $call['id']; ?>" data-title="<?php echo htmlspecialchars($call['title'], ENT_QUOTES); ?>" data-description="<?php echo htmlspecialchars($call['description'], ENT_QUOTES); ?>" data-start="<?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>" data-end="<?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>" <?php if ($selectedCallId == $call['id']) echo 'selected'; ?>><?php echo htmlspecialchars($call['title']); ?></option>
               <?php endforeach; ?>
@@ -51,6 +51,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="organization_id">Ente</label>
             <select id="organization_id" name="organization_id" class="form-input" required>
+              <option value="" disabled selected></option>
               <?php foreach ($organizations as $org): ?>
               <option value="<?php echo $org['id']; ?>"><?php echo htmlspecialchars($org['name']); ?></option>
               <?php endforeach; ?>
@@ -59,6 +60,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="supervisor_id">Relatore</label>
             <select id="supervisor_id" name="supervisor_id" class="form-input" required>
+              <option value="" disabled selected></option>
               <?php foreach ($supervisors as $sup): ?>
               <option value="<?php echo $sup['id']; ?>"><?php echo htmlspecialchars($sup['first_name'] . ' ' . $sup['last_name']); ?></option>
               <?php endforeach; ?>
