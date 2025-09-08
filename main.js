@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('header');
   const navigationMenu = document.querySelector('.navigation-menu');
+  const hamburger = document.querySelector('.hamburger');
+
+  if (!header || !navigationMenu || !hamburger) {
+    return;
+  }
 
   function updateHeaderHeight() {
     const headerHeight = header.offsetHeight;
@@ -12,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', updateHeaderHeight);
 
   // Example: Toggle navigation menu active state
-  const hamburger = document.querySelector('.hamburger');
   hamburger.addEventListener('click', () => {
     navigationMenu.classList.toggle('active');
   });

@@ -17,7 +17,7 @@
 
                 <div class="menu-separator"></div>
 
-                <div class="nav-links">
+                <div class="nav-links-wrapper">
                     <ul class="nav-links">
                         <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="chi_siamo.php">Chi Siamo</a></li>
