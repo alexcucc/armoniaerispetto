@@ -8,9 +8,6 @@
     <?php include 'header.php';?>
     <main>
       <div class="hero">
-        <div class="title">
-          <h1>🌿 Armonia e Rispetto - Fondazione per la salvaguardia e il benessere animale.</h1>
-        </div>
         <div class="intro-image-wrapper">
           <img src="images/elephant_and_man.png" alt="Elefante e uomo" class="intro-image">
         </div>
@@ -103,7 +100,7 @@
         <div class="content-container">
           <div class="overlay-wrapper">
             <div class="overlay-image">
-              <img class="image fade-right" src="images/man_woman_working_field.jpg">
+              <img class="image fade-right" src="images/ungulate_class.jpg">
             </div>
             <div class="overlay-text-right">
               <h2 style="text-align: justify;">🌟 Un invito a chi sente, a chi vede, a chi crede</h2>

@@ -72,7 +72,7 @@ img {
 
 .intro-image-wrapper {
   width: 100%;
-  height: calc(90vh - var(--header-height, 70px));
+  height: calc(99vh - var(--header-height, 70px));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -254,7 +254,7 @@ img {
 }
 
 .overlay-image {
-    flex: 4;
+    flex: 3;
 }
 
 .overlay-image img {
@@ -288,11 +288,11 @@ img {
 }
 
 .overlay-text-right {
-    margin-left: -20%; 
+    margin-left: -10%; 
 }
 
 .overlay-text-left {
-    margin-right: -20%; 
+    margin-right: -10%; 
 }
 
 .hero {
