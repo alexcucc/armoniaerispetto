@@ -15,13 +15,13 @@ $message = '';
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_profile'])) {
-        $first_name = trim(filter_input(INPUT_POST, 'first_name', FILTER_UNSAFE_RAW));
-        $last_name = trim(filter_input(INPUT_POST, 'last_name', FILTER_UNSAFE_RAW));
+        
+        // First name and last name are read-only and should not be updated
         $organization = trim(filter_input(INPUT_POST, 'organization', FILTER_UNSAFE_RAW));
         $new_password = trim(filter_input(INPUT_POST, 'new_password', FILTER_UNSAFE_RAW));
 
-        $sql = "UPDATE user SET first_name = ?, last_name = ?, organization = ?";
-        $params = [$first_name, $last_name, $organization];
+        $sql = "UPDATE user SET organization = ?";
+        $params = [$organization];
 
         if (!empty($new_password)) {
             $sql .= ", password = ?";
@@ -65,14 +65,14 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
             <form class="contact-form" method="POST">
                 <div class="form-group">
                     <label class="form-label required" for="first_name">Nome</label>
-                    <input type="text" id="first_name" name="first_name" class="form-input" 
-                           value="<?php echo htmlspecialchars($user['first_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                    <input type="text" id="first_name" class="form-input" 
+                           value="<?php echo htmlspecialchars($user['first_name'], ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label required" for="last_name">Cognome</label>
-                    <input type="text" id="last_name" name="last_name" class="form-input" 
-                           value="<?php echo htmlspecialchars($user['last_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                    <input type="text" id="last_name" class="form-input" 
+                           value="<?php echo htmlspecialchars($user['last_name'], ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
                 </div>
 
                 <div class="form-group">
