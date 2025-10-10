@@ -328,6 +328,7 @@ header {
   text-shadow: 2px 2px 3px rgba(0,0,0,0.5);
   position: sticky;
   top: 0;
+  z-index: 2100;
   box-shadow: 0 1px 10px 3px rgba(0,0,0,0.5);
 }
 
@@ -515,12 +516,16 @@ th {
   bottom: 0;
   width: 300px; /* Adjust the width as needed */
   background-color: #1a5132;
-  z-index: 1000;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 1.5rem 1rem;
+  gap: 1rem;
   transition: right 0.3s ease-in-out; /* Smooth transition */
+  overflow-y: auto;
+  height: calc(100vh - var(--header-height, 70px));
 }
 
 .search-form {
