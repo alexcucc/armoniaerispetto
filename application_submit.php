@@ -31,13 +31,13 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="it">
   <head>
     <?php include 'common-head.php'; ?>
-    <title>Invia Risposta al bando</title>
+    <title>Carica Risposta al bando</title>
   </head>
   <body>
     <?php include 'header.php'; ?>
     <main>
       <div class="contact-form-container">
-        <h2>Invia risposta al bando</h2>
+        <h2>Carica risposta al bando</h2>
         <form class="contact-form" action="application_submit_handler.php" method="POST">
           <div class="form-group">
             <label class="form-label required" for="call_id">Bando</label>
