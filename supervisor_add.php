@@ -13,6 +13,7 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
 $stmt = $pdo->prepare(
     "SELECT u.id, u.first_name, u.last_name, u.email " .
     "FROM user u " .
+    "INNER JOIN evaluator e ON u.id = e.user_id " .
     "LEFT JOIN supervisor s ON u.id = s.user_id " .
     "WHERE s.user_id IS NULL"
 );
