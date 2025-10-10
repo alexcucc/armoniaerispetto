@@ -609,7 +609,8 @@ ul.nav-links {
 }
 
 .modify-btn,
-.delete-btn {
+.delete-btn,
+.view-btn {
   color: white;
   border: none;
   padding: 0.5em 1em;
@@ -633,12 +634,35 @@ ul.nav-links {
   background-color: #0069d9;
 }
 
+.view-btn {
+  background-color: #28a745;
+}
+
+.view-btn:hover {
+  background-color: #218838;
+}
+
 .delete-btn {
   background-color: #dc3545;
 }
 
 .delete-btn:hover {
   background-color: #c82333;
+}
+
+.filter-info {
+  margin-bottom: 1.5em;
+  font-style: italic;
+  color: #333;
+}
+
+.filter-info a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.filter-info a:hover {
+  text-decoration: none;
 }
 
 .nav-link {

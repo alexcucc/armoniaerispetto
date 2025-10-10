@@ -22,8 +22,29 @@ $sortOrder = isset($_GET['order']) && in_array(strtolower($_GET['order']), $allo
     : 'ASC';
 
 // Fetch all applications including supervisor full name
-$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id ORDER BY $sortField $sortOrder");
-$stmt->execute();
+$organizationId = isset($_GET['organization_id']) ? (int) $_GET['organization_id'] : null;
+$organizationName = null;
+
+if ($organizationId) {
+    $orgStmt = $pdo->prepare('SELECT name FROM organization WHERE id = :id');
+    $orgStmt->execute([':id' => $organizationId]);
+    $organizationName = $orgStmt->fetchColumn();
+
+    if (!$organizationName) {
+        $organizationId = null;
+    }
+}
+
+$whereClause = '';
+$params = [];
+
+if ($organizationId) {
+    $whereClause = 'WHERE a.organization_id = :organization_id';
+    $params[':organization_id'] = $organizationId;
+}
+
+$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
+$stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -40,10 +61,16 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h1>Risposte ai bandi</h1>
         </div>
         <div class="content-container">
-            <div class="content">
-                <div id="message" class="message" style="display: none;"></div>
-                <div class="button-container">
-                    <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+                <div class="content">
+                    <div id="message" class="message" style="display: none;"></div>
+                    <?php if ($organizationName): ?>
+                        <p class="filter-info">
+                            Visualizzando le domande per l'ente "<strong><?php echo htmlspecialchars($organizationName); ?></strong>".
+                            <a href="applications.php">Mostra tutte le domande</a>
+                        </p>
+                    <?php endif; ?>
+                    <div class="button-container">
+                        <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
                     <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
                 </div>
                 <div class="users-table-container">

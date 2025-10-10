@@ -81,6 +81,11 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['created_at']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['updated_at']))); ?></td>
                                 <td>
+                                    <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_LIST'])): ?>
+                                    <button class="view-btn" onclick="window.location.href='applications.php?organization_id=<?php echo $org['id']; ?>'">
+                                        <i class="fas fa-eye"></i> Domande
+                                    </button>
+                                    <?php endif; ?>
                                     <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_UPDATE'])): ?>
                                     <button class="modify-btn" onclick="window.location.href='organization_edit.php?id=<?php echo $org['id']; ?>'">
                                         <i class="fas fa-edit"></i> Modifica
