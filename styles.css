@@ -610,7 +610,8 @@ ul.nav-links {
 
 .modify-btn,
 .delete-btn,
-.view-btn {
+.view-btn,
+.download-btn {
   color: white;
   border: none;
   padding: 0.5em 1em;
@@ -640,6 +641,14 @@ ul.nav-links {
 
 .view-btn:hover {
   background-color: #218838;
+}
+
+.download-btn {
+  background-color: #17a2b8;
+}
+
+.download-btn:hover {
+  background-color: #138496;
 }
 
 .delete-btn {

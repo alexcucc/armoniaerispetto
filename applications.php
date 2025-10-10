@@ -43,7 +43,7 @@ if ($organizationId) {
     $params[':organization_id'] = $organizationId;
 }
 
-$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
+$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.application_pdf_path FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
 $stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -94,10 +94,13 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     echo '<th><a href="?sort=' . $field . '&order=' . $nextOrder . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
                                 }
                                 ?>
+                                <th>Documento</th>
+                                <?php
+                                ?>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
-        
+
                         <tbody>
                             <?php foreach ($applications as $app): ?>
                                 <tr>
@@ -106,6 +109,15 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($app['project_name']); ?></td>
                                     <td><?php echo htmlspecialchars($app['supervisor_name']); ?></td>
                                     <td><?php echo htmlspecialchars($app['status']); ?></td>
+                                    <td>
+                                        <?php if (!empty($app['application_pdf_path'])): ?>
+                                        <button class="download-btn" onclick="window.location.href='application_download.php?id=<?php echo $app['id']; ?>'">
+                                            <i class="fas fa-file-download"></i> Scarica
+                                        </button>
+                                        <?php else: ?>
+                                            <span class="text-muted">Non disponibile</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_UPDATE'])): ?>
                                         <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">

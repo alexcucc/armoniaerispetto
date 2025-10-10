@@ -26,9 +26,29 @@ if (!$callId || !$organizationId || !$supervisorId || !$projectName || !$project
     exit();
 }
 
-$userId = $_SESSION['user_id'];
+$pdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
+
+if (!$pdfUploaded) {
+    header('Location: applications.php');
+    exit();
+}
+
+if ($_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK) {
+    header('Location: applications.php');
+    exit();
+}
+
+$pdfTmpPath = $_FILES['application_pdf']['tmp_name'];
+$pdfName = $_FILES['application_pdf']['name'];
+$pdfExtension = strtolower(pathinfo($pdfName, PATHINFO_EXTENSION));
+
+if ($pdfExtension !== 'pdf') {
+    header('Location: applications.php');
+    exit();
+}
 
 try {
+    $pdo->beginTransaction();
     $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, status) VALUES (:call_id, :org_id, :sup_id, :name, :description, "SUBMITTED")');
     $insertStmt->execute([
         'call_id' => $callId,
@@ -37,8 +57,34 @@ try {
         'name' => $projectName,
         'description' => $projectDescription
     ]);
-} catch (PDOException $e) {
-    // Handle errors if necessary
+$applicationId = $pdo->lastInsertId();
+
+    $destinationDir = 'private/documents/applications/' . $applicationId;
+    if (!is_dir($destinationDir)) {
+        if (!mkdir($destinationDir, 0755, true)) {
+            throw new RuntimeException('Unable to create application directory');
+        }
+    }
+
+    $destinationPath = $destinationDir . '/domanda.pdf';
+
+    if (!move_uploaded_file($pdfTmpPath, $destinationPath)) {
+        throw new RuntimeException('Unable to move uploaded file');
+    }
+
+    $updateStmt = $pdo->prepare('UPDATE application SET application_pdf_path = :pdf_path WHERE id = :id');
+    $updateStmt->execute([
+        ':pdf_path' => $destinationPath,
+        ':id' => $applicationId
+    ]);
+
+    $pdo->commit();
+} catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    header('Location: applications.php');
+    exit();
 }
 
 header('Location: applications.php');

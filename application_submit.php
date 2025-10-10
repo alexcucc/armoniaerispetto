@@ -38,7 +38,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
     <main>
       <div class="contact-form-container">
         <h2>Carica risposta al bando</h2>
-        <form class="contact-form" action="application_submit_handler.php" method="POST">
+        <form class="contact-form" action="application_submit_handler.php" method="POST" enctype="multipart/form-data">
           <div class="form-group">
             <label class="form-label required" for="call_id">Bando</label>
             <select id="call_id" name="call_id" class="form-input" required>
@@ -73,6 +73,10 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="project_description">Descrizione del Progetto</label>
             <textarea id="project_description" name="project_description" class="form-input" required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label required" for="application_pdf">PDF della domanda</label>
+            <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf" required>
           </div>
           <div class="button-container">
             <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
