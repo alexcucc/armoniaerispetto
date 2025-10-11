@@ -17,7 +17,7 @@
 
                 <div class="menu-separator"></div>
 
-                <div class="nav-links">
+                <div class="nav-links-wrapper">
                     <ul class="nav-links">
                         <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="chi_siamo.php">Chi Siamo</a></li>
@@ -97,8 +97,8 @@
                                     <?php if ($canCallForProposalList): ?>
                                         <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Bandi</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canApplicationList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
+                                    <?php if ($canOrganizationList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
                                     <?php endif; ?>
                                     <?php if ($canApplicationReview): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Domande da revisionare</a></li>
@@ -106,8 +106,8 @@
                                     <?php if ($canSupervisorList): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisors.php">Relatori</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canOrganizationList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
+                                    <?php if ($canApplicationList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluationView): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>

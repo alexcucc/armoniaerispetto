@@ -31,18 +31,18 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="it">
   <head>
     <?php include 'common-head.php'; ?>
-    <title>Invia Risposta al bando</title>
+    <title>Carica Risposta al bando</title>
   </head>
   <body>
     <?php include 'header.php'; ?>
     <main>
       <div class="contact-form-container">
-        <h2>Invia risposta al bando</h2>
-        <form class="contact-form" action="application_submit_handler.php" method="POST">
+        <h2>Carica risposta al bando</h2>
+        <form class="contact-form" action="application_submit_handler.php" method="POST" enctype="multipart/form-data">
           <div class="form-group">
             <label class="form-label required" for="call_id">Bando</label>
             <select id="call_id" name="call_id" class="form-input" required>
-              <option value="" disabled <?php echo $selectedCallId ? '' : 'selected'; ?>>Seleziona un bando</option>
+              <option value="" disabled selected></option>
               <?php foreach ($availableCalls as $call): ?>
               <option value="<?php echo $call['id']; ?>" data-title="<?php echo htmlspecialchars($call['title'], ENT_QUOTES); ?>" data-description="<?php echo htmlspecialchars($call['description'], ENT_QUOTES); ?>" data-start="<?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>" data-end="<?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>" <?php if ($selectedCallId == $call['id']) echo 'selected'; ?>><?php echo htmlspecialchars($call['title']); ?></option>
               <?php endforeach; ?>
@@ -51,6 +51,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="organization_id">Ente</label>
             <select id="organization_id" name="organization_id" class="form-input" required>
+              <option value="" disabled selected></option>
               <?php foreach ($organizations as $org): ?>
               <option value="<?php echo $org['id']; ?>"><?php echo htmlspecialchars($org['name']); ?></option>
               <?php endforeach; ?>
@@ -59,6 +60,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="supervisor_id">Relatore</label>
             <select id="supervisor_id" name="supervisor_id" class="form-input" required>
+              <option value="" disabled selected></option>
               <?php foreach ($supervisors as $sup): ?>
               <option value="<?php echo $sup['id']; ?>"><?php echo htmlspecialchars($sup['first_name'] . ' ' . $sup['last_name']); ?></option>
               <?php endforeach; ?>
@@ -71,6 +73,10 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="project_description">Descrizione del Progetto</label>
             <textarea id="project_description" name="project_description" class="form-input" required></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label required" for="application_pdf">PDF della domanda</label>
+            <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf" required>
           </div>
           <div class="button-container">
             <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>

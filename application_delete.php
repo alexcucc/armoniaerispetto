@@ -22,14 +22,48 @@ if (!$appId) {
 }
 
 try {
+    $pdo->beginTransaction();
+
+    $selectStmt = $pdo->prepare('SELECT application_pdf_path FROM application WHERE id = :id');
+    $selectStmt->execute([':id' => $appId]);
+    $application = $selectStmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$application) {
+        $pdo->rollBack();
+        echo json_encode(['success' => false, 'message' => 'Domanda non trovata']);
+        exit();
+    }
+
     $stmt = $pdo->prepare('DELETE FROM application WHERE id = :id');
     $stmt->execute([':id' => $appId]);
 
     if ($stmt->rowCount() > 0) {
+        $pdo->commit();
+
+        if (!empty($application['application_pdf_path'])) {
+            $filePath = $application['application_pdf_path'];
+            $realPath = realpath($filePath);
+
+            if ($realPath && is_file($realPath)) {
+                unlink($realPath);
+                $directory = dirname($realPath);
+                if (is_dir($directory)) {
+                    $files = glob($directory . '/*');
+                    if ($files !== false && count($files) === 0) {
+                        rmdir($directory);
+                    }
+                }
+            }
+        }
+
         echo json_encode(['success' => true, 'message' => 'Domanda eliminata con successo']);
     } else {
+        $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Domanda non trovata']);
     }
 } catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     echo json_encode(['success' => false, 'message' => "Errore durante l'eliminazione della domanda"]);
 }
