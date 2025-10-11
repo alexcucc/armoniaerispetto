@@ -108,6 +108,7 @@
                                     <?php endif; ?>
                                     <?php if ($canApplicationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="supervisor_application_overview.php">Monitoraggio relatori</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluationView): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>

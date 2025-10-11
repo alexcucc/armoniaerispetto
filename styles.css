@@ -679,6 +679,36 @@ ul.nav-links {
   text-decoration: none;
 }
 
+.filters-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.filters-form .form-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.filters-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.secondary-button {
+  background-color: #6c757d;
+}
+
+.secondary-button:hover {
+  background-color: #5a6268;
+}
+
 .nav-link {
   text-align: center;
   display: block;
