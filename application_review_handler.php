@@ -15,20 +15,20 @@ if (!isset($_SESSION['user_id']) ||
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: supervisors.php');
+    header('Location: supervisor_applications.php');
     exit();
 }
 
 $applicationId = filter_input(INPUT_POST, 'application_id', FILTER_VALIDATE_INT);
 $decision = filter_input(INPUT_POST, 'decision', FILTER_UNSAFE_RAW);
 
-if (!$applicationId || !in_array($decision, ['approve', 'reject'], true)) {
-    header('Location: supervisors.php?error=1');
+if (!$applicationId || !in_array($decision, ['APPROVED', 'REJECTED'], true)) {
+    header('Location: supervisor_applications.php?error=1');
     exit();
 }
 
 if (!isset($_FILES['checklist']) || $_FILES['checklist']['error'] !== UPLOAD_ERR_OK) {
-    header('Location: supervisors.php?error=1');
+    header('Location: supervisor_applications.php?error=1');
     exit();
 }
 
@@ -41,13 +41,13 @@ try {
     $application = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$application || $application['status'] !== 'SUBMITTED') {
-        header('Location: supervisors.php?error=1');
+        header('Location: supervisor_applications.php?error=1');
         exit();
     }
 
     $extension = strtolower(pathinfo($_FILES['checklist']['name'], PATHINFO_EXTENSION));
     if ($extension !== 'pdf') {
-        header('Location: supervisors.php?error=1');
+        header('Location: supervisor_applications.php?error=1');
         exit();
     }
 
@@ -58,11 +58,11 @@ try {
     $destinationPath = $destinationDir . '/checklist.pdf';
 
     if (!move_uploaded_file($_FILES['checklist']['tmp_name'], $destinationPath)) {
-        header('Location: supervisors.php?error=1');
+        header('Location: supervisor_applications.php?error=1');
         exit();
     }
 
-    $newStatus = $decision === 'approve' ? 'APPROVED' : 'REJECTED';
+    $newStatus = $decision === 'APPROVED' ? 'APPROVED' : 'REJECTED';
     $updateStmt = $pdo->prepare('UPDATE application SET status = :status, checklist_path = :path WHERE id = :id');
     $updateStmt->execute([
         ':status' => $newStatus,
@@ -70,10 +70,10 @@ try {
         ':id' => $applicationId
     ]);
 
-    header('Location: supervisors.php?success=1');
+    header('Location: supervisor_applications.php?success=1');
     exit();
 } catch (PDOException $e) {
-    header('Location: supervisors.php?error=1');
+    header('Location: supervisor_applications.php?error=1');
     exit();
 }
 ?>

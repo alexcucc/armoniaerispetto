@@ -20,18 +20,36 @@ $stmt->execute(['uid' => $_SESSION['user_id']]);
 $supervisorId = $stmt->fetchColumn();
 
 if ($supervisorId) {
-    $stmt = $pdo->prepare(
-        'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name '
+    $pendingStmt = $pdo->prepare(
+        'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, a.status '
         . 'FROM application a '
         . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
         . 'JOIN organization o ON a.organization_id = o.id '
         . 'WHERE a.status = "SUBMITTED" AND a.supervisor_id = :sid'
     );
-    $stmt->execute(['sid' => $supervisorId]);
-    $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $pendingStmt->execute(['sid' => $supervisorId]);
+    $pendingApplications = $pendingStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $reviewedStmt = $pdo->prepare(
+        'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, a.status '
+        . 'FROM application a '
+        . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
+        . 'JOIN organization o ON a.organization_id = o.id '
+        . 'WHERE a.status IN ("APPROVED", "REJECTED") AND a.supervisor_id = :sid '
+        . 'ORDER BY a.updated_at DESC'
+    );
+    $reviewedStmt->execute(['sid' => $supervisorId]);
+    $reviewedApplications = $reviewedStmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    $applications = [];
+    $pendingApplications = [];
+    $reviewedApplications = [];
 }
+
+$statusLabels = [
+    'SUBMITTED' => 'In attesa',
+    'APPROVED' => 'Approvata',
+    'REJECTED' => 'Respinta'
+];
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -49,6 +67,7 @@ if ($supervisorId) {
         <div class="content-container">
             <div class="content">
                 <div class="users-table-container">
+                    <h2>Domande in Attesa di Revisione</h2>
                     <table class="users-table">
                         <thead>
                             <tr>
@@ -59,12 +78,12 @@ if ($supervisorId) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (empty($applications)): ?>
+                            <?php if (empty($pendingApplications)): ?>
                                 <tr>
                                     <td colspan="4">Nessuna domanda da revisionare.</td>
                                 </tr>
                             <?php else: ?>
-                                <?php foreach ($applications as $app): ?>
+                                <?php foreach ($pendingApplications as $app): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($app['call_title']); ?></td>
                                         <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
@@ -72,6 +91,36 @@ if ($supervisorId) {
                                         <td>
                                             <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Revisiona</a>
                                         </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="users-table-container" style="margin-top: 2rem;">
+                    <h2>Domande Già Revisionate</h2>
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Bando</th>
+                                <th>Ente</th>
+                                <th>Nome Progetto</th>
+                                <th>Esito</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($reviewedApplications)): ?>
+                                <tr>
+                                    <td colspan="4">Nessuna domanda revisionata.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($reviewedApplications as $app): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($app['call_title']); ?></td>
+                                        <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($app['project_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($statusLabels[$app['status']] ?? $app['status']); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
