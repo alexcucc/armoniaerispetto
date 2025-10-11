@@ -887,6 +887,52 @@ footer {
   transition: border-color 0.3s ease;
 }
 
+.score-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.score-buttons input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.score-buttons .score-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid #ddd;
+  border-radius: 0.5em;
+  background-color: #fff;
+  color: #555;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.score-buttons .score-button:hover {
+  border-color: var(--secondary-color, #3CA76A);
+}
+
+.score-buttons input[type="radio"]:checked + .score-button {
+  background-color: var(--primary-color, #2E8B57);
+  border-color: var(--primary-color, #2E8B57);
+  color: #fff;
+}
+
+.score-buttons input[type="radio"]:focus-visible + .score-button {
+  outline: 3px solid #3CA76A;
+  outline-offset: 2px;
+}
+
 .form-input:focus,
 .form-textarea:focus {
   outline: none;

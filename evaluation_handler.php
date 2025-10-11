@@ -1,12 +1,45 @@
 <?php
 session_start();
+
+$isAjaxRequest = strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhttprequest';
+
+/**
+ * Sends a consistent response to the client and terminates the script.
+ */
+function sendResponseAndExit(bool $isAjax, bool $success, ?string $message = null, ?string $redirect = null): void
+{
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        $payload = ['success' => $success];
+        if ($message !== null) {
+            $payload['message'] = $message;
+        }
+        if ($redirect !== null) {
+            $payload['redirect'] = $redirect;
+        }
+        echo json_encode($payload);
+        exit;
+    }
+
+    if ($success && $redirect !== null) {
+        header('Location: ' . $redirect);
+        exit;
+    }
+
+    if ($message !== null) {
+        $_SESSION['evaluation_error'] = $message;
+    }
+    header('Location: evaluations.php');
+    exit;
+}
+
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Utente non autenticato.']);
+    sendResponseAndExit($isAjaxRequest, false, 'Utente non autenticato.');
     exit;
 }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Metodo non consentito.']);
+    sendResponseAndExit($isAjaxRequest, false, 'Metodo non consentito.');
     exit;
 }
 
@@ -14,8 +47,25 @@ include_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
 $rolePermissionManager = new RolePermissionManager($pdo);
 if (!$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE'])) {
-    echo json_encode(['success' => false, 'message' => 'Accesso non consentito.']);
-    exit;
+    sendResponseAndExit($isAjaxRequest, false, 'Accesso non consentito.');
+}
+
+$applicationId = $_POST['application_id'] ?? null;
+$evaluatorId   = $_POST['evaluator_id'] ?? null;
+
+if ($applicationId === null || $evaluatorId === null) {
+    sendResponseAndExit($isAjaxRequest, false, 'Dati della valutazione mancanti.');
+}
+
+// Prevent duplicate evaluations for the same application/evaluator pair
+$duplicateCheck = $pdo->prepare('SELECT id FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1');
+$duplicateCheck->execute([
+    ':application_id' => $applicationId,
+    ':evaluator_id'   => $evaluatorId,
+]);
+
+if ($duplicateCheck->fetchColumn()) {
+    sendResponseAndExit($isAjaxRequest, false, 'Esiste già una valutazione per questa domanda.');
 }
 
 try {
@@ -25,8 +75,8 @@ try {
     // Insert into evaluation table
     $stmt = $pdo->prepare("INSERT INTO evaluation (application_id, evaluator_id) VALUES (:application_id, :evaluator_id)");
     $stmt->execute([
-        ':application_id' => $_POST['application_id'],
-        ':evaluator_id'   => $_POST['evaluator_id']
+        ':application_id' => $applicationId,
+        ':evaluator_id'   => $evaluatorId
     ]);
     $evaluation_id = $pdo->lastInsertId();
 
@@ -251,9 +301,18 @@ try {
 
     $pdo->commit();
 
-    echo json_encode(['success' => true, 'redirect' => 'my_evaluations.php']);
+    $isAjax = strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhttprequest';
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        sendResponseAndExit($isAjaxRequest, true, null, 'evaluations.php');
+    } else {
+        header('Location: evaluations.php');
+        exit;
+    }
 } catch (Exception $e) {
-    $pdo->rollBack();
-    echo json_encode(['success' => false, 'message' => 'Errore nell\'inserimento: ' . $e->getMessage()]);
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    sendResponseAndExit($isAjaxRequest, false, 'Errore nell\'inserimento: ' . $e->getMessage());
 }
 ?>
