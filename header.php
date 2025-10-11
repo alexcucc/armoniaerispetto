@@ -112,6 +112,7 @@
                                     <?php endif; ?>
                                     <?php if ($canEvaluationView): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="evaluator_evaluation_overview.php">Monitoraggio valutatori</a></li>
                                     <?php endif; ?>
 
                                 </ul>
