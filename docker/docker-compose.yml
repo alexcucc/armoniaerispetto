@@ -2,6 +2,7 @@ services:
 
   mysql:
     image: mysql:5.7
+    restart: always
     container_name: mysql
     environment:
       MYSQL_DATABASE: 'armonia_e_rispetto'
@@ -16,6 +17,8 @@ services:
 
   flyway:
     image: redgate/flyway
+    restart: "no"
+    container_name: flyway
     depends_on:
       mysql:
         condition: service_healthy
@@ -25,6 +28,8 @@ services:
 
   mailhog:
     image: mailhog/mailhog
+    restart: always
+    container_name: mailhog
     ports:
       - "1025:1025"  # SMTP port
       - "8025:8025"  # Web interface port

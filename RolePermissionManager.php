@@ -58,7 +58,8 @@ class RolePermissionManager
         'APPLICATION_CREATE'       => 'application:create',
         'APPLICATION_UPDATE'       => 'application:update',
         'APPLICATION_DELETE'       => 'application:delete',
-        'APPLICATION_LIST'         => 'application:list'
+        'APPLICATION_LIST'         => 'application:list',
+        'APPLICATION_REVIEW'       => 'application:review'
     ];
 
     /**

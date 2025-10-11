@@ -71,6 +71,10 @@
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['APPLICATION_LIST']
                         );
+                        $canApplicationReview = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['APPLICATION_REVIEW'],
+                        );
                         if (
                             $canUserList ||
                             $canOrganizationList ||
@@ -78,7 +82,8 @@
                             $canSupervisorList ||
                             $canCallForProposalList ||
                             $canEvaluationView ||
-                            $canApplicationList
+                            $canApplicationList ||
+                            $canApplicationReview
                         ): ?>
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link manage-toggle">Gestione</a>
@@ -94,6 +99,9 @@
                                     <?php endif; ?>
                                     <?php if ($canOrganizationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canApplicationReview): ?>
+                                        <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Domande da revisionare</a></li>
                                     <?php endif; ?>
                                     <?php if ($canSupervisorList): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisors.php">Relatori</a></li>
