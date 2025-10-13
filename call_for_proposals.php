@@ -39,32 +39,35 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="users-table-container">
                     <table class="users-table">
                         <thead>
-                        <tr>
-                            <th>Titolo</th>
-                            <th>Descrizione</th>
-                            <th>Inizio</th>
-                            <th>Fine</th>
-                            <th>Creato il</th>
-                            <th>Aggiornato il</th>
-                            <th>Azioni</th>
-                        </tr>
+                            <tr>
+                                <th>Titolo</th>
+                                <th>Descrizione</th>
+                                <th>Inizio</th>
+                                <th>Fine</th>
+                                <th>Creato il</th>
+                                <th>Aggiornato il</th>
+                                <th>Azioni</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($calls as $cfp): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars($cfp['title']); ?></td>
-                                <td><?php echo htmlspecialchars($cfp['description']); ?></td>
-                                <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['start_date']))); ?></td>
-                                <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['end_date']))); ?></td>
-                                <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
-                                <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
-                                <td>
-                                    <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
-                                    <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?= $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
-                                    <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
+                            <?php foreach ($calls as $cfp): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($cfp['title']); ?></td>
+                                    <td><?php echo htmlspecialchars($cfp['description']); ?></td>
+                                    <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['start_date']))); ?></td>
+                                    <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['end_date']))); ?></td>
+                                    <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
+                                    <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
+                                    <td>
+                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW'])): ?>
+                                            <a class="page-button" href="call_for_proposal_results.php?id=<?php echo $cfp['id']; ?>">Graduatoria</a>
+                                        <?php endif; ?>
+                                        <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
+                                        <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?= $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
+                                        <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
