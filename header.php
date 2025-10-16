@@ -75,6 +75,10 @@
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['APPLICATION_REVIEW'],
                         );
+                        $canEvaluationCreate = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE'],
+                        );
                         if (
                             $canUserList ||
                             $canOrganizationList ||
@@ -83,7 +87,8 @@
                             $canCallForProposalList ||
                             $canEvaluationView ||
                             $canApplicationList ||
-                            $canApplicationReview
+                            $canApplicationReview ||
+                            $canEvaluationCreate
                         ): ?>
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link manage-toggle">Gestione</a>
@@ -110,8 +115,10 @@
                                         <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
                                         <li class="nav-item"><a class="nav-link" href="supervisor_application_overview.php">Monitoraggio relatori</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canEvaluationView): ?>
+                                    <?php if ($canEvaluationCreate): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canEvaluationView): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluator_evaluation_overview.php">Monitoraggio valutatori</a></li>
                                     <?php endif; ?>
 

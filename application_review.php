@@ -5,7 +5,7 @@ require_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
-if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_UPDATE'])) {
+if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_REVIEW'])) {
     header('Location: index.php');
     exit();
 }

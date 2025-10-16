@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 include_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
 $rolePermissionManager = new RolePermissionManager($pdo);
-if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']) === false) {
+if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']) === false) {
     header("Location: index.php");
     exit;
 }
@@ -47,7 +47,7 @@ $stmt = $pdo->prepare("
     SELECT 1 FROM evaluation e 
     WHERE e.application_id = a.id 
       AND e.evaluator_id = :uid
-  )
+  ) AND a.status = 'APPROVED'
   ORDER BY a.created_at DESC
 ");
 $stmt->execute([':uid' => $_SESSION['user_id']]);
