@@ -65,8 +65,8 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div id="message" class="message" style="display: none;"></div>
                     <?php if ($organizationName): ?>
                         <p class="filter-info">
-                            Visualizzando le domande per l'ente "<strong><?php echo htmlspecialchars($organizationName); ?></strong>".
-                            <a href="applications.php">Mostra tutte le domande</a>
+                            Visualizzando le risposte ai bandi per l'ente "<strong><?php echo htmlspecialchars($organizationName); ?></strong>".
+                            <a href="applications.php">Mostra tutte le risposte ai bandi</a>
                         </p>
                     <?php endif; ?>
                     <div class="button-container">
