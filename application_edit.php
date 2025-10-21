@@ -16,7 +16,7 @@ if (!$appId) {
     exit();
 }
 
-$stmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, project_name, project_description FROM application WHERE id = :id');
+$stmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, application_pdf_path FROM application WHERE id = :id');
 $stmt->execute([':id' => $appId]);
 $application = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$application) {
@@ -47,7 +47,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 <main>
     <div class="contact-form-container">
         <h2>Modifica Risposta al Bando</h2>
-        <form class="contact-form" action="application_edit_handler.php" method="POST">
+        <form class="contact-form" action="application_edit_handler.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($appId); ?>">
             <div class="form-group">
                 <label class="form-label required" for="call_id">Bando</label>
@@ -80,6 +80,21 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="form-group">
                 <label class="form-label required" for="project_description">Descrizione del Progetto</label>
                 <textarea id="project_description" name="project_description" class="form-input" required><?php echo htmlspecialchars($application['project_description']); ?></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="current_application_pdf">PDF attuale della domanda</label>
+                <?php if (!empty($application['application_pdf_path'])): ?>
+                <p id="current_application_pdf">
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>" target="_blank" rel="noopener">Scarica il PDF attuale</a>
+                </p>
+                <?php else: ?>
+                <p id="current_application_pdf">Nessun PDF caricato.</p>
+                <?php endif; ?>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="application_pdf">Sostituisci PDF della domanda</label>
+                <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf">
+                <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
             </div>
             <div class="button-container">
                 <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>

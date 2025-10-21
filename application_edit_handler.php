@@ -29,15 +29,76 @@ if (!$id || !$callId || !$organizationId || !$supervisorId || !$projectName || !
 
 $userId = $_SESSION['user_id'];
 
-$stmt = $pdo->prepare('UPDATE application SET call_for_proposal_id = :call_id, organization_id = :org_id, supervisor_id = :sup_id, project_name = :name, project_description = :description WHERE id = :id');
-$stmt->execute([
-    ':call_id' => $callId,
-    ':org_id' => $organizationId,
-    ':sup_id' => $supervisorId,
-    ':name' => $projectName,
-    ':description' => $projectDescription,
-    ':id' => $id
-]);
+$pdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
+
+if ($pdfUploaded && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK) {
+    header('Location: application_edit.php?id=' . urlencode($id));
+    exit();
+}
+
+$destinationPath = null;
+$pdfTmpPath = null;
+if ($pdfUploaded) {
+    $pdfTmpPath = $_FILES['application_pdf']['tmp_name'];
+    $pdfName = $_FILES['application_pdf']['name'];
+    $pdfExtension = strtolower(pathinfo($pdfName, PATHINFO_EXTENSION));
+
+    if ($pdfExtension !== 'pdf') {
+        header('Location: application_edit.php?id=' . urlencode($id));
+        exit();
+    }
+
+    $destinationDir = 'private/documents/applications/' . $id;
+    $destinationPath = $destinationDir . '/domanda.pdf';
+}
+
+try {
+    $pdo->beginTransaction();
+
+    if ($pdfUploaded) {
+        if (!is_dir($destinationDir)) {
+            if (!mkdir($destinationDir, 0755, true)) {
+                throw new RuntimeException('Unable to create application directory');
+            }
+        }
+
+        if (file_exists($destinationPath) && !unlink($destinationPath)) {
+            throw new RuntimeException('Unable to replace existing PDF');
+        }
+
+        if (!move_uploaded_file($pdfTmpPath, $destinationPath)) {
+            throw new RuntimeException('Unable to move uploaded file');
+        }
+    }
+
+    $query = 'UPDATE application SET call_for_proposal_id = :call_id, organization_id = :org_id, supervisor_id = :sup_id, project_name = :name, project_description = :description';
+    $params = [
+        ':call_id' => $callId,
+        ':org_id' => $organizationId,
+        ':sup_id' => $supervisorId,
+        ':name' => $projectName,
+        ':description' => $projectDescription,
+        ':id' => $id
+    ];
+
+    if ($pdfUploaded) {
+        $query .= ', application_pdf_path = :pdf_path';
+        $params[':pdf_path'] = $destinationPath;
+    }
+
+    $query .= ' WHERE id = :id';
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
+
+    $pdo->commit();
+} catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    header('Location: application_edit.php?id=' . urlencode($id));
+    exit();
+}
 
 header('Location: applications.php');
 exit();
