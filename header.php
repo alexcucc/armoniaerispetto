@@ -96,6 +96,9 @@
                                     <?php if ($canUserList): ?>
                                         <li class="nav-item"><a class="nav-link" href="users.php">Utenti</a></li>
                                     <?php endif; ?>
+                                    <?php if ($canSupervisorList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="supervisors.php">Relatori</a></li>
+                                    <?php endif; ?>
                                     <?php if ($canEvaluatorList): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluators.php">Valutatori</a></li>
                                     <?php endif; ?>
@@ -105,14 +108,13 @@
                                     <?php if ($canOrganizationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canApplicationReview): ?>
-                                        <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Domande da revisionare</a></li>
-                                    <?php endif; ?>
-                                    <?php if ($canSupervisorList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="supervisors.php">Relatori</a></li>
-                                    <?php endif; ?>
                                     <?php if ($canApplicationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canApplicationReview): ?>
+                                        <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Risposte ai bandi da controllare</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canApplicationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisor_application_overview.php">Monitoraggio relatori</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluationCreate): ?>
