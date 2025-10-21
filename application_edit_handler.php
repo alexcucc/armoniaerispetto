@@ -27,7 +27,25 @@ if (!$id || !$callId || !$organizationId || !$supervisorId || !$projectName || !
     exit();
 }
 
-$userId = $_SESSION['user_id'];
+$duplicateCheckStmt = $pdo->prepare('SELECT COUNT(*) FROM application WHERE call_for_proposal_id = :call_id AND organization_id = :org_id AND id <> :id');
+$duplicateCheckStmt->execute([
+    ':call_id' => $callId,
+    ':org_id' => $organizationId,
+    ':id' => $id
+]);
+
+if ($duplicateCheckStmt->fetchColumn() > 0) {
+    $_SESSION['error_message'] = 'Esiste già una risposta al bando per questo ente.';
+    $_SESSION['form_data'] = [
+        'call_id' => $callId,
+        'organization_id' => $organizationId,
+        'supervisor_id' => $supervisorId,
+        'project_name' => $projectName,
+        'project_description' => $projectDescription
+    ];
+    header('Location: application_edit.php?id=' . urlencode($id));
+    exit();
+}
 
 $pdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
 

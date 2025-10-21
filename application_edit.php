@@ -35,6 +35,30 @@ $organizations = $orgStmt->fetchAll(PDO::FETCH_ASSOC);
 $supStmt = $pdo->prepare('SELECT s.id, u.first_name, u.last_name FROM supervisor s JOIN user u ON s.user_id = u.id ORDER BY u.first_name, u.last_name');
 $supStmt->execute();
 $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+$errorMessage = $_SESSION['error_message'] ?? null;
+$formData = $_SESSION['form_data'] ?? [];
+
+unset($_SESSION['error_message'], $_SESSION['form_data']);
+
+if (!empty($formData)) {
+    if (isset($formData['call_id'])) {
+        $application['call_for_proposal_id'] = (int) $formData['call_id'];
+    }
+    if (isset($formData['organization_id'])) {
+        $application['organization_id'] = (int) $formData['organization_id'];
+    }
+    if (isset($formData['supervisor_id'])) {
+        $application['supervisor_id'] = (int) $formData['supervisor_id'];
+    }
+    if (isset($formData['project_name'])) {
+        $application['project_name'] = $formData['project_name'];
+    }
+    if (isset($formData['project_description'])) {
+        $application['project_description'] = $formData['project_description'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -47,6 +71,11 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 <main>
     <div class="contact-form-container">
         <h2>Modifica Risposta al Bando</h2>
+        <?php if (!empty($errorMessage)): ?>
+        <div class="message error">
+            <?php echo htmlspecialchars($errorMessage); ?>
+        </div>
+        <?php endif; ?>
         <form class="contact-form" action="application_edit_handler.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($appId); ?>">
             <div class="form-group">
