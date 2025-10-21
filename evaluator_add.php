@@ -14,7 +14,8 @@ $stmt = $pdo->prepare(
     "SELECT u.id, u.first_name, u.last_name, u.email " .
     "FROM user u " .
     "LEFT JOIN evaluator e ON u.id = e.user_id " .
-    "WHERE e.user_id IS NULL"
+    "WHERE e.user_id IS NULL " .
+    "ORDER BY u.first_name ASC, u.last_name ASC"
 );
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
