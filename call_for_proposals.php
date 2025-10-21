@@ -10,8 +10,23 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Fetch all call for proposals
-$stmt = $pdo->prepare("SELECT id, title, description, start_date, end_date, pdf_path, created_at, updated_at FROM call_for_proposal");
+// Fetch all call for proposals with associated application counts
+$stmt = $pdo->prepare(
+    "SELECT cfp.id,
+            cfp.title,
+            cfp.description,
+            cfp.start_date,
+            cfp.end_date,
+            cfp.pdf_path,
+            cfp.created_at,
+            cfp.updated_at,
+            (
+                SELECT COUNT(*)
+                FROM application a
+                WHERE a.call_for_proposal_id = cfp.id
+            ) AS application_count
+     FROM call_for_proposal cfp"
+);
 $stmt->execute();
 $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -64,7 +79,9 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <?php endif; ?>
                                         <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
                                         <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?= $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
-                                        <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
+                                        <?php if ((int) $cfp['application_count'] === 0): ?>
+                                            <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -29,6 +29,23 @@ try {
     $stmt->execute([$callForProposalId]);
     $pdfPath = $stmt->fetchColumn();
 
+    if ($pdfPath === false) {
+        echo json_encode(['success' => false, 'message' => 'Bando non trovato']);
+        exit();
+    }
+
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM application WHERE call_for_proposal_id = ?');
+    $stmt->execute([$callForProposalId]);
+    $applicationCount = (int) $stmt->fetchColumn();
+
+    if ($applicationCount > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Impossibile eliminare il bando perché sono presenti domande associate.'
+        ]);
+        exit();
+    }
+
     if ($pdfPath && file_exists($pdfPath)) {
         unlink($pdfPath);
         @rmdir(dirname($pdfPath));
