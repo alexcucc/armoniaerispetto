@@ -23,29 +23,83 @@ $sortOrder = isset($_GET['order']) && in_array(strtolower($_GET['order']), $allo
 
 // Fetch all applications including supervisor full name
 $organizationId = isset($_GET['organization_id']) ? (int) $_GET['organization_id'] : null;
-$organizationName = null;
+$callId = isset($_GET['call_id']) ? (int) $_GET['call_id'] : null;
+$selectedOrganizationName = null;
+$selectedCallTitle = null;
 
 if ($organizationId) {
     $orgStmt = $pdo->prepare('SELECT name FROM organization WHERE id = :id');
     $orgStmt->execute([':id' => $organizationId]);
-    $organizationName = $orgStmt->fetchColumn();
+    $selectedOrganizationName = $orgStmt->fetchColumn();
 
-    if (!$organizationName) {
+    if (!$selectedOrganizationName) {
         $organizationId = null;
     }
 }
 
-$whereClause = '';
+if ($callId) {
+    $callStmt = $pdo->prepare('SELECT title FROM call_for_proposal WHERE id = :id');
+    $callStmt->execute([':id' => $callId]);
+    $selectedCallTitle = $callStmt->fetchColumn();
+
+    if (!$selectedCallTitle) {
+        $callId = null;
+    }
+}
+
+$callOptionsStmt = $pdo->query('SELECT id, title FROM call_for_proposal ORDER BY title');
+$callOptions = $callOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$organizationOptionsStmt = $pdo->query('SELECT id, name FROM organization ORDER BY name');
+$organizationOptions = $organizationOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$whereClauses = [];
 $params = [];
 
 if ($organizationId) {
-    $whereClause = 'WHERE a.organization_id = :organization_id';
+    $whereClauses[] = 'a.organization_id = :organization_id';
     $params[':organization_id'] = $organizationId;
+}
+
+if ($callId) {
+    $whereClauses[] = 'a.call_for_proposal_id = :call_id';
+    $params[':call_id'] = $callId;
+}
+
+$whereClause = '';
+if (!empty($whereClauses)) {
+    $whereClause = 'WHERE ' . implode(' AND ', $whereClauses);
 }
 
 $stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.application_pdf_path FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
 $stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$currentFilters = [
+    'call_id' => $callId ?: null,
+    'organization_id' => $organizationId ?: null,
+];
+
+function buildApplicationsSortLink(string $field, string $sortField, string $sortOrder, array $currentFilters): string
+{
+    $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
+    $query = array_filter(
+        array_merge($currentFilters, [
+            'sort' => $field,
+            'order' => $nextOrder,
+        ]),
+        static function ($value) {
+            return $value !== null && $value !== '';
+        }
+    );
+
+    return '?' . http_build_query($query);
+}
+
+$resetUrl = 'applications.php?' . http_build_query([
+    'sort' => $sortField,
+    'order' => strtolower($sortOrder),
+]);
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -63,10 +117,51 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="content-container">
                 <div class="content">
                     <div id="message" class="message" style="display: none;"></div>
-                    <?php if ($organizationName): ?>
+                    <form method="get" class="filters-form">
+                        <div class="form-group">
+                            <label class="form-label" for="call_id">Bando</label>
+                            <select id="call_id" name="call_id" class="form-input">
+                                <option value="">Tutti i bandi</option>
+                                <?php foreach ($callOptions as $callOption): ?>
+                                    <option value="<?php echo (int) $callOption['id']; ?>" <?php echo $callId === (int) $callOption['id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($callOption['title']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="organization_id">Ente</label>
+                            <select id="organization_id" name="organization_id" class="form-input">
+                                <option value="">Tutti gli enti</option>
+                                <?php foreach ($organizationOptions as $organizationOption): ?>
+                                    <option value="<?php echo (int) $organizationOption['id']; ?>" <?php echo $organizationId === (int) $organizationOption['id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($organizationOption['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sortField); ?>">
+                        <input type="hidden" name="order" value="<?php echo htmlspecialchars(strtolower($sortOrder)); ?>">
+                        <div class="filters-actions">
+                            <button type="submit" class="page-button">Applica filtri</button>
+                            <a href="<?php echo htmlspecialchars($resetUrl); ?>" class="page-button secondary-button">Reset</a>
+                        </div>
+                    </form>
+                    <?php if ($selectedCallTitle || $selectedOrganizationName): ?>
                         <p class="filter-info">
-                            Visualizzando le risposte ai bandi per l'ente "<strong><?php echo htmlspecialchars($organizationName); ?></strong>".
-                            <a href="applications.php">Mostra tutte le risposte ai bandi</a>
+                            Visualizzando le domande
+                            <?php if ($selectedCallTitle): ?>
+                                per il bando "<strong><?php echo htmlspecialchars($selectedCallTitle); ?></strong>"
+                            <?php endif; ?>
+                            <?php if ($selectedOrganizationName): ?>
+                                <?php if ($selectedCallTitle): ?>
+                                    e
+                                <?php else: ?>
+                                    per
+                                <?php endif; ?>
+                                l'ente "<strong><?php echo htmlspecialchars($selectedOrganizationName); ?></strong>"
+                            <?php endif; ?>.
+                            <a href="<?php echo htmlspecialchars('applications.php?sort=' . urlencode($sortField) . '&order=' . urlencode(strtolower($sortOrder))); ?>">Mostra tutte le domande</a>
                         </p>
                     <?php endif; ?>
                     <div class="button-container">
@@ -86,12 +181,12 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     'status' => 'Stato'
                                 ];
                                 foreach ($columns as $field => $label) {
-                                    $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
+                                    $link = buildApplicationsSortLink($field, $sortField, $sortOrder, $currentFilters);
                                     $icon = '';
                                     if ($sortField === $field) {
                                         $icon = $sortOrder === 'ASC' ? '▲' : '▼';
                                     }
-                                    echo '<th><a href="?sort=' . $field . '&order=' . $nextOrder . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
+                                    echo '<th><a href="' . htmlspecialchars($link) . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
                                 }
                                 ?>
                                 <th>Documento</th>
@@ -102,6 +197,11 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </thead>
 
                         <tbody>
+                            <?php if (empty($applications)): ?>
+                                <tr>
+                                    <td colspan="7">Nessuna domanda trovata.</td>
+                                </tr>
+                            <?php else: ?>
                             <?php foreach ($applications as $app): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($app['call_title']); ?></td>
@@ -132,6 +232,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
