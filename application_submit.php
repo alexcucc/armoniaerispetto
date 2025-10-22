@@ -77,7 +77,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label required" for="supervisor_id">Relatore</label>
+            <label class="form-label required" for="supervisor_id">Convalidatore</label>
             <select id="supervisor_id" name="supervisor_id" class="form-input" required>
               <option value="" disabled <?php echo $selectedSupervisorId ? '' : 'selected'; ?>></option>
               <?php foreach ($supervisors as $sup): ?>

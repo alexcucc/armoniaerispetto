@@ -95,7 +95,7 @@ if (!empty($formData)) {
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label required" for="supervisor_id">Relatore</label>
+                <label class="form-label required" for="supervisor_id">Convalidatore</label>
                 <select id="supervisor_id" name="supervisor_id" class="form-input" required>
                     <?php foreach ($supervisors as $sup): ?>
                     <option value="<?php echo $sup['id']; ?>" <?php if ($sup['id'] == $application['supervisor_id']) echo 'selected'; ?>><?php echo htmlspecialchars($sup['first_name'] . ' ' . $sup['last_name']); ?></option>

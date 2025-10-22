@@ -145,14 +145,14 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Monitoraggio domande dei relatori</title>
+    <title>Monitoraggio domande dei convalidatori</title>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Monitoraggio domande dei relatori</h1>
+            <h1>Monitoraggio domande dei convalidatori</h1>
         </div>
         <div class="content-container">
             <div class="content">
@@ -161,7 +161,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                 </div>
                 <form class="filters-form" method="get" action="">
                     <div class="form-group">
-                        <label class="form-label" for="supervisor_id">Relatore</label>
+                        <label class="form-label" for="supervisor_id">Convalidatore</label>
                         <select id="supervisor_id" name="supervisor_id" class="form-input">
                             <option value="">Tutti</option>
                             <?php foreach ($supervisors as $supervisor): ?>
@@ -199,7 +199,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                     </div>
                 </form>
                 <section class="users-table-container">
-                    <h2>Domande già compilate dai relatori</h2>
+                    <h2>Domande già compilate dai convalidatori</h2>
                     <table class="users-table">
                         <thead>
                         <tr>
@@ -207,7 +207,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                             $columns = [
                                 'call_title' => 'Bando',
                                 'organization_name' => 'Ente',
-                                'supervisor_name' => 'Relatore',
+                                'supervisor_name' => 'Convalidatore',
                                 'status' => 'Esito',
                                 'updated_at' => 'Ultimo aggiornamento'
                             ];

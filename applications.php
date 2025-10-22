@@ -177,7 +177,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     'call_title' => 'Bando',
                                     'organization_name' => 'Ente',
                                     'project_name' => 'Nome Progetto',
-                                    'supervisor_name' => 'Relatore',
+                                    'supervisor_name' => 'Convalidatore',
                                     'status' => 'Stato'
                                 ];
                                 foreach ($columns as $field => $label) {

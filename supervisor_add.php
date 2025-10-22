@@ -24,13 +24,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Aggiungi Relatore</title>
+    <title>Aggiungi Convalidatore</title>
     </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">
-        <h2>Aggiungi Relatore</h2>
+        <h2>Aggiungi Convalidatore</h2>
         <form class="contact-form" action="supervisor_add_handler.php" method="POST">
             <div class="form-group">
                 <label class="form-label required" for="user_id">Utente</label>

@@ -97,7 +97,7 @@
                                         <li class="nav-item"><a class="nav-link" href="users.php">Utenti</a></li>
                                     <?php endif; ?>
                                     <?php if ($canSupervisorList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="supervisors.php">Relatori</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="supervisors.php">Convalidatori</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluatorList): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluators.php">Valutatori</a></li>
@@ -115,7 +115,7 @@
                                         <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Risposte ai bandi da controllare</a></li>
                                     <?php endif; ?>
                                     <?php if ($canApplicationList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="supervisor_application_overview.php">Monitoraggio relatori</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="supervisor_application_overview.php">Monitoraggio convalidatori</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluationCreate): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>

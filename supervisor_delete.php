@@ -16,7 +16,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 $supervisorId = $data['id'] ?? null;
 
 if (!$supervisorId) {
-    echo json_encode(['success' => false, 'message' => 'ID relatore non valido']);
+    echo json_encode(['success' => false, 'message' => 'ID convalidatore non valido']);
     exit();
 }
 
@@ -29,7 +29,7 @@ try {
 
     if (!$userId) {
         $pdo->rollBack();
-        echo json_encode(['success' => false, 'message' => 'Relatore non trovato']);
+        echo json_encode(['success' => false, 'message' => 'Convalidatore non trovato']);
         exit();
     }
 
@@ -42,8 +42,8 @@ try {
     $roleStmt->execute([$userId]);
 
     $pdo->commit();
-    echo json_encode(['success' => true, 'message' => 'Relatore eliminato con successo']);
+    echo json_encode(['success' => true, 'message' => 'Convalidatore eliminato con successo']);
 } catch (PDOException $e) {
     $pdo->rollBack();
-    echo json_encode(['success' => false, 'message' => "Errore durante l'eliminazione del relatore"]);
+    echo json_encode(['success' => false, 'message' => "Errore durante l'eliminazione del convalidatore"]);
 }

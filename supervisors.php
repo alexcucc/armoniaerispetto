@@ -18,21 +18,21 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Relatore</title>
+    <title>Convalidatore</title>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Relatore</h1>
+            <h1>Convalidatore</h1>
         </div>
         <div class="content-container">
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
                 <div class="button-container">
                     <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
-                    <a class="page-button" href="supervisor_add.php">Aggiungi Relatore</a>
+                    <a class="page-button" href="supervisor_add.php">Aggiungi Convalidatore</a>
                 </div>
                 <div class="users-table-container">
                     <table class="users-table">
@@ -72,7 +72,7 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         deleteButtons.forEach(button => {
             button.addEventListener('click', async function() {
-                if (confirm('Sei sicuro di voler eliminare questo relatore?')) {
+                if (confirm('Sei sicuro di voler eliminare questo convalidatore?')) {
                     const supervisorId = this.dataset.id;
                     try {
                         const response = await fetch('supervisor_delete.php', {
