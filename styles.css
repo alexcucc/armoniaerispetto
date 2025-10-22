@@ -616,7 +616,8 @@ ul.nav-links {
 .modify-btn,
 .delete-btn,
 .view-btn,
-.download-btn {
+.download-btn,
+.impersonate-btn {
   color: white;
   border: none;
   padding: 0.5em 1em;
@@ -662,6 +663,47 @@ ul.nav-links {
 
 .delete-btn:hover {
   background-color: #c82333;
+}
+
+.impersonate-btn {
+  background-color: #6f42c1;
+}
+
+.impersonate-btn:hover {
+  background-color: #59359a;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.impersonation-banner {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  border-radius: 0.5em;
+  padding: 0.35em 0.75em;
+  font-weight: 600;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+
+.impersonation-banner span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.impersonation-stop-link {
+  color: #856404;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.impersonation-stop-link:hover {
+  text-decoration: none;
 }
 
 .filter-info {
@@ -1251,7 +1293,8 @@ textarea:focus-visible {
     }
 
     .delete-btn,
-    .modify-btn {
+    .modify-btn,
+    .impersonate-btn {
         padding: 0.3em 0.6em;
         font-size: 0.9rem;
         width: 110px;

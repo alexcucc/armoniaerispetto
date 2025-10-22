@@ -24,6 +24,7 @@ class RolePermissionManager
         'USER_READ'           => 'user:read',
         'USER_DELETE'         => 'user:delete',
         'USER_LIST'           => 'user:list',
+        'USER_IMPERSONATE'    => 'user:impersonate',
 
         # evaluators
         'EVALUATOR_CREATE'   => 'evaluator:create',

@@ -43,6 +43,18 @@
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                         <?php endif; ?>
                         <?php
+                        $impersonationActive = !empty($_SESSION['is_impersonating']) && !empty($_SESSION['impersonated_user']);
+                        $impersonatedUser = $_SESSION['impersonated_user'] ?? null;
+                        $impersonationReturnUrl = isset($_SERVER['REQUEST_URI']) ? urlencode($_SERVER['REQUEST_URI']) : urlencode('index.php');
+                        if ($impersonationActive && $impersonatedUser): ?>
+                            <li class="nav-item impersonation-banner">
+                                <span>
+                                    Stai agendo come <?php echo htmlspecialchars($impersonatedUser['first_name'] . ' ' . $impersonatedUser['last_name']); ?>
+                                </span>
+                                <a class="impersonation-stop-link" href="stop_impersonation.php?redirect=<?php echo $impersonationReturnUrl; ?>">Torna al tuo account</a>
+                            </li>
+                        <?php endif; ?>
+                        <?php
                         $canEvaluationView = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']

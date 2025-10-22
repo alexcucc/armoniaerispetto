@@ -9,6 +9,11 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     exit();
 }
 
+$canImpersonate = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['USER_IMPERSONATE']
+);
+
 // Get all users from database
 $stmt = $pdo->prepare("SELECT id, email, first_name, last_name, phone, organization, created_at, email_verified FROM user");
 $stmt->execute();
@@ -62,7 +67,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         </span>
                                     </td>
                                     <td><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></td>
-                                    <td>
+                                    <td class="actions-cell">
+                                        <?php if ($canImpersonate): ?>
+                                            <button
+                                                class="impersonate-btn"
+                                                data-id="<?php echo $user['id']; ?>"
+                                                data-name="<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>"
+                                            >
+                                                <i class="fas fa-user-secret"></i> Assumi ruolo
+                                            </button>
+                                        <?php endif; ?>
                                         <button class="delete-btn" data-id="<?php echo $user['id']; ?>">
                                             <i class="fas fa-trash"></i> Elimina
                                         </button>
@@ -80,6 +94,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const deleteButtons = document.querySelectorAll('.delete-btn');
+            const impersonateButtons = document.querySelectorAll('.impersonate-btn');
             const messageDiv = document.getElementById('message');
 
             deleteButtons.forEach(button => {
@@ -110,6 +125,41 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             messageDiv.className = 'message error';
                             messageDiv.style.display = 'block';
                         }
+                    }
+                });
+            });
+
+            impersonateButtons.forEach(button => {
+                button.addEventListener('click', async function() {
+                    const userId = this.dataset.id;
+                    const userName = this.dataset.name;
+
+                    if (!confirm('Vuoi agire come ' + userName + '?')) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('impersonate_user.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ id: userId })
+                        });
+
+                        const data = await response.json();
+
+                        messageDiv.textContent = data.message;
+                        messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
+                        messageDiv.style.display = 'block';
+
+                        if (data.success && data.redirect) {
+                            window.location.href = data.redirect;
+                        }
+                    } catch (error) {
+                        messageDiv.textContent = 'Si è verificato un errore durante il cambio di utente.';
+                        messageDiv.className = 'message error';
+                        messageDiv.style.display = 'block';
                     }
                 });
             });
