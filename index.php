@@ -11,21 +11,31 @@
         <div class="intro-image-wrapper">
           <img src="images/elephant_and_man.png" alt="Elefante e uomo" class="intro-image">
         </div>
-        <div class="content-container">
+        <div class="mobile-intro-text mobile-only">
+          <h2 style="text-align: justify;">🌍 La Terra non ci appartiene. Siamo ospiti, siamo custodi.</h2>
+          <p>Viviamo immersi in un mondo di voci che sussurrano, non parlano.
+          <br>
+          Ogni battito d’ali, ogni zampa che tocca la terra, ogni sguardo al cielo racconta una storia di coesistenza.
+          <br>
+          Una storia millenaria, fatta di equilibri sottili e silenzi che parlano al cuore.</p>
+        </div>
+        <div class="content-container first-section">
           <div class="overlay-wrapper">
             <div class="overlay-image">
               <img class="image fade-right" src="images/elephants_drinking.jpg">
             </div>
             <div class="overlay-text-right">
-              <h2 style="text-align: justify;">🌍 La Terra non ci appartiene. Siamo ospiti, siamo custodi.</h2>
-              <p>Viviamo immersi in un mondo di voci che sussurrano, non parlano.  
+              <div class="desktop-only">
+                <h2 style="text-align: justify;">🌍 La Terra non ci appartiene. Siamo ospiti, siamo custodi.</h2>
+                <p>Viviamo immersi in un mondo di voci che sussurrano, non parlano.
+                <br>
+                Ogni battito d’ali, ogni zampa che tocca la terra, ogni sguardo al cielo racconta una storia di coesistenza.
+                <br>
+                Una storia millenaria, fatta di equilibri sottili e silenzi che parlano al cuore.</p>
+              </div>
+              <p>Ma nel tempo della corsa e del dominio, l’uomo ha dimenticato il proprio posto nel cerchio della vita.
               <br>
-              Ogni battito d’ali, ogni zampa che tocca la terra, ogni sguardo al cielo racconta una storia di coesistenza.  
-              <br>
-              Una storia millenaria, fatta di equilibri sottili e silenzi che parlano al cuore.</p>
-              <p>Ma nel tempo della corsa e del dominio, l’uomo ha dimenticato il proprio posto nel cerchio della vita.  
-              <br>
-              Ha smesso di ascoltare, di guardare davvero.  
+              Ha smesso di ascoltare, di guardare davvero.
               <br>
               Ha costruito muri e tracciato confini, dividendo ciò che la natura aveva unito: <b>l’umano e il selvatico, la mente e l’istinto, la parola e il canto silenzioso degli animali.</b></p>
               <p>Ora, più che mai, sentiamo un richiamo profondo: <b>ritrovare l’armonia perduta.</b>  
@@ -34,8 +44,11 @@
             </div>
           </div>
         </div>
-        <div class="content-container">
+        <div class="content-container reverse-desktop">
           <div class="overlay-wrapper">
+            <div class="overlay-image">
+              <img class="image fade-left" src="images/rhinos_1.jpg">
+            </div>
             <div class="overlay-text-left">
               <h2 style="text-align: justify;">🕊️ Una visione che ci attraversa: coesistere, non dominare</h2>
               <p>La Fondazione <i>Armonia e Rispetto</i> non è solo un'istituzione.
@@ -51,9 +64,6 @@
               <b>Vogliamo trasformare la coscienza.</b>
               <br>
               Vogliamo che le nuove generazioni crescano con un senso profondo di connessione, non di superiorità.</p>
-            </div>
-            <div class="overlay-image">
-              <img class="image fade-left" src="images/rhinos_1.jpg">
             </div>
           </div>
         </div>
@@ -82,8 +92,11 @@
             </div>
           </div>
         </div>
-        <div class="content-container">
+        <div class="content-container reverse-desktop">
           <div class="overlay-wrapper">
+            <div class="overlay-image">
+              <img class="image fade-left" src="images/boy_drinking.jpg">
+            </div>
             <div class="overlay-text-left">
               <h2 style="text-align:justify">🌱 Il nostro impegno è il nostro volto</h2>
               <p>Ogni progetto che sosteniamo, ogni animale salvato, ogni voce amplificata è parte di una visione più grande.</p>
@@ -91,9 +104,6 @@
               <p>Non l'indignazione sterile, ma <b>il desiderio profondo di cambiare le cose, davvero, giorno dopo giorno.</b></p>
               <p>Perché <b>coabitare questa Terra significa condividere il destino</b>, e solo un destino condiviso può essere giusto.</p>
               <p>Non ci sarà salvezza per l'uomo se non ci sarà salvezza per gli animali, per le foreste, per i mari, per ogni essere che abita con noi questa fragile meraviglia che chiamiamo casa.</p>
-            </div>
-            <div class="overlay-image">
-              <img class="image fade-left" src="images/boy_drinking.jpg">
             </div>
           </div>
         </div>
