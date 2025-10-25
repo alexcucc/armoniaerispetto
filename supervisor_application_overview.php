@@ -199,7 +199,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                     </div>
                 </form>
                 <section class="users-table-container">
-                    <h2>Risposte ai bandi già compilate dai convalidatori</h2>
+                    <h2>Risposte ai bandi convalidate</h2>
                     <table class="users-table">
                         <thead>
                         <tr>
@@ -244,7 +244,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                 </section>
 
                 <section class="users-table-container">
-                    <h2>Risposte ai bandi ancora da compilare</h2>
+                    <h2>Risposte ai bandi da convalidare</h2>
                     <table class="users-table">
                         <thead>
                         <tr>
