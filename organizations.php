@@ -83,7 +83,7 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td>
                                     <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_LIST'])): ?>
                                     <button class="view-btn" onclick="window.location.href='applications.php?organization_id=<?php echo $org['id']; ?>'">
-                                        <i class="fas fa-eye"></i> Domande
+                                        <i class="fas fa-eye"></i> Risposte ai bandi
                                     </button>
                                     <?php endif; ?>
                                     <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['ORGANIZATION_UPDATE'])): ?>

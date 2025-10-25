@@ -199,7 +199,7 @@ if ($totalEvaluators > 0) {
                                     <tr>
                                         <th>Posizione</th>
                                         <th>Ente</th>
-                                        <th>Domande presentate</th>
+                                        <th>Risposte al bando presentate</th>
                                         <th>Valutazioni ricevute</th>
                                         <th>Punteggio totale</th>
                                     </tr>

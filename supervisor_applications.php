@@ -55,19 +55,19 @@ $statusLabels = [
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Domande da Revisionare</title>
+    <title>Risposte ai bandi da Revisionare</title>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Domande da Revisionare</h1>
+            <h1>Risposte ai bandi da Revisionare</h1>
         </div>
         <div class="content-container">
             <div class="content">
                 <div class="users-table-container">
-                    <h2>Domande in Attesa di Revisione</h2>
+                    <h2>Risposte ai bandi in Attesa di Revisione</h2>
                     <table class="users-table">
                         <thead>
                             <tr>
@@ -99,7 +99,7 @@ $statusLabels = [
                 </div>
 
                 <div class="users-table-container" style="margin-top: 2rem;">
-                    <h2>Domande Già Revisionate</h2>
+                    <h2>Risposte ai bandi Già Revisionate</h2>
                     <table class="users-table">
                         <thead>
                             <tr>

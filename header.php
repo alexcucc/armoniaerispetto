@@ -135,7 +135,6 @@
                                     <?php if ($canEvaluationView): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluator_evaluation_overview.php">Monitoraggio valutatori</a></li>
                                     <?php endif; ?>
-
                                 </ul>
                             </li>
                         <?php endif; ?>
