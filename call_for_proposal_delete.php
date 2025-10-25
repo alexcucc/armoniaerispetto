@@ -41,7 +41,7 @@ try {
     if ($applicationCount > 0) {
         echo json_encode([
             'success' => false,
-            'message' => 'Impossibile eliminare il bando perché sono presenti domande associate.'
+            'message' => 'Impossibile eliminare il bando perché sono presenti risposte al bando associate.'
         ]);
         exit();
     }

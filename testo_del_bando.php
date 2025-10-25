@@ -22,7 +22,7 @@
                 Scarica il bando
               </a>
               <button onclick="window.location.href='presentazione_della_domanda.php';" class="page-button">
-                Presentazione della domanda
+                Presentazione della risposta al bando
               </button>
             </div>
           </div>

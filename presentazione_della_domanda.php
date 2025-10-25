@@ -2,14 +2,14 @@
 <html lang="it">
   <head>
     <?php include 'common-head.php';?>
-    <title>Presentazione della Domanda</title>
+    <title>Presentazione della Risposta al Bando</title>
   </head>
   <body>
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Presentazione della Domanda</h1>
+          <h1>Presentazione della Risposta al Bando</h1>
         </div>
         <div class="content-container">
           <div class="content">

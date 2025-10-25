@@ -17,7 +17,7 @@ $appId = $data['id'] ?? null;
 $userId = $_SESSION['user_id'];
 
 if (!$appId) {
-    echo json_encode(['success' => false, 'message' => 'ID domanda non valido']);
+    echo json_encode(['success' => false, 'message' => 'ID risposta al bando non valido']);
     exit();
 }
 
@@ -30,7 +30,7 @@ try {
 
     if (!$application) {
         $pdo->rollBack();
-        echo json_encode(['success' => false, 'message' => 'Domanda non trovata']);
+        echo json_encode(['success' => false, 'message' => 'Risposta al bando non trovata']);
         exit();
     }
 
@@ -56,14 +56,14 @@ try {
             }
         }
 
-        echo json_encode(['success' => true, 'message' => 'Domanda eliminata con successo']);
+        echo json_encode(['success' => true, 'message' => 'Risposta al bando eliminata con successo']);
     } else {
         $pdo->rollBack();
-        echo json_encode(['success' => false, 'message' => 'Domanda non trovata']);
+        echo json_encode(['success' => false, 'message' => 'Risposta al bando non trovata']);
     }
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    echo json_encode(['success' => false, 'message' => "Errore durante l'eliminazione della domanda"]);
+    echo json_encode(['success' => false, 'message' => "Errore durante l'eliminazione della risposta al bando"]);
 }

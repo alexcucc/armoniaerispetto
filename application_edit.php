@@ -111,7 +111,7 @@ if (!empty($formData)) {
                 <textarea id="project_description" name="project_description" class="form-input" required><?php echo htmlspecialchars($application['project_description']); ?></textarea>
             </div>
             <div class="form-group">
-                <label class="form-label" for="current_application_pdf">PDF attuale della domanda</label>
+                <label class="form-label" for="current_application_pdf">PDF attuale della risposta al bando</label>
                 <?php if (!empty($application['application_pdf_path'])): ?>
                 <p id="current_application_pdf">
                     <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>" target="_blank" rel="noopener">Scarica il PDF attuale</a>
@@ -121,7 +121,7 @@ if (!empty($formData)) {
                 <?php endif; ?>
             </div>
             <div class="form-group">
-                <label class="form-label" for="application_pdf">Sostituisci PDF della domanda</label>
+                <label class="form-label" for="application_pdf">Sostituisci PDF della risposta al bando</label>
                 <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf">
                 <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
             </div>

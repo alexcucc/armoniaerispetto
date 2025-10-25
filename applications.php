@@ -181,7 +181,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                     </form>
                     <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName): ?>
                         <p class="filter-info">
-                            Visualizzando le domande
+                            Visualizzando le risposte ai bandi
                             <?php if ($selectedCallTitle): ?>
                                 per il bando "<strong><?php echo htmlspecialchars($selectedCallTitle); ?></strong>"
                             <?php endif; ?>
@@ -201,7 +201,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                                 <?php endif; ?>
                                 il convalidatore "<strong><?php echo htmlspecialchars($selectedSupervisorName); ?></strong>"
                             <?php endif; ?>.
-                            <a href="<?php echo htmlspecialchars('applications.php?sort=' . urlencode($sortField) . '&order=' . urlencode(strtolower($sortOrder))); ?>">Mostra tutte le domande</a>
+                            <a href="<?php echo htmlspecialchars('applications.php?sort=' . urlencode($sortField) . '&order=' . urlencode(strtolower($sortOrder))); ?>">Mostra tutte le risposte ai bandi</a>
                         </p>
                     <?php endif; ?>
                     <div class="button-container">
@@ -239,7 +239,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                         <tbody>
                             <?php if (empty($applications)): ?>
                                 <tr>
-                                    <td colspan="7">Nessuna domanda trovata.</td>
+                                    <td colspan="7">Nessuna risposta al bando trovata.</td>
                                 </tr>
                             <?php else: ?>
                             <?php foreach ($applications as $app): ?>

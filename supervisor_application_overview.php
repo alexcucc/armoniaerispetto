@@ -114,7 +114,7 @@ $callsStmt = $pdo->query(
 $calls = $callsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $statusLabels = [
-    'SUBMITTED' => 'In attesa di revisione',
+    'SUBMITTED' => 'In attesa di convalida',
     'APPROVED' => 'Approvata',
     'REJECTED' => 'Respinta',
 ];
@@ -145,14 +145,14 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Monitoraggio domande dei convalidatori</title>
+    <title>Monitoraggio risposte ai bandi dei convalidatori</title>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Monitoraggio domande dei convalidatori</h1>
+            <h1>Monitoraggio risposte ai bandi dei convalidatori</h1>
         </div>
         <div class="content-container">
             <div class="content">
@@ -199,7 +199,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                     </div>
                 </form>
                 <section class="users-table-container">
-                    <h2>Risposte ai bandi già compilati dai convalidatori</h2>
+                    <h2>Risposte ai bandi già compilate dai convalidatori</h2>
                     <table class="users-table">
                         <thead>
                         <tr>
@@ -225,7 +225,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         <tbody>
                         <?php if (empty($compiledApplications)): ?>
                             <tr>
-                                <td colspan="5">Nessuna domanda trovata.</td>
+                                <td colspan="5">Nessuna risposta al bando trovata.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($compiledApplications as $application): ?>
@@ -263,7 +263,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         <tbody>
                         <?php if (empty($pendingApplications)): ?>
                             <tr>
-                                <td colspan="5">Nessuna domanda in attesa per i criteri selezionati.</td>
+                                <td colspan="5">Nessuna risposta al bando in attesa per i criteri selezionati.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($pendingApplications as $application): ?>

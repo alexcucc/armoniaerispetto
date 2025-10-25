@@ -105,14 +105,14 @@ $statusLabels = [
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Risposte ai bandi da Revisionare</title>
+    <title>Risposte ai bandi da Convalidare</title>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Risposte ai bandi da Revisionare</h1>
+            <h1>Risposte ai bandi da Convalida</h1>
         </div>
         <div class="content-container">
             <div class="content">
@@ -146,7 +146,7 @@ $statusLabels = [
                 </form>
                 <?php if ($filtersApplied): ?>
                     <p class="filter-info">
-                        Visualizzando le domande
+                        Visualizzando le risposte ai bandi
                         <?php if ($selectedCallTitle): ?>
                             per il bando "<strong><?php echo htmlspecialchars($selectedCallTitle); ?></strong>"
                         <?php endif; ?>
@@ -158,11 +158,11 @@ $statusLabels = [
                             <?php endif; ?>
                             l'ente "<strong><?php echo htmlspecialchars($selectedOrganizationName); ?></strong>"
                         <?php endif; ?>.
-                        <a href="<?php echo htmlspecialchars($resetUrl); ?>">Mostra tutte le domande</a>
+                        <a href="<?php echo htmlspecialchars($resetUrl); ?>">Mostra tutte le risposte ai bandi</a>
                     </p>
                 <?php endif; ?>
                 <div class="users-table-container">
-                    <h2>Risposte ai bandi in Attesa di Revisione</h2>
+                    <h2>Risposte ai bandi in Attesa di Convalida</h2>
                     <table class="users-table">
                         <thead>
                             <tr>
@@ -175,7 +175,7 @@ $statusLabels = [
                         <tbody>
                             <?php if (empty($pendingApplications)): ?>
                                 <tr>
-                                    <td colspan="4">Nessuna domanda da revisionare.</td>
+                                    <td colspan="4">Nessuna risposta al bando da convalidare.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($pendingApplications as $app): ?>
@@ -184,7 +184,7 @@ $statusLabels = [
                                         <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
                                         <td><?php echo htmlspecialchars($app['project_name']); ?></td>
                                         <td>
-                                            <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Revisiona</a>
+                                            <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Convalida</a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -194,7 +194,7 @@ $statusLabels = [
                 </div>
 
                 <div class="users-table-container" style="margin-top: 2rem;">
-                    <h2>Risposte ai bandi Già Revisionate</h2>
+                    <h2>Risposte ai bandi Già Convalida</h2>
                     <table class="users-table">
                         <thead>
                             <tr>
@@ -207,7 +207,7 @@ $statusLabels = [
                         <tbody>
                             <?php if (empty($reviewedApplications)): ?>
                                 <tr>
-                                    <td colspan="4">Nessuna domanda revisionata.</td>
+                                    <td colspan="4">Nessuna risposta al bando convalidata.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($reviewedApplications as $app): ?>

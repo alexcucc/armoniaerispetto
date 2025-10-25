@@ -29,13 +29,13 @@ if (!$application || $application['supervisor_user_id'] != $_SESSION['user_id'])
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Revisione Risposta al Bando</title>
+    <title>Convalida Risposta al Bando</title>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">
-        <h2>Revisione Risposta al Bando</h2>
+        <h2>Convalida Risposta al Bando</h2>
         <div class="form-group">
             <p><strong>Bando:</strong> <?php echo htmlspecialchars($application['call_title']); ?></p>
             <p><strong>Ente:</strong> <?php echo htmlspecialchars($application['organization_name']); ?></p>

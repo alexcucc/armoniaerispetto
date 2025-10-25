@@ -94,7 +94,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             <textarea id="project_description" name="project_description" class="form-input" required><?php echo htmlspecialchars($projectDescriptionValue); ?></textarea>
           </div>
           <div class="form-group">
-            <label class="form-label required" for="application_pdf">PDF della domanda</label>
+            <label class="form-label required" for="application_pdf">PDF della risposta al bando</label>
             <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf" required>
           </div>
           <div class="button-container">
