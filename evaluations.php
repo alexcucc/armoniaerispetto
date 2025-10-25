@@ -68,14 +68,14 @@ $pending = $stmt->fetchAll();
         <div class="button-container">
           <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
         </div>
-        <h2>Valutazioni Inviate</h2>
+        <h2>Valutazioni Compilate</h2>
         <?php if (count($submitted) > 0): ?>
           <table>
             <thead>
               <tr>
                 <th>Bando</th>
                 <th>Ente</th>
-                <th>Data Invio</th>
+                <th>Data Compilazione</th>
               </tr>
             </thead>
             <tbody>
