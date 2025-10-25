@@ -10,7 +10,31 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     exit();
 }
 
-$stmt = $pdo->prepare("SELECT e.id, u.first_name, u.last_name, u.email FROM evaluator e JOIN user u ON e.user_id = u.id");
+$allowedSortFields = ['name', 'email'];
+$allowedSortOrders = ['asc', 'desc'];
+
+$sortFieldParam = strtolower(filter_input(INPUT_GET, 'sort', FILTER_UNSAFE_RAW) ?? '');
+$sortField = in_array($sortFieldParam, $allowedSortFields, true) ? $sortFieldParam : 'name';
+
+$sortOrderParam = strtolower(filter_input(INPUT_GET, 'order', FILTER_UNSAFE_RAW) ?? '');
+$sortOrder = in_array($sortOrderParam, $allowedSortOrders, true) ? strtoupper($sortOrderParam) : 'ASC';
+
+switch ($sortField) {
+    case 'email':
+        $orderByClause = "u.email $sortOrder";
+        break;
+    case 'name':
+    default:
+        $orderByClause = "u.first_name $sortOrder, u.last_name $sortOrder";
+        break;
+}
+
+$stmt = $pdo->prepare(
+    "SELECT e.id, u.first_name, u.last_name, u.email "
+    . "FROM evaluator e "
+    . "JOIN user u ON e.user_id = u.id "
+    . "ORDER BY $orderByClause"
+);
 $stmt->execute();
 $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -38,8 +62,21 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <table class="users-table">
                         <thead>
                         <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
+                            <?php
+                            $columns = [
+                                'name' => 'Nome',
+                                'email' => 'Email',
+                            ];
+                            foreach ($columns as $field => $label) {
+                                $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
+                                $icon = '';
+                                if ($sortField === $field) {
+                                    $icon = $sortOrder === 'ASC' ? '▲' : '▼';
+                                }
+                                echo '<th><a href="?sort=' . $field . '&order=' . $nextOrder . '">' . $label
+                                    . '<span class="sort-icon">' . $icon . '</span></a></th>';
+                            }
+                            ?>
                             <th>Azioni</th>
                         </tr>
                         </thead>
