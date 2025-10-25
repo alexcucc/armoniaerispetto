@@ -18,19 +18,19 @@
             </div>
             <div class="overlay-text-right">
               <h2 style="text-align: justify;">🌍 La Terra non ci appartiene. Siamo ospiti, siamo custodi.</h2>
-              <p>Viviamo immersi in un mondo colmo di voci che non parlano, ma che sussurrano.
+              <p>Viviamo immersi in un mondo di voci che sussurrano, non parlano.  
               <br>
-              Ogni battito d'ali, ogni zampa che sfiora il suolo, ogni muso che si affaccia al cielo racconta una storia di coesistenza.
+              Ogni battito d’ali, ogni zampa che tocca la terra, ogni sguardo al cielo racconta una storia di coesistenza.  
               <br>
-              Una storia millenaria, fatta di equilibri sottili, di alleanze invisibili, di silenzi carichi di senso.</p>
-              <p>Eppure, nel tempo della velocità e del dominio, l'essere umano ha spesso dimenticato il proprio posto nel cerchio della vita.
+              Una storia millenaria, fatta di equilibri sottili e silenzi che parlano al cuore.</p>
+              <p>Ma nel tempo della corsa e del dominio, l’uomo ha dimenticato il proprio posto nel cerchio della vita.  
               <br>
-              Ha smesso di ascoltare, ha smesso di guardare davvero.
+              Ha smesso di ascoltare, di guardare davvero.  
               <br>
-              Ha costruito muri, ha tracciato confini, ha separato ciò che la natura aveva unito: <b>l'umano e il non umano, l'intelletto e l'istinto, la parola e il canto silenzioso degli animali.</b></p>
-              <p>Ma oggi, più che mai, emerge un'urgenza profonda: <b>ritrovare l'armonia perduta.</b>
+              Ha costruito muri e tracciato confini, dividendo ciò che la natura aveva unito: <b>l’umano e il selvatico, la mente e l’istinto, la parola e il canto silenzioso degli animali.</b></p>
+              <p>Ora, più che mai, sentiamo un richiamo profondo: <b>ritrovare l’armonia perduta.</b>  
               <br>
-              E in questo richiamo, forte e sommesso insieme, nasce la nostra Fondazione.</p>
+              È da questo respiro condiviso che nasce la nostra Fondazione.</p>
             </div>
           </div>
         </div>
