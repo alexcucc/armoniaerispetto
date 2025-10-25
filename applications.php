@@ -24,8 +24,10 @@ $sortOrder = isset($_GET['order']) && in_array(strtolower($_GET['order']), $allo
 // Fetch all applications including supervisor full name
 $organizationId = isset($_GET['organization_id']) ? (int) $_GET['organization_id'] : null;
 $callId = isset($_GET['call_id']) ? (int) $_GET['call_id'] : null;
+$supervisorId = isset($_GET['supervisor_id']) ? (int) $_GET['supervisor_id'] : null;
 $selectedOrganizationName = null;
 $selectedCallTitle = null;
+$selectedSupervisorName = null;
 
 if ($organizationId) {
     $orgStmt = $pdo->prepare('SELECT name FROM organization WHERE id = :id');
@@ -44,6 +46,19 @@ if ($callId) {
 
     if (!$selectedCallTitle) {
         $callId = null;
+    }
+}
+
+$supervisorOptionsStmt = $pdo->query('SELECT s.id, CONCAT(u.first_name, " ", u.last_name) AS full_name FROM supervisor s JOIN user u ON s.user_id = u.id ORDER BY u.first_name, u.last_name');
+$supervisorOptions = $supervisorOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+if ($supervisorId) {
+    $supervisorStmt = $pdo->prepare('SELECT CONCAT(u.first_name, " ", u.last_name) AS full_name FROM supervisor s JOIN user u ON s.user_id = u.id WHERE s.id = :id');
+    $supervisorStmt->execute([':id' => $supervisorId]);
+    $selectedSupervisorName = $supervisorStmt->fetchColumn();
+
+    if (!$selectedSupervisorName) {
+        $supervisorId = null;
     }
 }
 
@@ -66,6 +81,11 @@ if ($callId) {
     $params[':call_id'] = $callId;
 }
 
+if ($supervisorId) {
+    $whereClauses[] = 'a.supervisor_id = :supervisor_id';
+    $params[':supervisor_id'] = $supervisorId;
+}
+
 $whereClause = '';
 if (!empty($whereClauses)) {
     $whereClause = 'WHERE ' . implode(' AND ', $whereClauses);
@@ -78,6 +98,7 @@ $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $currentFilters = [
     'call_id' => $callId ?: null,
     'organization_id' => $organizationId ?: null,
+    'supervisor_id' => $supervisorId ?: null,
 ];
 
 function buildApplicationsSortLink(string $field, string $sortField, string $sortOrder, array $currentFilters): string
@@ -140,6 +161,17 @@ $resetUrl = 'applications.php?' . http_build_query([
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label class="form-label" for="supervisor_id">Convalidatore</label>
+                            <select id="supervisor_id" name="supervisor_id" class="form-input">
+                                <option value="">Tutti i convalidatori</option>
+                                <?php foreach ($supervisorOptions as $supervisorOption): ?>
+                                    <option value="<?php echo (int) $supervisorOption['id']; ?>" <?php echo $supervisorId === (int) $supervisorOption['id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($supervisorOption['full_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                         <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sortField); ?>">
                         <input type="hidden" name="order" value="<?php echo htmlspecialchars(strtolower($sortOrder)); ?>">
                         <div class="filters-actions">
@@ -147,7 +179,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                             <a href="<?php echo htmlspecialchars($resetUrl); ?>" class="page-button secondary-button">Reset</a>
                         </div>
                     </form>
-                    <?php if ($selectedCallTitle || $selectedOrganizationName): ?>
+                    <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName): ?>
                         <p class="filter-info">
                             Visualizzando le domande
                             <?php if ($selectedCallTitle): ?>
@@ -160,6 +192,14 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     per
                                 <?php endif; ?>
                                 l'ente "<strong><?php echo htmlspecialchars($selectedOrganizationName); ?></strong>"
+                            <?php endif; ?>
+                            <?php if ($selectedSupervisorName): ?>
+                                <?php if ($selectedCallTitle || $selectedOrganizationName): ?>
+                                    e
+                                <?php else: ?>
+                                    per
+                                <?php endif; ?>
+                                il convalidatore "<strong><?php echo htmlspecialchars($selectedSupervisorName); ?></strong>"
                             <?php endif; ?>.
                             <a href="<?php echo htmlspecialchars('applications.php?sort=' . urlencode($sortField) . '&order=' . urlencode(strtolower($sortOrder))); ?>">Mostra tutte le domande</a>
                         </p>
@@ -207,7 +247,8 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     <td><?php echo htmlspecialchars($app['call_title']); ?></td>
                                     <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
                                     <td><?php echo htmlspecialchars($app['project_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($app['supervisor_name']); ?></td>
+                                    <?php $supervisorName = trim((string) ($app['supervisor_name'] ?? '')); ?>
+                                    <td><?php echo htmlspecialchars($supervisorName !== '' ? $supervisorName : 'Non assegnato'); ?></td>
                                     <td><?php echo htmlspecialchars($app['status']); ?></td>
                                     <td>
                                         <?php if (!empty($app['application_pdf_path'])): ?>
