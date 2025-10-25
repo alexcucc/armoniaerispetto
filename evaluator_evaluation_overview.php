@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id']) ||
     exit();
 }
 
-$allowedSortFields = ['call_title', 'organization_name', 'evaluator_name', 'status', 'updated_at'];
+$allowedSortFields = ['call_title', 'organization_name', 'evaluator_name', 'supervisor_name', 'status', 'updated_at'];
 $allowedSortOrders = ['asc', 'desc'];
 
 $sortFieldParam = filter_input(INPUT_GET, 'sort', FILTER_UNSAFE_RAW) ?? '';
@@ -29,6 +29,7 @@ $filters = [];
 $evaluatorId = filter_input(INPUT_GET, 'evaluator_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $organizationId = filter_input(INPUT_GET, 'organization_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $callId = filter_input(INPUT_GET, 'call_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
+$supervisorId = filter_input(INPUT_GET, 'supervisor_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 
 if ($evaluatorId) {
     $filters[] = 'ev.id = :evaluator_id';
@@ -45,6 +46,11 @@ if ($callId) {
     $params[':call_id'] = $callId;
 }
 
+if ($supervisorId) {
+    $filters[] = 'a.supervisor_id = :supervisor_id';
+    $params[':supervisor_id'] = $supervisorId;
+}
+
 $filterClause = '';
 if (!empty($filters)) {
     $filterClause = ' WHERE ' . implode(' AND ', $filters);
@@ -52,13 +58,16 @@ if (!empty($filters)) {
 
 $completedQuery = "SELECT e.id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.first_name, ' ', u.last_name) AS evaluator_name, "
+    . "CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name, "
     . "'COMPLETED' AS status, e.updated_at "
     . "FROM evaluation e "
     . "JOIN application a ON e.application_id = a.id "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
     . "JOIN organization o ON a.organization_id = o.id "
     . "JOIN evaluator ev ON ev.user_id = e.evaluator_id "
-    . "JOIN user u ON ev.user_id = u.id"
+    . "JOIN user u ON ev.user_id = u.id "
+    . "JOIN supervisor s ON a.supervisor_id = s.id "
+    . "JOIN user su ON s.user_id = su.id"
     . $filterClause
     . " ORDER BY $sortField $sortOrder";
 
@@ -68,12 +77,15 @@ $completedEvaluations = $completedStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.first_name, ' ', u.last_name) AS evaluator_name, "
+    . "CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name, "
     . "'PENDING' AS status, a.updated_at "
     . "FROM evaluator ev "
     . "JOIN user u ON ev.user_id = u.id "
     . "JOIN application a ON a.status IN ('SUBMITTED', 'APPROVED', 'REJECTED') "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
     . "JOIN organization o ON a.organization_id = o.id "
+    . "JOIN supervisor s ON a.supervisor_id = s.id "
+    . "JOIN user su ON s.user_id = su.id "
     . "LEFT JOIN evaluation e ON e.application_id = a.id AND e.evaluator_id = ev.user_id"
     . $filterClause
     . ($filterClause === '' ? ' WHERE' : ' AND')
@@ -102,6 +114,14 @@ $callsStmt = $pdo->query(
 );
 $calls = $callsStmt->fetchAll(PDO::FETCH_ASSOC);
 
+$supervisorsStmt = $pdo->query(
+    "SELECT s.id, CONCAT(u.first_name, ' ', u.last_name) AS full_name "
+    . "FROM supervisor s "
+    . "JOIN user u ON s.user_id = u.id "
+    . "ORDER BY u.first_name, u.last_name"
+);
+$supervisors = $supervisorsStmt->fetchAll(PDO::FETCH_ASSOC);
+
 $statusLabels = [
     'COMPLETED' => 'Valutata',
     'PENDING' => 'In attesa di valutazione',
@@ -111,6 +131,7 @@ $currentFilters = [
     'evaluator_id' => $evaluatorId,
     'organization_id' => $organizationId,
     'call_id' => $callId,
+    'supervisor_id' => $supervisorId,
 ];
 
 function buildSortLink(string $field, string $sortField, string $sortOrder, array $currentFilters): string
@@ -181,6 +202,17 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label" for="supervisor_id">Convalidatore</label>
+                        <select id="supervisor_id" name="supervisor_id" class="form-input">
+                            <option value="">Tutti</option>
+                            <?php foreach ($supervisors as $supervisor): ?>
+                                <option value="<?php echo htmlspecialchars($supervisor['id']); ?>" <?php echo ($supervisorId === (int) $supervisor['id']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($supervisor['full_name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="filters-actions">
                         <button type="submit" class="page-button">Applica filtri</button>
                         <a href="evaluator_evaluation_overview.php" class="page-button secondary-button">Reset</a>
@@ -196,6 +228,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                 'call_title' => 'Bando',
                                 'organization_name' => 'Ente',
                                 'evaluator_name' => 'Valutatore',
+                                'supervisor_name' => 'Convalidatore',
                                 'status' => 'Stato',
                                 'updated_at' => 'Ultimo aggiornamento'
                             ];
@@ -213,7 +246,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         <tbody>
                         <?php if (empty($completedEvaluations)): ?>
                             <tr>
-                                <td colspan="5">Nessuna valutazione trovata.</td>
+                                <td colspan="6">Nessuna valutazione trovata.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($completedEvaluations as $evaluation): ?>
@@ -222,6 +255,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                     <td><?php echo htmlspecialchars($evaluation['call_title']); ?></td>
                                     <td><?php echo htmlspecialchars($evaluation['organization_name']); ?></td>
                                     <td><?php echo htmlspecialchars($evaluation['evaluator_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($evaluation['supervisor_name']); ?></td>
                                     <td><?php echo htmlspecialchars($statusLabels[$evaluation['status']] ?? $evaluation['status']); ?></td>
                                     <td><?php echo htmlspecialchars($formattedDate); ?></td>
                                 </tr>
@@ -251,7 +285,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         <tbody>
                         <?php if (empty($pendingEvaluations)): ?>
                             <tr>
-                                <td colspan="5">Nessuna valutazione in sospeso per i criteri selezionati.</td>
+                                <td colspan="6">Nessuna valutazione in sospeso per i criteri selezionati.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($pendingEvaluations as $evaluation): ?>
@@ -260,6 +294,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                     <td><?php echo htmlspecialchars($evaluation['call_title']); ?></td>
                                     <td><?php echo htmlspecialchars($evaluation['organization_name']); ?></td>
                                     <td><?php echo htmlspecialchars($evaluation['evaluator_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($evaluation['supervisor_name']); ?></td>
                                     <td><?php echo htmlspecialchars($statusLabels[$evaluation['status']] ?? $evaluation['status']); ?></td>
                                     <td><?php echo htmlspecialchars($formattedDate); ?></td>
                                 </tr>
