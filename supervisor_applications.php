@@ -112,7 +112,7 @@ $statusLabels = [
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Risposte ai bandi da Convalida</h1>
+            <h1>Risposte ai bandi da Convalidare</h1>
         </div>
         <div class="content-container">
             <div class="content">

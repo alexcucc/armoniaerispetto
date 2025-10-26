@@ -124,7 +124,7 @@
                                         <li class="nav-item"><a class="nav-link" href="applications.php">Risposte ai bandi</a></li>
                                     <?php endif; ?>
                                     <?php if ($canApplicationReview): ?>
-                                        <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Risposte ai bandi da controllare</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Risposte ai bandi da convalidare</a></li>
                                     <?php endif; ?>
                                     <?php if ($canApplicationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisor_application_overview.php">Monitoraggio convalidatori</a></li>
