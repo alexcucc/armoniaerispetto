@@ -59,7 +59,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    toggle.manageMenuControls = {
+      show: showSubmenu,
+      hide: hideSubmenu,
+      isExpanded: () => navItem.classList.contains('manage-expanded'),
+    };
+
     // Ensure the submenu is hidden when the page loads.
     hideSubmenu();
+  });
+
+  document.querySelectorAll('.page-button.back-button').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      const manageToggle = document.querySelector('.manage-toggle');
+      const navigationMenu = document.querySelector('.navigation-menu');
+      const controls = manageToggle?.manageMenuControls;
+
+      if (!manageToggle || !controls) {
+        return;
+      }
+
+      event.preventDefault();
+
+      navigationMenu?.classList.add('active');
+
+      controls.show();
+
+      manageToggle.focus();
+    });
   });
 });
