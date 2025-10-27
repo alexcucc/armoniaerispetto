@@ -105,14 +105,14 @@ $statusLabels = [
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Risposte ai bandi da Convalidare</title>
+    <title>Risposte ai bandi da convalidare</title>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Risposte ai bandi da Convalidare</h1>
+            <h1>Risposte ai bandi da convalidare</h1>
         </div>
         <div class="content-container">
             <div class="content">
@@ -162,7 +162,7 @@ $statusLabels = [
                     </p>
                 <?php endif; ?>
                 <div class="users-table-container">
-                    <h2>Risposte ai bandi in Attesa di Convalida</h2>
+                    <h2>Risposte ai bandi in attesa di convalida</h2>
                     <table class="users-table">
                         <thead>
                             <tr>
@@ -194,7 +194,7 @@ $statusLabels = [
                 </div>
 
                 <div class="users-table-container" style="margin-top: 2rem;">
-                    <h2>Risposte ai bandi Già Convalida</h2>
+                    <h2>Risposte ai bandi già convalidate</h2>
                     <table class="users-table">
                         <thead>
                             <tr>
