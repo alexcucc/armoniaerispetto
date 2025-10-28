@@ -69,23 +69,33 @@ document.addEventListener('DOMContentLoaded', () => {
     hideSubmenu();
   });
 
+  const openGestioneMenu = () => {
+    const manageToggle = document.querySelector('.manage-toggle');
+    const controls = manageToggle?.manageMenuControls;
+
+    if (!manageToggle || !controls) {
+      return false;
+    }
+
+    navigationMenu?.classList.add('active');
+    controls.show();
+    manageToggle.focus();
+
+    return true;
+  };
+
   document.querySelectorAll('.page-button.back-button').forEach((button) => {
     button.addEventListener('click', (event) => {
-      const manageToggle = document.querySelector('.manage-toggle');
-      const navigationMenu = document.querySelector('.navigation-menu');
-      const controls = manageToggle?.manageMenuControls;
-
-      if (!manageToggle || !controls) {
-        return;
-      }
-
       event.preventDefault();
-
-      navigationMenu?.classList.add('active');
-
-      controls.show();
-
-      manageToggle.focus();
+      window.location.href = 'index.php?open_gestione=1';
     });
   });
+
+  const shouldOpenGestione = new URLSearchParams(window.location.search).get('open_gestione') === '1';
+
+  if (shouldOpenGestione && openGestioneMenu()) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('open_gestione');
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+  }
 });
