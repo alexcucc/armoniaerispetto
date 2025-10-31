@@ -1140,6 +1140,56 @@ textarea:focus-visible {
   scrollbar-width: thin;
 }
 
+.users-filters {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 1.5rem 0 0.5rem;
+  align-items: end;
+}
+
+.users-filters .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.users-filters label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.users-filters input,
+.users-filters select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  background-color: #fff;
+}
+
+.users-filters .filter-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.page-button.secondary {
+  background-color: #f1f5f9;
+  color: var(--text-primary);
+  border: 1px solid #cbd5e1;
+}
+
+.page-button.secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.page-button.secondary:active {
+  background-color: #cbd5e1;
+}
+
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -1180,6 +1230,33 @@ textarea:focus-visible {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.users-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.users-table th .sort-indicator {
+  display: inline-block;
+  margin-left: 0.35rem;
+  font-size: 0.75em;
+  opacity: 0.6;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.users-table th[aria-sort="none"] .sort-indicator::before {
+  content: '\2195';
+}
+
+.users-table th[aria-sort="ascending"] .sort-indicator::before {
+  content: '\25B2';
+  opacity: 1;
+}
+
+.users-table th[aria-sort="descending"] .sort-indicator::before {
+  content: '\25BC';
+  opacity: 1;
 }
 
 .users-table tr:hover {
