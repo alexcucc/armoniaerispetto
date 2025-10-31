@@ -98,4 +98,59 @@ document.addEventListener('DOMContentLoaded', () => {
     url.searchParams.delete('open_gestione');
     window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
   }
+
+  document.querySelectorAll('.tab-container').forEach((container) => {
+    const buttons = Array.from(container.querySelectorAll('.tab-button'));
+    const panels = Array.from(container.querySelectorAll('.tab-panel'));
+
+    if (!buttons.length || !panels.length) {
+      return;
+    }
+
+    const activateTab = (targetId) => {
+      buttons.forEach((button) => {
+        const isActive = button.getAttribute('aria-controls') === targetId;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        button.tabIndex = isActive ? 0 : -1;
+      });
+
+      panels.forEach((panel) => {
+        const shouldShow = panel.id === targetId;
+        panel.classList.toggle('active', shouldShow);
+        panel.hidden = !shouldShow;
+      });
+    };
+
+    const defaultButton = buttons.find((button) => button.classList.contains('active')) ?? buttons[0];
+    activateTab(defaultButton.getAttribute('aria-controls'));
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetId = button.getAttribute('aria-controls');
+
+        if (!targetId) {
+          return;
+        }
+
+        activateTab(targetId);
+      });
+
+      button.addEventListener('keydown', (event) => {
+        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+          return;
+        }
+
+        event.preventDefault();
+
+        const currentIndex = buttons.indexOf(button);
+        const offset = event.key === 'ArrowRight' ? 1 : -1;
+        const nextIndex = (currentIndex + offset + buttons.length) % buttons.length;
+        const nextButton = buttons[nextIndex];
+
+        nextButton.focus();
+        activateTab(nextButton.getAttribute('aria-controls'));
+      });
+    });
+  });
 });

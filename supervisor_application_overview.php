@@ -198,88 +198,124 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         <a href="supervisor_application_overview.php" class="page-button secondary-button">Reset</a>
                     </div>
                 </form>
-                <section class="users-table-container">
-                    <h2>Risposte ai bandi convalidate</h2>
-                    <table class="users-table">
-                        <thead>
-                        <tr>
-                            <?php
-                            $columns = [
-                                'call_title' => 'Bando',
-                                'organization_name' => 'Ente',
-                                'supervisor_name' => 'Convalidatore',
-                                'status' => 'Esito',
-                                'updated_at' => 'Ultimo aggiornamento'
-                            ];
-                            foreach ($columns as $field => $label) {
-                                $link = buildSortLink($field, $sortField, $sortOrder, $currentFilters);
-                                $icon = '';
-                                if ($sortField === $field) {
-                                    $icon = $sortOrder === 'ASC' ? '▲' : '▼';
-                                }
-                                echo '<th><a href="' . htmlspecialchars($link) . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
-                            }
-                            ?>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php if (empty($compiledApplications)): ?>
-                            <tr>
-                                <td colspan="5">Nessuna risposta al bando trovata.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($compiledApplications as $application): ?>
-                                <?php $formattedDate = $application['updated_at'] ? date('d/m/Y H:i', strtotime($application['updated_at'])) : '-'; ?>
+                <div class="tab-container">
+                    <div class="tab-buttons" role="tablist" aria-label="Filtra risposte per stato">
+                        <button
+                            type="button"
+                            class="tab-button active"
+                            role="tab"
+                            id="applications-completed-tab"
+                            aria-controls="applications-completed"
+                            aria-selected="true"
+                        >
+                            Risposte convalidate
+                        </button>
+                        <button
+                            type="button"
+                            class="tab-button"
+                            role="tab"
+                            id="applications-pending-tab"
+                            aria-controls="applications-pending"
+                            aria-selected="false"
+                        >
+                            Risposte da convalidare
+                        </button>
+                    </div>
+                    <div class="tab-panels">
+                        <section
+                            id="applications-completed"
+                            class="tab-panel active users-table-container"
+                            role="tabpanel"
+                            aria-labelledby="applications-completed-tab"
+                        >
+                            <h2>Risposte ai bandi convalidate</h2>
+                            <table class="users-table">
+                                <thead>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($application['call_title']); ?></td>
-                                    <td><?php echo htmlspecialchars($application['organization_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($application['supervisor_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($statusLabels[$application['status']] ?? $application['status']); ?></td>
-                                    <td><?php echo htmlspecialchars($formattedDate); ?></td>
+                                    <?php
+                                    $columns = [
+                                        'call_title' => 'Bando',
+                                        'organization_name' => 'Ente',
+                                        'supervisor_name' => 'Convalidatore',
+                                        'status' => 'Esito',
+                                        'updated_at' => 'Ultimo aggiornamento'
+                                    ];
+                                    foreach ($columns as $field => $label) {
+                                        $link = buildSortLink($field, $sortField, $sortOrder, $currentFilters);
+                                        $icon = '';
+                                        if ($sortField === $field) {
+                                            $icon = $sortOrder === 'ASC' ? '▲' : '▼';
+                                        }
+                                        echo '<th><a href="' . htmlspecialchars($link) . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
+                                    }
+                                    ?>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        </tbody>
-                    </table>
-                </section>
-
-                <section class="users-table-container">
-                    <h2>Risposte ai bandi da convalidare</h2>
-                    <table class="users-table">
-                        <thead>
-                        <tr>
-                            <?php
-                            foreach ($columns as $field => $label) {
-                                $link = buildSortLink($field, $sortField, $sortOrder, $currentFilters);
-                                $icon = '';
-                                if ($sortField === $field) {
-                                    $icon = $sortOrder === 'ASC' ? '▲' : '▼';
-                                }
-                                echo '<th><a href="' . htmlspecialchars($link) . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
-                            }
-                            ?>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php if (empty($pendingApplications)): ?>
-                            <tr>
-                                <td colspan="5">Nessuna risposta al bando in attesa per i criteri selezionati.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($pendingApplications as $application): ?>
-                                <?php $formattedDate = $application['updated_at'] ? date('d/m/Y H:i', strtotime($application['updated_at'])) : '-'; ?>
+                                </thead>
+                                <tbody>
+                                <?php if (empty($compiledApplications)): ?>
+                                    <tr>
+                                        <td colspan="5">Nessuna risposta al bando trovata.</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($compiledApplications as $application): ?>
+                                        <?php $formattedDate = $application['updated_at'] ? date('d/m/Y H:i', strtotime($application['updated_at'])) : '-'; ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($application['call_title']); ?></td>
+                                            <td><?php echo htmlspecialchars($application['organization_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($application['supervisor_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($statusLabels[$application['status']] ?? $application['status']); ?></td>
+                                            <td><?php echo htmlspecialchars($formattedDate); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </section>
+                        <section
+                            id="applications-pending"
+                            class="tab-panel users-table-container"
+                            role="tabpanel"
+                            aria-labelledby="applications-pending-tab"
+                            hidden
+                        >
+                            <h2>Risposte ai bandi da convalidare</h2>
+                            <table class="users-table">
+                                <thead>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($application['call_title']); ?></td>
-                                    <td><?php echo htmlspecialchars($application['organization_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($application['supervisor_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($statusLabels[$application['status']] ?? $application['status']); ?></td>
-                                    <td><?php echo htmlspecialchars($formattedDate); ?></td>
+                                    <?php
+                                    foreach ($columns as $field => $label) {
+                                        $link = buildSortLink($field, $sortField, $sortOrder, $currentFilters);
+                                        $icon = '';
+                                        if ($sortField === $field) {
+                                            $icon = $sortOrder === 'ASC' ? '▲' : '▼';
+                                        }
+                                        echo '<th><a href="' . htmlspecialchars($link) . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
+                                    }
+                                    ?>
                                 </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        </tbody>
-                    </table>
-                </section>
+                                </thead>
+                                <tbody>
+                                <?php if (empty($pendingApplications)): ?>
+                                    <tr>
+                                        <td colspan="5">Nessuna risposta al bando in attesa per i criteri selezionati.</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($pendingApplications as $application): ?>
+                                        <?php $formattedDate = $application['updated_at'] ? date('d/m/Y H:i', strtotime($application['updated_at'])) : '-'; ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($application['call_title']); ?></td>
+                                            <td><?php echo htmlspecialchars($application['organization_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($application['supervisor_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($statusLabels[$application['status']] ?? $application['status']); ?></td>
+                                            <td><?php echo htmlspecialchars($formattedDate); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </section>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
