@@ -10,6 +10,19 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     exit();
 }
 
+$canCreate = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['APPLICATION_CREATE']
+);
+$canUpdate = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['APPLICATION_UPDATE']
+);
+$canDelete = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['APPLICATION_DELETE']
+);
+
 // Determine sorting parameters
 $allowedSortFields = ['call_title', 'organization_name', 'project_name', 'supervisor_name', 'status'];
 $allowedSortOrders = ['asc', 'desc'];
@@ -206,8 +219,10 @@ $resetUrl = 'applications.php?' . http_build_query([
                     <?php endif; ?>
                     <div class="button-container">
                         <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
-                    <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
-                </div>
+                        <?php if ($canCreate): ?>
+                            <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
+                        <?php endif; ?>
+                    </div>
                 <div class="users-table-container">
                     <table class="users-table">
                         <thead>
@@ -260,15 +275,15 @@ $resetUrl = 'applications.php?' . http_build_query([
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_UPDATE'])): ?>
-                                        <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
-                                            <i class="fas fa-edit"></i> Modifica
-                                        </button>
+                                        <?php if ($canUpdate): ?>
+                                            <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
+                                                <i class="fas fa-edit"></i> Modifica
+                                            </button>
                                         <?php endif; ?>
-                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_DELETE'])): ?>
-                                        <button class="delete-btn" data-id="<?php echo $app['id']; ?>">
-                                            <i class="fas fa-trash"></i> Elimina
-                                        </button>
+                                        <?php if ($canDelete): ?>
+                                            <button class="delete-btn" data-id="<?php echo $app['id']; ?>">
+                                                <i class="fas fa-trash"></i> Elimina
+                                            </button>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

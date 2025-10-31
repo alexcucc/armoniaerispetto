@@ -10,6 +10,33 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$canList = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_LIST']
+);
+
+if (!$canList) {
+    header('Location: index.php');
+    exit();
+}
+
+$canCreate = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_CREATE']
+);
+$canUpdate = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_UPDATE']
+);
+$canDelete = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_DELETE']
+);
+$canViewResults = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']
+);
+
 // Fetch all call for proposals with associated application counts
 $stmt = $pdo->prepare(
     "SELECT cfp.id,
@@ -49,7 +76,9 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div id="message" class="message" style="display:none;"></div>
                 <div class="button-container">
                     <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
-                    <a class="page-button" href="call_for_proposal_add.php">Aggiungi Bando</a>
+                    <?php if ($canCreate): ?>
+                        <a class="page-button" href="call_for_proposal_add.php">Aggiungi Bando</a>
+                    <?php endif; ?>
                 </div>
                 <div class="users-table-container">
                     <table class="users-table">
@@ -74,12 +103,14 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                     <td>
-                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW'])): ?>
+                                        <?php if ($canViewResults): ?>
                                             <a class="page-button" href="call_for_proposal_results.php?id=<?php echo $cfp['id']; ?>">Graduatoria</a>
                                         <?php endif; ?>
                                         <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
-                                        <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?= $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
-                                        <?php if ((int) $cfp['application_count'] === 0): ?>
+                                        <?php if ($canUpdate): ?>
+                                            <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?php echo $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
+                                        <?php endif; ?>
+                                        <?php if ($canDelete && (int) $cfp['application_count'] === 0): ?>
                                             <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
                                         <?php endif; ?>
                                     </td>
