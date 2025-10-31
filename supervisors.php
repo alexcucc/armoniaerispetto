@@ -18,14 +18,14 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Convalidatore</title>
+    <title>Convalidatori</title>
 </head>
 <body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Convalidatore</h1>
+            <h1>Convalidatori</h1>
         </div>
         <div class="content-container">
             <div class="content">

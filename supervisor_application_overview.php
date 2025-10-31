@@ -226,9 +226,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                             id="applications-completed"
                             class="tab-panel active users-table-container"
                             role="tabpanel"
-                            aria-labelledby="applications-completed-tab"
-                        >
-                            <h2>Risposte ai bandi convalidate</h2>
+                            aria-labelledby="applications-completed-tab">
                             <table class="users-table">
                                 <thead>
                                 <tr>
@@ -276,9 +274,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                             class="tab-panel users-table-container"
                             role="tabpanel"
                             aria-labelledby="applications-pending-tab"
-                            hidden
-                        >
-                            <h2>Risposte ai bandi da convalidare</h2>
+                            hidden>
                             <table class="users-table">
                                 <thead>
                                 <tr>
