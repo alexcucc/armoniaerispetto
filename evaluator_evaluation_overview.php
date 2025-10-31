@@ -156,7 +156,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
     <?php include 'common-head.php'; ?>
     <title>Monitoraggio valutatori</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">

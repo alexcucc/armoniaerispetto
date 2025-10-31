@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     <?php include 'common-head.php'; ?>
     <title>Aggiungi Bando</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">

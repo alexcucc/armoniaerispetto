@@ -51,7 +51,7 @@
     <?php include 'common-head.php'; ?>
     <title>Invia la Valutazione</title>
   </head>
-  <body>
+  <body class="management-page">
     <?php include 'header.php'; ?>
     <main>
       <div class="contact-form-container" style="margin-top:2em;">

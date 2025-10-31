@@ -173,7 +173,7 @@ if ($totalEvaluators > 0) {
     <?php include 'common-head.php'; ?>
     <title>Graduatoria - <?php echo htmlspecialchars($call['title']); ?></title>
 </head>
-<body>
+<body class="management-page">
     <?php include 'header.php'; ?>
     <main>
         <div class="hero">

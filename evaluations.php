@@ -157,7 +157,7 @@ $pending = $stmt->fetchAll();
     <!-- Make sure styles.css is linked. If not already in common-head.php, add: -->
     <link rel="stylesheet" href="styles.css">
   </head>
-  <body>
+  <body class="management-page">
     <?php include 'header.php'; ?>
     <main>
       <div class="hero">

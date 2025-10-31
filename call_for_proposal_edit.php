@@ -31,7 +31,7 @@ if (!$proposal) {
     <?php include 'common-head.php'; ?>
     <title>Modifica Bando</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">

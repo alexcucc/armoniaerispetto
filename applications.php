@@ -141,7 +141,7 @@ $resetUrl = 'applications.php?' . http_build_query([
     <?php include 'common-head.php'; ?>
     <title>Risposte ai bandi</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">

@@ -44,7 +44,7 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include 'common-head.php'; ?>
     <title>Valutatori</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">

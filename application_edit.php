@@ -66,7 +66,7 @@ if (!empty($formData)) {
     <?php include 'common-head.php'; ?>
     <title>Modifica Risposta al Bando</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">

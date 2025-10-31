@@ -31,7 +31,7 @@ if (!$application || $application['supervisor_user_id'] != $_SESSION['user_id'])
     <?php include 'common-head.php'; ?>
     <title>Convalida Risposta al Bando</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">

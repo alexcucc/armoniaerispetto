@@ -31,7 +31,7 @@ if (!$org) {
     <?php include 'common-head.php'; ?>
     <title>Modifica Ente</title>
 </head>
-<body>
+<body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">
