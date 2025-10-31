@@ -42,19 +42,23 @@
                             <li class="nav-item"><a class="nav-link" href="profile.php">Profilo</a></li>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                         <?php endif; ?>
+                        <li class="nav-item search-item">
+                            <form class="search-form" action="ricerca.php" method="get">
+                                <input type="search"
+                                        name="q"
+                                        class="search-input"
+                                        placeholder="Cerca nel sito"
+                                        aria-label="Cerca nel sito"
+                                        required>
+                                <button type="submit" class="search-button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                        </li>
                         <?php
                         $impersonationActive = !empty($_SESSION['is_impersonating']) && !empty($_SESSION['impersonated_user']);
                         $impersonatedUser = $_SESSION['impersonated_user'] ?? null;
                         $impersonationReturnUrl = isset($_SERVER['REQUEST_URI']) ? urlencode($_SERVER['REQUEST_URI']) : urlencode('index.php');
-                        if ($impersonationActive && $impersonatedUser): ?>
-                            <li class="nav-item impersonation-banner">
-                                <span>
-                                    Stai agendo come <?php echo htmlspecialchars($impersonatedUser['first_name'] . ' ' . $impersonatedUser['last_name']); ?>
-                                </span>
-                                <a class="impersonation-stop-link" href="stop_impersonation.php?redirect=<?php echo $impersonationReturnUrl; ?>">Torna al tuo account</a>
-                            </li>
-                        <?php endif; ?>
-                        <?php
                         $canEvaluationView = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']
@@ -138,24 +142,17 @@
                                 </ul>
                             </li>
                         <?php endif; ?>
+                        <?php if ($impersonationActive && $impersonatedUser): ?>
+                            <li class="nav-item impersonation-banner">
+                                <span>
+                                    Stai agendo come <?php echo htmlspecialchars($impersonatedUser['first_name'] . ' ' . $impersonatedUser['last_name']); ?>
+                                </span>
+                                <a class="impersonation-stop-link" href="stop_impersonation.php?redirect=<?php echo $impersonationReturnUrl; ?>">Torna al tuo account</a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
 
-                <div class="menu-separator"></div>
-
-                <div class="nav-item search-container">
-                    <form class="search-form" action="ricerca.php" method="get">
-                        <input type="search" 
-                                name="q"
-                                class="search-input" 
-                                placeholder="Cerca nel sito"
-                                aria-label="Cerca nel sito"
-                                required>
-                        <button type="submit" class="search-button">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
             </nav>
         </div>
     </div>
