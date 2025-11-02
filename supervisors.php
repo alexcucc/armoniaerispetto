@@ -49,11 +49,13 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars($supervisor['first_name'] . ' ' . $supervisor['last_name']); ?></td>
                                 <td><?php echo htmlspecialchars($supervisor['email']); ?></td>
                                 <td>
-                                    <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['SUPERVISOR_DELETE'])): ?>
-                                    <button class="delete-btn" data-id="<?php echo $supervisor['id']; ?>">
-                                        <i class="fas fa-trash"></i> Elimina
-                                    </button>
-                                    <?php endif; ?>
+                                    <div class="actions-cell">
+                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['SUPERVISOR_DELETE'])): ?>
+                                            <button class="delete-btn" data-id="<?php echo $supervisor['id']; ?>">
+                                                <i class="fas fa-trash"></i> Elimina
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

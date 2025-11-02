@@ -117,19 +117,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         </span>
                                     </td>
                                     <td><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></td>
-                                    <td class="actions-cell">
-                                        <?php if ($canImpersonate): ?>
-                                            <button
-                                                class="impersonate-btn"
-                                                data-id="<?php echo $user['id']; ?>"
-                                                data-name="<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>"
-                                            >
-                                                <i class="fas fa-user-secret"></i> Assumi ruolo
+                                    <td>
+                                        <div class="actions-cell">
+                                            <?php if ($canImpersonate): ?>
+                                                <button
+                                                    class="impersonate-btn"
+                                                    data-id="<?php echo $user['id']; ?>"
+                                                    data-name="<?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>"
+                                                >
+                                                    <i class="fas fa-user-secret"></i> Assumi ruolo
+                                                </button>
+                                            <?php endif; ?>
+                                            <button class="delete-btn" data-id="<?php echo $user['id']; ?>">
+                                                <i class="fas fa-trash"></i> Elimina
                                             </button>
-                                        <?php endif; ?>
-                                        <button class="delete-btn" data-id="<?php echo $user['id']; ?>">
-                                            <i class="fas fa-trash"></i> Elimina
-                                        </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

@@ -103,16 +103,18 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                     <td>
-                                        <?php if ($canViewResults): ?>
-                                            <a class="page-button" href="call_for_proposal_results.php?id=<?php echo $cfp['id']; ?>">Graduatoria</a>
-                                        <?php endif; ?>
-                                        <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
-                                        <?php if ($canUpdate): ?>
-                                            <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?php echo $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
-                                        <?php endif; ?>
-                                        <?php if ($canDelete && (int) $cfp['application_count'] === 0): ?>
-                                            <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
-                                        <?php endif; ?>
+                                        <div class="actions-cell">
+                                            <?php if ($canViewResults): ?>
+                                                <a class="page-button" href="call_for_proposal_results.php?id=<?php echo $cfp['id']; ?>">Graduatoria</a>
+                                            <?php endif; ?>
+                                            <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
+                                            <?php if ($canUpdate): ?>
+                                                <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?php echo $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
+                                            <?php endif; ?>
+                                            <?php if ($canDelete && (int) $cfp['application_count'] === 0): ?>
+                                                <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

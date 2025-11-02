@@ -86,11 +86,13 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars($evaluator['first_name'] . ' ' . $evaluator['last_name']); ?></td>
                                 <td><?php echo htmlspecialchars($evaluator['email']); ?></td>
                                 <td>
-                                    <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATOR_DELETE'])): ?>
-                                    <button class="delete-btn" data-id="<?php echo $evaluator['id']; ?>">
-                                        <i class="fas fa-trash"></i> Elimina
-                                    </button>
-                                    <?php endif; ?>
+                                    <div class="actions-cell">
+                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATOR_DELETE'])): ?>
+                                            <button class="delete-btn" data-id="<?php echo $evaluator['id']; ?>">
+                                                <i class="fas fa-trash"></i> Elimina
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

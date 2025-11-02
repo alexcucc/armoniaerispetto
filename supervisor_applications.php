@@ -187,7 +187,9 @@ $statusLabels = [
                                         <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
                                         <td><?php echo htmlspecialchars($app['project_name']); ?></td>
                                         <td>
-                                            <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Convalida</a>
+                                            <div class="actions-cell">
+                                                <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Convalida</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

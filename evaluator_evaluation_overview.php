@@ -246,9 +246,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                             id="evaluations-completed"
                             class="tab-panel active users-table-container"
                             role="tabpanel"
-                            aria-labelledby="evaluations-completed-tab"
-                        >
-                            <h2>Valutazioni completate</h2>
+                            aria-labelledby="evaluations-completed-tab">
                             <table class="users-table">
                                 <thead>
                                 <tr>
@@ -298,9 +296,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                             class="tab-panel users-table-container"
                             role="tabpanel"
                             aria-labelledby="evaluations-pending-tab"
-                            hidden
-                        >
-                            <h2>Valutazioni da completare</h2>
+                            hidden>
                             <table class="users-table">
                                 <thead>
                                 <tr>

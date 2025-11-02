@@ -88,21 +88,23 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['created_at']))); ?></td>
                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['updated_at']))); ?></td>
                                 <td>
-                                    <?php if ($canSeeApplications): ?>
-                                    <button class="view-btn" onclick="window.location.href='applications.php?organization_id=<?php echo $org['id']; ?>'">
-                                        <i class="fas fa-eye"></i> Risposte ai bandi
-                                    </button>
-                                    <?php endif; ?>
-                                    <?php if ($canUpdate): ?>
-                                    <button class="modify-btn" onclick="window.location.href='organization_edit.php?id=<?php echo $org['id']; ?>'">
-                                        <i class="fas fa-edit"></i> Modifica
-                                    </button>
-                                    <?php endif; ?>
-                                    <?php if ($canDelete): ?>
-                                    <button class="delete-btn" data-id="<?php echo $org['id']; ?>">
-                                        <i class="fas fa-trash"></i> Elimina
-                                    </button>
-                                    <?php endif; ?>
+                                    <div class="actions-cell">
+                                        <?php if ($canSeeApplications): ?>
+                                            <button class="view-btn" onclick="window.location.href='applications.php?organization_id=<?php echo $org['id']; ?>'">
+                                                <i class="fas fa-eye"></i> Risposte ai bandi
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if ($canUpdate): ?>
+                                            <button class="modify-btn" onclick="window.location.href='organization_edit.php?id=<?php echo $org['id']; ?>'">
+                                                <i class="fas fa-edit"></i> Modifica
+                                            </button>
+                                        <?php endif; ?>
+                                        <?php if ($canDelete): ?>
+                                            <button class="delete-btn" data-id="<?php echo $org['id']; ?>">
+                                                <i class="fas fa-trash"></i> Elimina
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

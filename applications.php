@@ -266,25 +266,29 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     <td><?php echo htmlspecialchars($supervisorName !== '' ? $supervisorName : 'Non assegnato'); ?></td>
                                     <td><?php echo htmlspecialchars($app['status']); ?></td>
                                     <td>
-                                        <?php if (!empty($app['application_pdf_path'])): ?>
-                                        <button class="download-btn" onclick="window.location.href='application_download.php?id=<?php echo $app['id']; ?>'">
-                                            <i class="fas fa-file-download"></i> Scarica
-                                        </button>
-                                        <?php else: ?>
-                                            <span class="text-muted">Non disponibile</span>
-                                        <?php endif; ?>
+                                        <div class="actions-cell">
+                                            <?php if (!empty($app['application_pdf_path'])): ?>
+                                                <button class="download-btn" onclick="window.location.href='application_download.php?id=<?php echo $app['id']; ?>'">
+                                                    <i class="fas fa-file-download"></i> Scarica
+                                                </button>
+                                            <?php else: ?>
+                                                <span class="text-muted">Non disponibile</span>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                     <td>
-                                        <?php if ($canUpdate): ?>
-                                            <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
-                                                <i class="fas fa-edit"></i> Modifica
-                                            </button>
-                                        <?php endif; ?>
-                                        <?php if ($canDelete): ?>
-                                            <button class="delete-btn" data-id="<?php echo $app['id']; ?>">
-                                                <i class="fas fa-trash"></i> Elimina
-                                            </button>
-                                        <?php endif; ?>
+                                        <div class="actions-cell">
+                                            <?php if ($canUpdate): ?>
+                                                <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
+                                                    <i class="fas fa-edit"></i> Modifica
+                                                </button>
+                                            <?php endif; ?>
+                                            <?php if ($canDelete): ?>
+                                                <button class="delete-btn" data-id="<?php echo $app['id']; ?>">
+                                                    <i class="fas fa-trash"></i> Elimina
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -239,16 +239,18 @@ $pending = $stmt->fetchAll();
                         <td><?php echo htmlspecialchars($row['ente']); ?></td>
                         <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                         <td>
-                          <?php if (!empty($row['checklist_path'])): ?>
-                            <a
-                              class="page-button secondary-button"
-                              href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >Apri Checklist</a>
-                          <?php else: ?>
-                            <span>Non disponibile</span>
-                          <?php endif; ?>
+                          <div class="actions-cell">
+                            <?php if (!empty($row['checklist_path'])): ?>
+                              <a
+                                class="page-button secondary-button"
+                                href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >Apri Checklist</a>
+                            <?php else: ?>
+                              <span>Non disponibile</span>
+                            <?php endif; ?>
+                          </div>
                         </td>
                       </tr>
                     <?php endforeach; ?>
@@ -281,19 +283,23 @@ $pending = $stmt->fetchAll();
                         <td><?php echo htmlspecialchars($row['ente']); ?></td>
                         <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                         <td>
-                          <?php if (!empty($row['checklist_path'])): ?>
-                            <a
-                              class="page-button secondary-button"
-                              href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >Apri Checklist</a>
-                          <?php else: ?>
-                            <span>Non disponibile</span>
-                          <?php endif; ?>
+                          <div class="actions-cell">
+                            <?php if (!empty($row['checklist_path'])): ?>
+                              <a
+                                class="page-button secondary-button"
+                                href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >Apri Checklist</a>
+                            <?php else: ?>
+                              <span>Non disponibile</span>
+                            <?php endif; ?>
+                          </div>
                         </td>
                         <td>
-                          <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Compila Valutazione</a>
+                          <div class="actions-cell">
+                            <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Compila Valutazione</a>
+                          </div>
                         </td>
                       </tr>
                     <?php endforeach; ?>
