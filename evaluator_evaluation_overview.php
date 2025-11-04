@@ -8,7 +8,7 @@ $rolePermissionManager = new RolePermissionManager($pdo);
 if (!isset($_SESSION['user_id']) ||
     !$rolePermissionManager->userHasPermission(
         $_SESSION['user_id'],
-        RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']
+        RolePermissionManager::$PERMISSIONS['EVALUATOR_MONITOR']
     )) {
     header('Location: index.php');
     exit();

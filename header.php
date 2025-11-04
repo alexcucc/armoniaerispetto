@@ -95,6 +95,14 @@
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE'],
                         );
+                        $canSupervisorMonitor = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['SUPERVISOR_MONITOR'],
+                        );
+                        $canEvaluatorMonitor = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['EVALUATOR_MONITOR'],
+                        );
                         if (
                             $canUserList ||
                             $canOrganizationList ||
@@ -104,7 +112,9 @@
                             $canEvaluationView ||
                             $canApplicationList ||
                             $canApplicationReview ||
-                            $canEvaluationCreate
+                            $canEvaluationCreate ||
+                            $canSupervisorMonitor ||
+                            $canEvaluatorMonitor
                         ): ?>
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link manage-toggle">Gestione</a>
@@ -130,13 +140,13 @@
                                     <?php if ($canApplicationReview): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisor_applications.php">Risposte ai bandi da convalidare</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canApplicationList): ?>
+                                    <?php if ($canSupervisorMonitor): ?>
                                         <li class="nav-item"><a class="nav-link" href="supervisor_application_overview.php">Monitoraggio convalidatori</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluationCreate): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluations.php">Valutazioni</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canEvaluationView): ?>
+                                    <?php if ($canEvaluatorMonitor): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluator_evaluation_overview.php">Monitoraggio valutatori</a></li>
                                     <?php endif; ?>
                                 </ul>

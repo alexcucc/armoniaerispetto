@@ -8,7 +8,7 @@ $rolePermissionManager = new RolePermissionManager($pdo);
 if (!isset($_SESSION['user_id']) ||
     !$rolePermissionManager->userHasPermission(
         $_SESSION['user_id'],
-        RolePermissionManager::$PERMISSIONS['APPLICATION_LIST']
+        RolePermissionManager::$PERMISSIONS['SUPERVISOR_MONITOR']
     )) {
     header('Location: index.php');
     exit();
