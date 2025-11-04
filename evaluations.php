@@ -220,97 +220,131 @@ $pending = $stmt->fetchAll();
               </p>
             <?php endif; ?>
 
-            <section class="users-table-container">
-              <h2>Valutazioni Compilate</h2>
-              <table class="users-table">
-                <thead>
-                  <tr>
-                    <th>Bando</th>
-                    <th>Ente</th>
-                    <th>Data Compilazione</th>
-                    <th>Checklist</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php if (count($submitted) > 0): ?>
-                    <?php foreach($submitted as $row): ?>
+            <div class="tab-container">
+              <div class="tab-buttons" role="tablist" aria-label="Filtra valutazioni per stato">
+                <button
+                  type="button"
+                  class="tab-button active"
+                  role="tab"
+                  id="evaluations-submitted-tab"
+                  aria-controls="evaluations-submitted"
+                  aria-selected="true"
+                >
+                  Valutazioni compilate
+                </button>
+                <button
+                  type="button"
+                  class="tab-button"
+                  role="tab"
+                  id="evaluations-pending-tab"
+                  aria-controls="evaluations-pending"
+                  aria-selected="false"
+                >
+                  Valutazioni da compilare
+                </button>
+              </div>
+              <div class="tab-panels">
+                <section
+                  id="evaluations-submitted"
+                  class="tab-panel active users-table-container"
+                  role="tabpanel"
+                  aria-labelledby="evaluations-submitted-tab"
+                >
+                  <table class="users-table">
+                    <thead>
                       <tr>
-                        <td><?php echo htmlspecialchars($row['call_title']); ?></td>
-                        <td><?php echo htmlspecialchars($row['ente']); ?></td>
-                        <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                        <td>
-                          <div class="actions-cell">
-                            <?php if (!empty($row['checklist_path'])): ?>
-                              <a
-                                class="page-button secondary-button"
-                                href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >Apri Checklist</a>
-                            <?php else: ?>
-                              <span>Non disponibile</span>
-                            <?php endif; ?>
-                          </div>
-                        </td>
+                        <th>Bando</th>
+                        <th>Ente</th>
+                        <th>Data Compilazione</th>
+                        <th>Checklist</th>
                       </tr>
-                    <?php endforeach; ?>
-                  <?php else: ?>
-                    <tr>
-                      <td colspan="4">Non hai inviato nessuna valutazione.</td>
-                    </tr>
-                  <?php endif; ?>
-                </tbody>
-              </table>
-            </section>
-
-            <section class="users-table-container" style="margin-top: 2rem;">
-              <h2>Valutazioni da Compilare</h2>
-              <table class="users-table">
-                <thead>
-                  <tr>
-                    <th>Bando</th>
-                    <th>Ente</th>
-                    <th>Data di Invio</th>
-                    <th>Checklist</th>
-                    <th>Azione</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php if (count($pending) > 0): ?>
-                    <?php foreach($pending as $row): ?>
+                    </thead>
+                    <tbody>
+                      <?php if (count($submitted) > 0): ?>
+                        <?php foreach($submitted as $row): ?>
+                          <tr>
+                            <td><?php echo htmlspecialchars($row['call_title']); ?></td>
+                            <td><?php echo htmlspecialchars($row['ente']); ?></td>
+                            <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                            <td>
+                              <div class="actions-cell">
+                                <?php if (!empty($row['checklist_path'])): ?>
+                                  <a
+                                    class="page-button secondary-button"
+                                    href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >Apri Checklist</a>
+                                <?php else: ?>
+                                  <span>Non disponibile</span>
+                                <?php endif; ?>
+                              </div>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                      <?php else: ?>
+                        <tr>
+                          <td colspan="4">Non hai inviato nessuna valutazione.</td>
+                        </tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </section>
+                <section
+                  id="evaluations-pending"
+                  class="tab-panel users-table-container"
+                  role="tabpanel"
+                  aria-labelledby="evaluations-pending-tab"
+                  hidden
+                >
+                  <table class="users-table">
+                    <thead>
                       <tr>
-                        <td><?php echo htmlspecialchars($row['call_title']); ?></td>
-                        <td><?php echo htmlspecialchars($row['ente']); ?></td>
-                        <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                        <td>
-                          <div class="actions-cell">
-                            <?php if (!empty($row['checklist_path'])): ?>
-                              <a
-                                class="page-button secondary-button"
-                                href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >Apri Checklist</a>
-                            <?php else: ?>
-                              <span>Non disponibile</span>
-                            <?php endif; ?>
-                          </div>
-                        </td>
-                        <td>
-                          <div class="actions-cell">
-                            <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Compila Valutazione</a>
-                          </div>
-                        </td>
+                        <th>Bando</th>
+                        <th>Ente</th>
+                        <th>Data di Invio</th>
+                        <th>Checklist</th>
+                        <th>Azione</th>
                       </tr>
-                    <?php endforeach; ?>
-                  <?php else: ?>
-                    <tr>
-                      <td colspan="5">Non ci sono valutazioni in sospeso.</td>
-                    </tr>
-                  <?php endif; ?>
-                </tbody>
-              </table>
-            </section>
+                    </thead>
+                    <tbody>
+                      <?php if (count($pending) > 0): ?>
+                        <?php foreach($pending as $row): ?>
+                          <tr>
+                            <td><?php echo htmlspecialchars($row['call_title']); ?></td>
+                            <td><?php echo htmlspecialchars($row['ente']); ?></td>
+                            <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                            <td>
+                              <div class="actions-cell">
+                                <?php if (!empty($row['checklist_path'])): ?>
+                                  <a
+                                    class="page-button secondary-button"
+                                    href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >Apri Checklist</a>
+                                <?php else: ?>
+                                  <span>Non disponibile</span>
+                                <?php endif; ?>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="actions-cell">
+                                <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Compila Valutazione</a>
+                              </div>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                      <?php else: ?>
+                        <tr>
+                          <td colspan="5">Non ci sono valutazioni in sospeso.</td>
+                        </tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </section>
+              </div>
+            </div>
           </div>
         </div>
       </div>

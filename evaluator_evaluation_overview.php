@@ -238,7 +238,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                             aria-controls="evaluations-pending"
                             aria-selected="false"
                         >
-                            Valutazioni da completare
+                            Valutazioni da compilare
                         </button>
                     </div>
                     <div class="tab-panels">

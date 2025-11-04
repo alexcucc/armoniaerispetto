@@ -164,68 +164,102 @@ $statusLabels = [
                         <a href="<?php echo htmlspecialchars($resetUrl); ?>">Mostra tutte le risposte ai bandi</a>
                     </p>
                 <?php endif; ?>
-                <div class="users-table-container">
-                    <h2>Risposte ai bandi in attesa di convalida</h2>
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Bando</th>
-                                <th>Ente</th>
-                                <th>Nome Progetto</th>
-                                <th>Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($pendingApplications)): ?>
-                                <tr>
-                                    <td colspan="4">Nessuna risposta al bando da convalidare.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($pendingApplications as $app): ?>
+                <div class="tab-container">
+                    <div class="tab-buttons" role="tablist" aria-label="Filtra risposte per stato">
+                        <button
+                            type="button"
+                            class="tab-button active"
+                            role="tab"
+                            id="applications-reviewed-tab"
+                            aria-controls="applications-reviewed"
+                            aria-selected="true"
+                        >
+                            Risposte convalidate
+                        </button>
+                        <button
+                            type="button"
+                            class="tab-button"
+                            role="tab"
+                            id="applications-pending-tab"
+                            aria-controls="applications-pending"
+                            aria-selected="false"
+                        >
+                            Risposte da convalidare
+                        </button>
+                    </div>
+                    <div class="tab-panels">
+                        <section
+                            id="applications-reviewed"
+                            class="tab-panel active users-table-container"
+                            role="tabpanel"
+                            aria-labelledby="applications-reviewed-tab"
+                        >
+                            <table class="users-table">
+                                <thead>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($app['call_title']); ?></td>
-                                        <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($app['project_name']); ?></td>
-                                        <td>
-                                            <div class="actions-cell">
-                                                <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Convalida</a>
-                                            </div>
-                                        </td>
+                                        <th>Bando</th>
+                                        <th>Ente</th>
+                                        <th>Nome Progetto</th>
+                                        <th>Esito</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="users-table-container" style="margin-top: 2rem;">
-                    <h2>Risposte ai bandi già convalidate</h2>
-                    <table class="users-table">
-                        <thead>
-                            <tr>
-                                <th>Bando</th>
-                                <th>Ente</th>
-                                <th>Nome Progetto</th>
-                                <th>Esito</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($reviewedApplications)): ?>
-                                <tr>
-                                    <td colspan="4">Nessuna risposta al bando convalidata.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($reviewedApplications as $app): ?>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($reviewedApplications)): ?>
+                                        <tr>
+                                            <td colspan="4">Nessuna risposta al bando convalidata.</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($reviewedApplications as $app): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($app['call_title']); ?></td>
+                                                <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($app['project_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($statusLabels[$app['status']] ?? $app['status']); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </section>
+                        <section
+                            id="applications-pending"
+                            class="tab-panel users-table-container"
+                            role="tabpanel"
+                            aria-labelledby="applications-pending-tab"
+                            hidden
+                        >
+                            <table class="users-table">
+                                <thead>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($app['call_title']); ?></td>
-                                        <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($app['project_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($statusLabels[$app['status']] ?? $app['status']); ?></td>
+                                        <th>Bando</th>
+                                        <th>Ente</th>
+                                        <th>Nome Progetto</th>
+                                        <th>Azioni</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($pendingApplications)): ?>
+                                        <tr>
+                                            <td colspan="4">Nessuna risposta al bando da convalidare.</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($pendingApplications as $app): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($app['call_title']); ?></td>
+                                                <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($app['project_name']); ?></td>
+                                                <td>
+                                                    <div class="actions-cell">
+                                                        <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Convalida</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </section>
+                    </div>
                 </div>
             </div>
         </div>
