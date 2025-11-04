@@ -201,12 +201,13 @@ $statusLabels = [
                                         <th>Ente</th>
                                         <th>Nome Progetto</th>
                                         <th>Esito</th>
+                                        <th>Azioni</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php if (empty($reviewedApplications)): ?>
                                         <tr>
-                                            <td colspan="4">Nessuna risposta al bando convalidata.</td>
+                                            <td colspan="5">Nessuna risposta al bando convalidata.</td>
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($reviewedApplications as $app): ?>
@@ -215,6 +216,16 @@ $statusLabels = [
                                                 <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($app['project_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($statusLabels[$app['status']] ?? $app['status']); ?></td>
+                                                <td>
+                                                    <div class="actions-cell">
+                                                        <a
+                                                            class="page-button secondary-button"
+                                                            href="application_review.php?application_id=<?php echo $app['id']; ?>"
+                                                        >
+                                                            Modifica
+                                                        </a>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php endif; ?>

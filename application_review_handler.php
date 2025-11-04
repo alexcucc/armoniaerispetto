@@ -27,37 +27,53 @@ if (!$applicationId || !in_array($decision, ['APPROVED', 'REJECTED'], true)) {
     exit();
 }
 
-if (!isset($_FILES['checklist']) || $_FILES['checklist']['error'] !== UPLOAD_ERR_OK) {
-    header('Location: supervisor_applications.php?error=1');
-    exit();
-}
-
 try {
-    $stmt = $pdo->prepare('SELECT a.status FROM application a JOIN supervisor s ON a.supervisor_id = s.id WHERE a.id = :id AND s.user_id = :user_id');
+    $stmt = $pdo->prepare('SELECT a.status, a.checklist_path FROM application a JOIN supervisor s ON a.supervisor_id = s.id WHERE a.id = :id AND s.user_id = :user_id');
     $stmt->execute([
         ':id' => $applicationId,
         ':user_id' => $_SESSION['user_id']
     ]);
     $application = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$application || $application['status'] !== 'SUBMITTED') {
+    if (!$application || !in_array($application['status'], ['SUBMITTED', 'APPROVED', 'REJECTED'], true)) {
         header('Location: supervisor_applications.php?error=1');
         exit();
     }
 
-    $extension = strtolower(pathinfo($_FILES['checklist']['name'], PATHINFO_EXTENSION));
-    if ($extension !== 'pdf') {
+    $existingChecklist = $application['checklist_path'] ?? null;
+    $fileError = $_FILES['checklist']['error'] ?? UPLOAD_ERR_NO_FILE;
+    $hasNewChecklist = $fileError === UPLOAD_ERR_OK;
+    $checklistRequired = $application['status'] === 'SUBMITTED' || empty($existingChecklist);
+
+    if ($checklistRequired && !$hasNewChecklist) {
         header('Location: supervisor_applications.php?error=1');
         exit();
     }
 
-    $destinationDir = 'private/documents/applications/' . $applicationId;
-    if (!is_dir($destinationDir)) {
-        mkdir($destinationDir, 0755, true);
-    }
-    $destinationPath = $destinationDir . '/checklist.pdf';
+    $destinationPath = $existingChecklist;
 
-    if (!move_uploaded_file($_FILES['checklist']['tmp_name'], $destinationPath)) {
+    if ($hasNewChecklist) {
+        $extension = strtolower(pathinfo($_FILES['checklist']['name'], PATHINFO_EXTENSION));
+        if ($extension !== 'pdf') {
+            header('Location: supervisor_applications.php?error=1');
+            exit();
+        }
+
+        $destinationDir = 'private/documents/applications/' . $applicationId;
+        if (!is_dir($destinationDir)) {
+            mkdir($destinationDir, 0755, true);
+        }
+        $destinationPath = $destinationDir . '/checklist.pdf';
+
+        if ($existingChecklist && file_exists($existingChecklist)) {
+            unlink($existingChecklist);
+        }
+
+        if (!move_uploaded_file($_FILES['checklist']['tmp_name'], $destinationPath)) {
+            header('Location: supervisor_applications.php?error=1');
+            exit();
+        }
+    } elseif ($fileError !== UPLOAD_ERR_NO_FILE) {
         header('Location: supervisor_applications.php?error=1');
         exit();
     }
