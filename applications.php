@@ -151,6 +151,12 @@ $resetUrl = 'applications.php?' . http_build_query([
         <div class="content-container">
                 <div class="content">
                     <div id="message" class="message" style="display: none;"></div>
+                    <div class="button-container">
+                        <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+                        <?php if ($canCreate): ?>
+                            <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
+                        <?php endif; ?>
+                    </div>
                     <form method="get" class="filters-form">
                         <div class="form-group">
                             <label class="form-label" for="call_id">Bando</label>
@@ -217,12 +223,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                             <a href="<?php echo htmlspecialchars('applications.php?sort=' . urlencode($sortField) . '&order=' . urlencode(strtolower($sortOrder))); ?>">Mostra tutte le risposte ai bandi</a>
                         </p>
                     <?php endif; ?>
-                    <div class="button-container">
-                        <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
-                        <?php if ($canCreate): ?>
-                            <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
-                        <?php endif; ?>
-                    </div>
                 <div class="users-table-container">
                     <table class="users-table">
                         <thead>
