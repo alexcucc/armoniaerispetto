@@ -256,6 +256,7 @@ $pending = $stmt->fetchAll();
                         <th>Bando</th>
                         <th>Ente</th>
                         <th>Data Compilazione</th>
+                        <th>Risposta al bando</th>
                         <th>Checklist</th>
                       </tr>
                     </thead>
@@ -266,6 +267,16 @@ $pending = $stmt->fetchAll();
                             <td><?php echo htmlspecialchars($row['call_title']); ?></td>
                             <td><?php echo htmlspecialchars($row['ente']); ?></td>
                             <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                            <td>
+                              <div class="actions-cell">
+                                <a
+                                  class="page-button secondary-button"
+                                  href="applications.php?application_id=<?php echo $row['application_id']; ?>"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >Visualizza risposta</a>
+                              </div>
+                            </td>
                             <td>
                               <div class="actions-cell">
                                 <?php if (!empty($row['checklist_path'])): ?>
@@ -284,7 +295,7 @@ $pending = $stmt->fetchAll();
                         <?php endforeach; ?>
                       <?php else: ?>
                         <tr>
-                          <td colspan="4">Non hai inviato nessuna valutazione.</td>
+                          <td colspan="5">Non hai inviato nessuna valutazione.</td>
                         </tr>
                       <?php endif; ?>
                     </tbody>
@@ -303,6 +314,7 @@ $pending = $stmt->fetchAll();
                         <th>Bando</th>
                         <th>Ente</th>
                         <th>Data di Invio</th>
+                        <th>Risposta al bando</th>
                         <th>Checklist</th>
                         <th>Azione</th>
                       </tr>
@@ -314,6 +326,16 @@ $pending = $stmt->fetchAll();
                             <td><?php echo htmlspecialchars($row['call_title']); ?></td>
                             <td><?php echo htmlspecialchars($row['ente']); ?></td>
                             <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                            <td>
+                              <div class="actions-cell">
+                                <a
+                                  class="page-button secondary-button"
+                                  href="applications.php?application_id=<?php echo $row['application_id']; ?>"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >Visualizza risposta</a>
+                              </div>
+                            </td>
                             <td>
                               <div class="actions-cell">
                                 <?php if (!empty($row['checklist_path'])): ?>
@@ -337,7 +359,7 @@ $pending = $stmt->fetchAll();
                         <?php endforeach; ?>
                       <?php else: ?>
                         <tr>
-                          <td colspan="5">Non ci sono valutazioni in sospeso.</td>
+                          <td colspan="6">Non ci sono valutazioni in sospeso.</td>
                         </tr>
                       <?php endif; ?>
                     </tbody>

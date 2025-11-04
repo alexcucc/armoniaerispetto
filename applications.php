@@ -24,6 +24,13 @@ $canDelete = $rolePermissionManager->userHasPermission(
 );
 
 // Determine sorting parameters
+$applicationId = filter_input(INPUT_GET, 'application_id', FILTER_VALIDATE_INT, [
+    'options' => ['min_range' => 1],
+]);
+if ($applicationId === false) {
+    $applicationId = null;
+}
+
 $allowedSortFields = ['call_title', 'organization_name', 'project_name', 'supervisor_name', 'status'];
 $allowedSortOrders = ['asc', 'desc'];
 
@@ -100,6 +107,10 @@ if ($supervisorId) {
 }
 
 $whereClause = '';
+if ($applicationId !== null) {
+    $whereClauses[] = 'a.id = :application_id';
+    $params[':application_id'] = $applicationId;
+}
 if (!empty($whereClauses)) {
     $whereClause = 'WHERE ' . implode(' AND ', $whereClauses);
 }
@@ -112,6 +123,7 @@ $currentFilters = [
     'call_id' => $callId ?: null,
     'organization_id' => $organizationId ?: null,
     'supervisor_id' => $supervisorId ?: null,
+    'application_id' => $applicationId !== null ? $applicationId : null,
 ];
 
 function buildApplicationsSortLink(string $field, string $sortField, string $sortOrder, array $currentFilters): string
@@ -134,6 +146,12 @@ $resetUrl = 'applications.php?' . http_build_query([
     'sort' => $sortField,
     'order' => strtolower($sortOrder),
 ]);
+
+$statusLabels = [
+    'SUBMITTED' => 'In attesa',
+    'APPROVED' => 'Approvata',
+    'REJECTED' => 'Respinta',
+];
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -191,6 +209,9 @@ $resetUrl = 'applications.php?' . http_build_query([
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <?php if ($applicationId !== null): ?>
+                            <input type="hidden" name="application_id" value="<?php echo htmlspecialchars((string) $applicationId); ?>">
+                        <?php endif; ?>
                         <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sortField); ?>">
                         <input type="hidden" name="order" value="<?php echo htmlspecialchars(strtolower($sortOrder)); ?>">
                         <div class="filters-actions">
@@ -198,7 +219,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                             <a href="<?php echo htmlspecialchars($resetUrl); ?>" class="page-button secondary-button">Reset</a>
                         </div>
                     </form>
-                    <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName): ?>
+                    <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName || $applicationId !== null): ?>
                         <p class="filter-info">
                             Visualizzando le risposte ai bandi
                             <?php if ($selectedCallTitle): ?>
@@ -219,6 +240,14 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     per
                                 <?php endif; ?>
                                 il convalidatore "<strong><?php echo htmlspecialchars($selectedSupervisorName); ?></strong>"
+                            <?php endif; ?>
+                            <?php if ($applicationId !== null): ?>
+                                <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName): ?>
+                                    relative alla risposta
+                                <?php else: ?>
+                                    per la risposta
+                                <?php endif; ?>
+                                "<strong>#<?php echo htmlspecialchars((string) $applicationId); ?></strong>"
                             <?php endif; ?>.
                             <a href="<?php echo htmlspecialchars('applications.php?sort=' . urlencode($sortField) . '&order=' . urlencode(strtolower($sortOrder))); ?>">Mostra tutte le risposte ai bandi</a>
                         </p>
@@ -258,13 +287,17 @@ $resetUrl = 'applications.php?' . http_build_query([
                                 </tr>
                             <?php else: ?>
                             <?php foreach ($applications as $app): ?>
-                                <tr>
+                                <tr id="application-row-<?php echo (int) $app['id']; ?>">
                                     <td><?php echo htmlspecialchars($app['call_title']); ?></td>
                                     <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
                                     <td><?php echo htmlspecialchars($app['project_name']); ?></td>
                                     <?php $supervisorName = trim((string) ($app['supervisor_name'] ?? '')); ?>
                                     <td><?php echo htmlspecialchars($supervisorName !== '' ? $supervisorName : 'Non assegnato'); ?></td>
-                                    <td><?php echo htmlspecialchars($app['status']); ?></td>
+                                    <?php
+                                    $statusKey = (string) $app['status'];
+                                    $statusLabel = $statusLabels[$statusKey] ?? ucwords(strtolower(str_replace('_', ' ', $statusKey)));
+                                    ?>
+                                    <td><?php echo htmlspecialchars($statusLabel); ?></td>
                                     <td>
                                         <div class="actions-cell">
                                             <?php if (!empty($app['application_pdf_path'])): ?>
