@@ -157,7 +157,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
         <div class="content-container">
             <div class="content">
                 <div class="button-container">
-                    <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+                    <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
                 <form class="filters-form" method="get" action="">
                     <div class="form-group">

@@ -152,7 +152,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                 <div class="content">
                     <div id="message" class="message" style="display: none;"></div>
                     <div class="button-container">
-                        <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+                        <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                         <?php if ($canCreate): ?>
                             <a href="application_submit.php" class="page-button">Carica risposta al bando</a>
                         <?php endif; ?>

@@ -57,7 +57,7 @@ if (!$application || $application['supervisor_user_id'] != $_SESSION['user_id'])
             <input type="hidden" name="supervisor_id" value="<?php echo htmlspecialchars($application['supervisor_id']); ?>">
             <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($appId); ?>">
             <div class="button-container">
-                <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
+                <a href="supervisor_applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
                 <button type="submit" class="page-button">Invia</button>
             </div>
         </form>

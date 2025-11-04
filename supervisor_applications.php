@@ -117,7 +117,7 @@ $statusLabels = [
         <div class="content-container">
             <div class="content">
                 <div class="button-container">
-                    <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+                    <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
                 <form method="get" class="filters-form">
                     <div class="form-group">

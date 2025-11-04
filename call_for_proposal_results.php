@@ -184,7 +184,7 @@ if ($totalEvaluators > 0) {
             <div class="content-container">
                 <div class="content">
                     <div class="button-container">
-                        <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+                        <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                         <a class="page-button" href="call_for_proposals.php">Torna ai bandi</a>
                     </div>
 

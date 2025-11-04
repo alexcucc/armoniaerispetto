@@ -75,7 +75,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="content">
                 <div id="message" class="message" style="display:none;"></div>
                 <div class="button-container">
-                    <a href="javascript:history.back()" class="page-button back-button">Indietro</a>
+                    <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                     <?php if ($canCreate): ?>
                         <a class="page-button" href="call_for_proposal_add.php">Aggiungi Bando</a>
                     <?php endif; ?>
