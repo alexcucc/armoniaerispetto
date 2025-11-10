@@ -1168,6 +1168,7 @@ textarea:focus-visible {
   --secondary-color: #3CA76A;
   --background-light: #f9f9f9;
   --spacing-unit: 1rem;
+  --sticky-table-header-offset: var(--header-height, 70px);
 }
 
 .users-table-container {
@@ -1178,6 +1179,7 @@ textarea:focus-visible {
   max-height: 60vh;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   scrollbar-width: thin;
+  --sticky-table-header-offset: 0px;
 }
 
 .tab-container {
@@ -1311,8 +1313,8 @@ textarea:focus-visible {
   color: white;
   font-weight: bold;
   position: sticky;
-  top: 0;
-  z-index: 1;
+  top: var(--sticky-table-header-offset, 0px);
+  z-index: 2;
 }
 
 .users-table th.sortable {
