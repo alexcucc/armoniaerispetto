@@ -197,9 +197,57 @@
   <head>
     <?php include 'common-head.php'; ?>
     <title>Invia la Valutazione</title>
+    <style>
+      .total-score-overlay {
+        position: fixed;
+        top: 6rem;
+        right: 1.5rem;
+        background-color: #ffffff;
+        border: 1px solid #d1d5db;
+        border-radius: 0.75rem;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+        font-weight: 600;
+        font-size: 1.15rem;
+        color: #1f2937;
+        min-width: 12rem;
+        text-align: center;
+        z-index: 1000;
+      }
+
+      .total-score-overlay__label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #4b5563;
+        margin-bottom: 0.35rem;
+        letter-spacing: 0.02em;
+      }
+
+      .total-score-overlay__value {
+        font-size: 1.8rem;
+        color: #0c4a6e;
+      }
+
+      @media (max-width: 768px) {
+        .total-score-overlay {
+          top: auto;
+          right: auto;
+          bottom: 1.5rem;
+          left: 50%;
+          transform: translateX(-50%);
+          width: calc(100% - 3rem);
+          max-width: 22rem;
+        }
+      }
+    </style>
   </head>
   <body class="management-page">
     <?php include 'header.php'; ?>
+    <div class="total-score-overlay" role="status" aria-live="polite">
+      <span class="total-score-overlay__label">Totale punteggio</span>
+      <span class="total-score-overlay__value" id="total-score-value">0</span>
+    </div>
     <main>
       <div class="contact-form-container" style="margin-top:2em;">
         <div class="button-container" style="margin-bottom: 1.5em;">
@@ -843,7 +891,7 @@
             </small>
           </div>
           
-          <div class="form-group" style="margin-top:2em;">
+          <div class="form-group" style="margin-top:1em;">
             <div class="actions-cell" style="gap: 1rem; display: flex; flex-wrap: wrap;">
               <button class="submit-btn secondary-button" type="submit" name="action" value="save">Salva bozza</button>
               <button class="submit-btn" type="submit" name="action" value="submit">Invia Valutazione</button>
@@ -868,6 +916,35 @@
         const form = document.getElementById('evaluation-form');
         const modal = document.getElementById('evaluation-success-modal');
         const closeButton = document.getElementById('close-evaluation-modal');
+        const totalScoreElement = document.getElementById('total-score-value');
+
+        const calculateTotalScore = () => {
+          if (!form || !totalScoreElement) {
+            return;
+          }
+
+          const scoreInputs = form.querySelectorAll('input[type="radio"]');
+          let total = 0;
+          const processedNames = new Set();
+
+          scoreInputs.forEach((input) => {
+            if (input.checked && !processedNames.has(input.name)) {
+              total += Number.parseInt(input.value, 10) || 0;
+              processedNames.add(input.name);
+            }
+          });
+
+          totalScoreElement.textContent = total.toString();
+        };
+
+        if (form && totalScoreElement) {
+          const scoreInputs = form.querySelectorAll('input[type="radio"]');
+          scoreInputs.forEach((input) => {
+            input.addEventListener('change', calculateTotalScore);
+          });
+
+          calculateTotalScore();
+        }
 
         form.addEventListener('submit', async function (event) {
           const submitter = event.submitter || null;
