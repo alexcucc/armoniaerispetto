@@ -56,10 +56,14 @@ if (!empty($filters)) {
     $filterClause = ' WHERE ' . implode(' AND ', $filters);
 }
 
+$completedFilterClause = $filterClause === ''
+    ? " WHERE e.status = 'SUBMITTED'"
+    : $filterClause . " AND e.status = 'SUBMITTED'";
+
 $completedQuery = "SELECT e.id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.first_name, ' ', u.last_name) AS evaluator_name, "
     . "CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name, "
-    . "'COMPLETED' AS status, e.updated_at "
+    . "'SUBMITTED' AS status, e.updated_at "
     . "FROM evaluation e "
     . "JOIN application a ON e.application_id = a.id "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
@@ -68,7 +72,7 @@ $completedQuery = "SELECT e.id, c.title AS call_title, o.name AS organization_na
     . "JOIN user u ON ev.user_id = u.id "
     . "JOIN supervisor s ON a.supervisor_id = s.id "
     . "JOIN user su ON s.user_id = su.id"
-    . $filterClause
+    . $completedFilterClause
     . " ORDER BY $sortField $sortOrder";
 
 $completedStmt = $pdo->prepare($completedQuery);
@@ -78,7 +82,7 @@ $completedEvaluations = $completedStmt->fetchAll(PDO::FETCH_ASSOC);
 $pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.first_name, ' ', u.last_name) AS evaluator_name, "
     . "CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name, "
-    . "'PENDING' AS status, a.updated_at "
+    . "COALESCE(e.status, 'NOT_STARTED') AS status, a.updated_at "
     . "FROM evaluator ev "
     . "JOIN user u ON ev.user_id = u.id "
     . "JOIN application a ON a.status IN ('SUBMITTED', 'APPROVED', 'REJECTED') "
@@ -89,7 +93,7 @@ $pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS
     . "LEFT JOIN evaluation e ON e.application_id = a.id AND e.evaluator_id = ev.user_id"
     . $filterClause
     . ($filterClause === '' ? ' WHERE' : ' AND')
-    . " e.id IS NULL"
+    . " (e.id IS NULL OR e.status = 'DRAFT')"
     . " ORDER BY $sortField $sortOrder";
 
 $pendingStmt = $pdo->prepare($pendingQuery);
@@ -123,8 +127,9 @@ $supervisorsStmt = $pdo->query(
 $supervisors = $supervisorsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $statusLabels = [
-    'COMPLETED' => 'Valutata',
-    'PENDING' => 'In attesa di valutazione',
+    'SUBMITTED' => 'Valutata',
+    'DRAFT' => 'Valutazione in bozza',
+    'NOT_STARTED' => 'In attesa di valutazione',
 ];
 
 $currentFilters = [
