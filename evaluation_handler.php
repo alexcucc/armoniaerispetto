@@ -8,6 +8,10 @@ $isAjaxRequest = strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhtt
  */
 function sendResponseAndExit(bool $isAjax, bool $success, ?string $message = null, ?string $redirect = null): void
 {
+    if (!$isAjax && $success && $message !== null) {
+        $_SESSION['evaluation_success'] = $message;
+    }
+
     if ($isAjax) {
         header('Content-Type: application/json');
         $payload = ['success' => $success];
@@ -57,28 +61,83 @@ if ($applicationId === null || $evaluatorId === null) {
     sendResponseAndExit($isAjaxRequest, false, 'Dati della valutazione mancanti.');
 }
 
-// Prevent duplicate evaluations for the same application/evaluator pair
-$duplicateCheck = $pdo->prepare('SELECT id FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1');
-$duplicateCheck->execute([
+$action = strtolower($_POST['action'] ?? 'save');
+if (!in_array($action, ['save', 'submit'], true)) {
+    sendResponseAndExit($isAjaxRequest, false, 'Azione non valida.');
+}
+$isSubmitAction = $action === 'submit';
+
+$providedEvaluationId = null;
+if (isset($_POST['evaluation_id'])) {
+    $evaluationIdParam = $_POST['evaluation_id'];
+    if (!ctype_digit((string) $evaluationIdParam)) {
+        sendResponseAndExit($isAjaxRequest, false, 'Identificativo valutazione non valido.');
+    }
+    $providedEvaluationId = (int) $evaluationIdParam;
+}
+
+$existingEvaluationStmt = $pdo->prepare(
+    'SELECT id, status FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1'
+);
+$existingEvaluationStmt->execute([
     ':application_id' => $applicationId,
     ':evaluator_id'   => $evaluatorId,
 ]);
+$existingEvaluation = $existingEvaluationStmt->fetch(PDO::FETCH_ASSOC);
 
-if ($duplicateCheck->fetchColumn()) {
-    sendResponseAndExit($isAjaxRequest, false, 'Esiste già una valutazione per questa domanda.');
+if ($existingEvaluation === false) {
+    $existingEvaluation = null;
+}
+
+if ($existingEvaluation !== null) {
+    if ($providedEvaluationId !== null && $providedEvaluationId !== (int) $existingEvaluation['id']) {
+        sendResponseAndExit($isAjaxRequest, false, 'Identificativo valutazione non valido.');
+    }
+
+    if ($existingEvaluation['status'] === 'SUBMITTED') {
+        sendResponseAndExit($isAjaxRequest, false, 'La valutazione è già stata inviata e non può essere modificata.');
+    }
+} elseif ($providedEvaluationId !== null) {
+    sendResponseAndExit($isAjaxRequest, false, 'Identificativo valutazione non valido.');
 }
 
 try {
     // Use transaction for consistency
     $pdo->beginTransaction();
 
-    // Insert into evaluation table
-    $stmt = $pdo->prepare("INSERT INTO evaluation (application_id, evaluator_id) VALUES (:application_id, :evaluator_id)");
-    $stmt->execute([
-        ':application_id' => $applicationId,
-        ':evaluator_id'   => $evaluatorId
-    ]);
-    $evaluation_id = $pdo->lastInsertId();
+    $statusToApply = $isSubmitAction ? 'SUBMITTED' : 'DRAFT';
+
+    if ($existingEvaluation !== null) {
+        $evaluation_id = (int) $existingEvaluation['id'];
+
+        $tablesToReset = [
+            'evaluation_general',
+            'evaluation_proposing_entity',
+            'evaluation_project',
+            'evaluation_financial_plan',
+            'evaluation_qualitative_elements',
+            'evaluation_thematic_criteria_repopulation',
+            'evaluation_thematic_criteria_safeguard',
+            'evaluation_thematic_criteria_cohabitation',
+            'evaluation_thematic_criteria_community_support',
+            'evaluation_thematic_criteria_culture_education_awareness',
+        ];
+
+        foreach ($tablesToReset as $tableName) {
+            $deleteStmt = $pdo->prepare("DELETE FROM {$tableName} WHERE evaluation_id = :evaluation_id");
+            $deleteStmt->execute([':evaluation_id' => $evaluation_id]);
+        }
+    } else {
+        $insertEvaluationStmt = $pdo->prepare(
+            'INSERT INTO evaluation (application_id, evaluator_id, status) VALUES (:application_id, :evaluator_id, :status)'
+        );
+        $insertEvaluationStmt->execute([
+            ':application_id' => $applicationId,
+            ':evaluator_id'   => $evaluatorId,
+            ':status'         => $statusToApply,
+        ]);
+        $evaluation_id = (int) $pdo->lastInsertId();
+    }
 
     // Get data for each section from POST
     $pe   = $_POST['proposing_entity'];
@@ -299,16 +358,18 @@ try {
     $stmt = $pdo->prepare("INSERT INTO evaluation_general (evaluation_id, proposing_entity_score, general_project_score, financial_plan_score, qualitative_elements_score, thematic_criteria_score, overall_score) VALUES (:evaluation_id, :proposing_entity_score, :general_project_score, :financial_plan_score, :qualitative_elements_score, :thematic_criteria_score, :overall_score)");
     $stmt->execute(array_merge([':evaluation_id' => $evaluation_id], $generalData));
 
+    $statusUpdateStmt = $pdo->prepare('UPDATE evaluation SET status = :status WHERE id = :id');
+    $statusUpdateStmt->execute([
+        ':status' => $statusToApply,
+        ':id'     => $evaluation_id,
+    ]);
+
     $pdo->commit();
 
-    $isAjax = strtolower($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'xmlhttprequest';
-    if ($isAjax) {
-        header('Content-Type: application/json');
-        sendResponseAndExit($isAjaxRequest, true, null, 'evaluations.php');
-    } else {
-        header('Location: evaluations.php');
-        exit;
-    }
+    $successMessage = $isSubmitAction
+        ? 'Valutazione inviata con successo.'
+        : 'Valutazione salvata come bozza.';
+    sendResponseAndExit($isAjaxRequest, true, $successMessage, 'evaluations.php');
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
