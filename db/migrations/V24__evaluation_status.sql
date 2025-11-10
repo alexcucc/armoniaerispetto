@@ -1,0 +1,5 @@
+ALTER TABLE evaluation
+    ADD COLUMN status ENUM('DRAFT', 'SUBMITTED') NOT NULL DEFAULT 'SUBMITTED';
+
+UPDATE evaluation
+SET status = 'SUBMITTED';

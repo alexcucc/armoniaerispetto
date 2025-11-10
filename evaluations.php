@@ -12,6 +12,11 @@ if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissi
     exit;
 }
 
+$successMessage = $_SESSION['evaluation_success'] ?? null;
+unset($_SESSION['evaluation_success']);
+$errorMessage = $_SESSION['evaluation_error'] ?? null;
+unset($_SESSION['evaluation_error']);
+
 // ----------------------------
 // Filters
 // ----------------------------
@@ -93,13 +98,13 @@ $submittedQuery = "
     c.id AS call_id,
     c.title AS call_title,
     COALESCE(o.name, 'Soggetto proponente') AS ente,
-    e.created_at,
+    e.updated_at,
     a.checklist_path
   FROM evaluation e
   JOIN application a ON e.application_id = a.id
   JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
   LEFT JOIN organization o ON a.organization_id = o.id
-  WHERE e.evaluator_id = :uid
+  WHERE e.evaluator_id = :uid AND e.status = 'SUBMITTED'
 ";
 $submittedParams = [':uid' => $_SESSION['user_id']];
 if ($selectedCall !== '') {
@@ -110,10 +115,41 @@ if ($selectedEnte !== '') {
     $submittedQuery .= " AND COALESCE(o.name, 'Soggetto proponente') = :ente_filter";
     $submittedParams[':ente_filter'] = $selectedEnte;
 }
-$submittedQuery .= " ORDER BY e.created_at DESC";
+$submittedQuery .= " ORDER BY e.updated_at DESC";
 $stmt = $pdo->prepare($submittedQuery);
 $stmt->execute($submittedParams);
 $submitted = $stmt->fetchAll();
+
+// ----------------------------
+// Draft Evaluations
+// ----------------------------
+$draftsQuery = "
+  SELECT
+    a.id AS application_id,
+    c.id AS call_id,
+    c.title AS call_title,
+    COALESCE(o.name, 'Soggetto proponente') AS ente,
+    e.updated_at,
+    a.checklist_path
+  FROM evaluation e
+  JOIN application a ON e.application_id = a.id
+  JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+  LEFT JOIN organization o ON a.organization_id = o.id
+  WHERE e.evaluator_id = :uid AND e.status = 'DRAFT'
+";
+$draftsParams = [':uid' => $_SESSION['user_id']];
+if ($selectedCall !== '') {
+    $draftsQuery .= " AND c.id = :call_filter";
+    $draftsParams[':call_filter'] = (int) $selectedCall;
+}
+if ($selectedEnte !== '') {
+    $draftsQuery .= " AND COALESCE(o.name, 'Soggetto proponente') = :ente_filter";
+    $draftsParams[':ente_filter'] = $selectedEnte;
+}
+$draftsQuery .= " ORDER BY e.updated_at DESC";
+$stmt = $pdo->prepare($draftsQuery);
+$stmt->execute($draftsParams);
+$drafts = $stmt->fetchAll();
 
 // ----------------------------
 // Pending Evaluations: applications that the user has not yet evaluated
@@ -165,11 +201,22 @@ $pending = $stmt->fetchAll();
           <h1>Le mie Valutazioni</h1>
         </div>
         <div class="content-container">
-          <div class="content">
+            <div class="content">
 
             <div class="button-container">
               <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
             </div>
+
+            <?php if ($successMessage !== null): ?>
+              <div class="flash-message" style="margin-bottom:1.5rem;padding:1rem;border-radius:8px;background-color:#e6f4ea;color:#1e4620;">
+                <?php echo htmlspecialchars($successMessage); ?>
+              </div>
+            <?php endif; ?>
+            <?php if ($errorMessage !== null): ?>
+              <div class="flash-message" style="margin-bottom:1.5rem;padding:1rem;border-radius:8px;background-color:#fdecea;color:#611a15;">
+                <?php echo htmlspecialchars($errorMessage); ?>
+              </div>
+            <?php endif; ?>
 
             <form method="get" class="filters-form">
               <div class="form-group">
@@ -230,7 +277,17 @@ $pending = $stmt->fetchAll();
                   aria-controls="evaluations-submitted"
                   aria-selected="true"
                 >
-                  Valutazioni compilate
+                  Valutazioni inviate
+                </button>
+                <button
+                  type="button"
+                  class="tab-button"
+                  role="tab"
+                  id="evaluations-drafts-tab"
+                  aria-controls="evaluations-drafts"
+                  aria-selected="false"
+                >
+                  Valutazioni in bozza
                 </button>
                 <button
                   type="button"
@@ -240,7 +297,7 @@ $pending = $stmt->fetchAll();
                   aria-controls="evaluations-pending"
                   aria-selected="false"
                 >
-                  Valutazioni da compilare
+                  Valutazioni da iniziare
                 </button>
               </div>
               <div class="tab-panels">
@@ -255,18 +312,18 @@ $pending = $stmt->fetchAll();
                       <tr>
                         <th>Bando</th>
                         <th>Ente</th>
-                        <th>Data Compilazione</th>
+                        <th>Ultimo aggiornamento</th>
                         <th>Risposta al bando</th>
                         <th>Checklist</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php if (count($submitted) > 0): ?>
-                        <?php foreach($submitted as $row): ?>
+                        <?php foreach ($submitted as $row): ?>
                           <tr>
                             <td><?php echo htmlspecialchars($row['call_title']); ?></td>
                             <td><?php echo htmlspecialchars($row['ente']); ?></td>
-                            <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                            <td><?php echo htmlspecialchars($row['updated_at']); ?></td>
                             <td>
                               <div class="actions-cell">
                                 <a
@@ -302,6 +359,70 @@ $pending = $stmt->fetchAll();
                   </table>
                 </section>
                 <section
+                  id="evaluations-drafts"
+                  class="tab-panel users-table-container"
+                  role="tabpanel"
+                  aria-labelledby="evaluations-drafts-tab"
+                  hidden
+                >
+                  <table class="users-table">
+                    <thead>
+                      <tr>
+                        <th>Bando</th>
+                        <th>Ente</th>
+                        <th>Ultimo aggiornamento</th>
+                        <th>Risposta al bando</th>
+                        <th>Checklist</th>
+                        <th>Azione</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php if (count($drafts) > 0): ?>
+                        <?php foreach ($drafts as $row): ?>
+                          <tr>
+                            <td><?php echo htmlspecialchars($row['call_title']); ?></td>
+                            <td><?php echo htmlspecialchars($row['ente']); ?></td>
+                            <td><?php echo htmlspecialchars($row['updated_at']); ?></td>
+                            <td>
+                              <div class="actions-cell">
+                                <a
+                                  class="page-button secondary-button"
+                                  href="applications.php?application_id=<?php echo $row['application_id']; ?>"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >Visualizza risposta</a>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="actions-cell">
+                                <?php if (!empty($row['checklist_path'])): ?>
+                                  <a
+                                    class="page-button secondary-button"
+                                    href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >Apri Checklist</a>
+                                <?php else: ?>
+                                  <span>Non disponibile</span>
+                                <?php endif; ?>
+                              </div>
+                            </td>
+                            <td>
+                              <div class="actions-cell">
+                                <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Continua</a>
+                              </div>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                      <?php else: ?>
+                        <tr>
+                          <td colspan="6">Non hai valutazioni in bozza.</td>
+                        </tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </section>
+                <section
                   id="evaluations-pending"
                   class="tab-panel users-table-container"
                   role="tabpanel"
@@ -313,7 +434,7 @@ $pending = $stmt->fetchAll();
                       <tr>
                         <th>Bando</th>
                         <th>Ente</th>
-                        <th>Data di Invio</th>
+                        <th>Data domanda</th>
                         <th>Risposta al bando</th>
                         <th>Checklist</th>
                         <th>Azione</th>
@@ -321,7 +442,7 @@ $pending = $stmt->fetchAll();
                     </thead>
                     <tbody>
                       <?php if (count($pending) > 0): ?>
-                        <?php foreach($pending as $row): ?>
+                        <?php foreach ($pending as $row): ?>
                           <tr>
                             <td><?php echo htmlspecialchars($row['call_title']); ?></td>
                             <td><?php echo htmlspecialchars($row['ente']); ?></td>
@@ -352,14 +473,14 @@ $pending = $stmt->fetchAll();
                             </td>
                             <td>
                               <div class="actions-cell">
-                                <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Compila Valutazione</a>
+                                <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Inizia valutazione</a>
                               </div>
                             </td>
                           </tr>
                         <?php endforeach; ?>
                       <?php else: ?>
                         <tr>
-                          <td colspan="6">Non ci sono valutazioni in sospeso.</td>
+                          <td colspan="6">Non ci sono valutazioni da iniziare.</td>
                         </tr>
                       <?php endif; ?>
                     </tbody>
