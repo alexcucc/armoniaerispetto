@@ -55,6 +55,9 @@
     <?php include 'header.php'; ?>
     <main>
       <div class="contact-form-container" style="margin-top:2em;">
+        <div class="button-container" style="margin-bottom: 1.5em;">
+          <a href="evaluations.php" class="page-button back-button">Indietro</a>
+        </div>
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
           <input type="hidden" name="application_id" value="<?php echo $application_id; ?>">
