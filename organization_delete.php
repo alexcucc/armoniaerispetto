@@ -21,7 +21,18 @@ if (!$organizationId) {
 }
 
 try {
-    $stmt = $pdo->prepare("DELETE FROM organization WHERE id = ?");
+    $applicationsStmt = $pdo->prepare('SELECT COUNT(*) FROM application WHERE organization_id = ?');
+    $applicationsStmt->execute([$organizationId]);
+
+    if ($applicationsStmt->fetchColumn() > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => "Impossibile eliminare l'ente perché ha risposte al bando associate"
+        ]);
+        exit();
+    }
+
+    $stmt = $pdo->prepare('DELETE FROM organization WHERE id = ?');
     $stmt->execute([$organizationId]);
 
     if ($stmt->rowCount() > 0) {

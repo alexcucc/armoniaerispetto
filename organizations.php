@@ -27,7 +27,18 @@ $sortOrder = isset($_GET['order']) && in_array(strtolower($_GET['order']), $allo
     : 'ASC';
 
 // Fetch all organizations with sorting
-$stmt = $pdo->prepare("SELECT id, name, type, incorporation_year, location AS location, created_at, updated_at FROM organization ORDER BY $sortField $sortOrder");
+$stmt = $pdo->prepare(
+    "SELECT 
+        id, 
+        name, 
+        type, 
+        incorporation_year, 
+        location AS location, 
+        created_at, 
+        updated_at,
+        (SELECT COUNT(*) FROM application WHERE organization_id = organization.id) AS application_count
+    FROM organization ORDER BY $sortField $sortOrder"
+);
 $stmt->execute();
 $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -99,7 +110,7 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <i class="fas fa-edit"></i> Modifica
                                             </button>
                                         <?php endif; ?>
-                                        <?php if ($canDelete): ?>
+                                        <?php if ($canDelete && (int)$org['application_count'] === 0): ?>
                                             <button class="delete-btn" data-id="<?php echo $org['id']; ?>">
                                                 <i class="fas fa-trash"></i> Elimina
                                             </button>
