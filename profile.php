@@ -18,30 +18,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // First name and last name are read-only and should not be updated
         $organization = trim(filter_input(INPUT_POST, 'organization', FILTER_UNSAFE_RAW));
+        $phone = trim(filter_input(INPUT_POST, 'phone', FILTER_UNSAFE_RAW));
         $new_password = trim(filter_input(INPUT_POST, 'new_password', FILTER_UNSAFE_RAW));
 
-        $sql = "UPDATE user SET organization = ?";
-        $params = [$organization];
-
-        if (!empty($new_password)) {
-            $sql .= ", password = ?";
-            $params[] = password_hash($new_password, PASSWORD_DEFAULT);
-        }
-
-        $sql .= " WHERE id = ?";
-        $params[] = $user_id;
-
-        $stmt = $pdo->prepare($sql);
-        if ($stmt->execute($params)) {
-            $message = "Profilo aggiornato con successo!";
+        if (empty($phone)) {
+            $message = "Il numero di telefono è obbligatorio.";
         } else {
-            $message = "Errore durante l'aggiornamento del profilo.";
+            $sql = "UPDATE user SET organization = ?, phone = ?";
+            $params = [$organization, $phone];
+
+            if (!empty($new_password)) {
+                $sql .= ", password = ?";
+                $params[] = password_hash($new_password, PASSWORD_DEFAULT);
+            }
+
+            $sql .= " WHERE id = ?";
+            $params[] = $user_id;
+
+            $stmt = $pdo->prepare($sql);
+            if ($stmt->execute($params)) {
+                $message = "Profilo aggiornato con successo!";
+            } else {
+                $message = "Errore durante l'aggiornamento del profilo.";
+            }
         }
     }
 }
 
 // Get user data
-$stmt = $pdo->prepare("SELECT first_name, last_name, email, organization FROM user WHERE id = ?");
+$stmt = $pdo->prepare("SELECT first_name, last_name, email, organization, phone FROM user WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
@@ -77,8 +82,14 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 <div class="form-group">
                     <label class="form-label required" for="organization">Organizzazione</label>
-                    <input type="text" id="organization" name="organization" class="form-input" 
+                    <input type="text" id="organization" name="organization" class="form-input"
                            value="<?php echo htmlspecialchars($user['organization'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required" for="phone">Numero di Telefono</label>
+                    <input type="tel" id="phone" name="phone" class="form-input"
+                           value="<?php echo htmlspecialchars($user['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                 </div>
 
                 <div class="form-group">
