@@ -16,7 +16,15 @@ if (!$appId) {
     exit();
 }
 
-$stmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, project_name, application_pdf_path FROM application WHERE id = :id');
+$stmt = $pdo->prepare(
+    'SELECT a.call_for_proposal_id, a.organization_id, a.supervisor_id, a.project_name, '
+    . 'a.application_pdf_path, a.checklist_path, '
+    . 'c.title AS call_title, o.name AS organization_name '
+    . 'FROM application a '
+    . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
+    . 'JOIN organization o ON a.organization_id = o.id '
+    . 'WHERE a.id = :id'
+);
 $stmt->execute([':id' => $appId]);
 $application = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$application) {
@@ -24,17 +32,23 @@ if (!$application) {
     exit();
 }
 
-$stmtCalls = $pdo->prepare('SELECT id, title FROM call_for_proposal');
-$stmtCalls->execute();
-$availableCalls = $stmtCalls->fetchAll(PDO::FETCH_ASSOC);
-
-$orgStmt = $pdo->prepare('SELECT id, name FROM organization ORDER BY name');
-$orgStmt->execute();
-$organizations = $orgStmt->fetchAll(PDO::FETCH_ASSOC);
-
 $supStmt = $pdo->prepare('SELECT s.id, u.first_name, u.last_name FROM supervisor s JOIN user u ON s.user_id = u.id ORDER BY u.first_name, u.last_name');
 $supStmt->execute();
 $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$currentSupervisorName = null;
+foreach ($supervisors as $sup) {
+    if ((int) $sup['id'] === (int) $application['supervisor_id']) {
+        $currentSupervisorName = $sup['first_name'] . ' ' . $sup['last_name'];
+        break;
+    }
+}
+
+if ($currentSupervisorName === null) {
+    $currentSupervisorName = 'Convalidatore #' . (string) $application['supervisor_id'];
+}
+
+$canChangeSupervisor = empty($application['checklist_path']);
 
 
 $errorMessage = $_SESSION['error_message'] ?? null;
@@ -43,13 +57,7 @@ $formData = $_SESSION['form_data'] ?? [];
 unset($_SESSION['error_message'], $_SESSION['form_data']);
 
 if (!empty($formData)) {
-    if (isset($formData['call_id'])) {
-        $application['call_for_proposal_id'] = (int) $formData['call_id'];
-    }
-    if (isset($formData['organization_id'])) {
-        $application['organization_id'] = (int) $formData['organization_id'];
-    }
-    if (isset($formData['supervisor_id'])) {
+    if ($canChangeSupervisor && isset($formData['supervisor_id'])) {
         $application['supervisor_id'] = (int) $formData['supervisor_id'];
     }
     if (isset($formData['project_name'])) {
@@ -77,27 +85,32 @@ if (!empty($formData)) {
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($appId); ?>">
             <div class="form-group">
                 <label class="form-label required" for="call_id">Bando</label>
-                <select id="call_id" name="call_id" class="form-input" required>
-                    <?php foreach ($availableCalls as $call): ?>
-                    <option value="<?php echo $call['id']; ?>" <?php if ($call['id'] == $application['call_for_proposal_id']) echo 'selected'; ?>><?php echo htmlspecialchars($call['title']); ?></option>
-                    <?php endforeach; ?>
+                <select id="call_id" class="form-input" disabled>
+                    <option selected><?php echo htmlspecialchars($application['call_title']); ?></option>
                 </select>
+                <input type="hidden" name="call_id" value="<?php echo htmlspecialchars($application['call_for_proposal_id']); ?>">
             </div>
             <div class="form-group">
                 <label class="form-label required" for="organization_id">Ente</label>
-                <select id="organization_id" name="organization_id" class="form-input" required>
-                    <?php foreach ($organizations as $org): ?>
-                    <option value="<?php echo $org['id']; ?>" <?php if ($org['id'] == $application['organization_id']) echo 'selected'; ?>><?php echo htmlspecialchars($org['name']); ?></option>
-                    <?php endforeach; ?>
+                <select id="organization_id" class="form-input" disabled>
+                    <option selected><?php echo htmlspecialchars($application['organization_name']); ?></option>
                 </select>
+                <input type="hidden" name="organization_id" value="<?php echo htmlspecialchars($application['organization_id']); ?>">
             </div>
             <div class="form-group">
                 <label class="form-label required" for="supervisor_id">Convalidatore</label>
+                <?php if ($canChangeSupervisor): ?>
                 <select id="supervisor_id" name="supervisor_id" class="form-input" required>
                     <?php foreach ($supervisors as $sup): ?>
                     <option value="<?php echo $sup['id']; ?>" <?php if ($sup['id'] == $application['supervisor_id']) echo 'selected'; ?>><?php echo htmlspecialchars($sup['first_name'] . ' ' . $sup['last_name']); ?></option>
                     <?php endforeach; ?>
                 </select>
+                <?php else: ?>
+                <select id="supervisor_id" class="form-input" disabled>
+                    <option selected><?php echo htmlspecialchars($currentSupervisorName); ?></option>
+                </select>
+                <input type="hidden" name="supervisor_id" value="<?php echo htmlspecialchars($application['supervisor_id']); ?>">
+                <?php endif; ?>
             </div>
             <div class="form-group">
                 <label class="form-label required" for="project_name">Nome del Progetto</label>

@@ -16,13 +16,40 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-$callId = filter_input(INPUT_POST, 'call_id', FILTER_VALIDATE_INT);
-$organizationId = filter_input(INPUT_POST, 'organization_id', FILTER_VALIDATE_INT);
-$supervisorId = filter_input(INPUT_POST, 'supervisor_id', FILTER_VALIDATE_INT);
+$supervisorIdInput = filter_input(INPUT_POST, 'supervisor_id', FILTER_VALIDATE_INT);
 $projectName = trim(filter_input(INPUT_POST, 'project_name', FILTER_UNSAFE_RAW));
-if (!$id || !$callId || !$organizationId || !$supervisorId || !$projectName) {
-    header('Location: application_edit.php?id=' . urlencode($id));
+
+if (!$id || !$supervisorIdInput || !$projectName) {
+    header('Location: application_edit.php?id=' . urlencode((string) $id));
     exit();
+}
+
+$applicationStmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, checklist_path FROM application WHERE id = :id');
+$applicationStmt->execute([':id' => $id]);
+$existingApplication = $applicationStmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$existingApplication) {
+    header('Location: applications.php');
+    exit();
+}
+
+$callId = (int) $existingApplication['call_for_proposal_id'];
+$organizationId = (int) $existingApplication['organization_id'];
+$existingSupervisorId = (int) $existingApplication['supervisor_id'];
+$canChangeSupervisor = empty($existingApplication['checklist_path']);
+$supervisorId = (int) $supervisorIdInput;
+
+if (!$canChangeSupervisor && $supervisorId !== $existingSupervisorId) {
+    $_SESSION['error_message'] = 'Non è possibile modificare il convalidatore dopo il caricamento della convalida.';
+    $_SESSION['form_data'] = [
+        'project_name' => $projectName
+    ];
+    header('Location: application_edit.php?id=' . urlencode((string) $id));
+    exit();
+}
+
+if (!$canChangeSupervisor) {
+    $supervisorId = $existingSupervisorId;
 }
 
 $duplicateCheckStmt = $pdo->prepare('SELECT COUNT(*) FROM application WHERE call_for_proposal_id = :call_id AND organization_id = :org_id AND id <> :id');
@@ -35,8 +62,6 @@ $duplicateCheckStmt->execute([
 if ($duplicateCheckStmt->fetchColumn() > 0) {
     $_SESSION['error_message'] = 'Esiste già una risposta al bando per questo ente.';
     $_SESSION['form_data'] = [
-        'call_id' => $callId,
-        'organization_id' => $organizationId,
         'supervisor_id' => $supervisorId,
         'project_name' => $projectName
     ];
