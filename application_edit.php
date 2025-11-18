@@ -16,7 +16,7 @@ if (!$appId) {
     exit();
 }
 
-$stmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, application_pdf_path FROM application WHERE id = :id');
+$stmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, project_name, application_pdf_path FROM application WHERE id = :id');
 $stmt->execute([':id' => $appId]);
 $application = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$application) {
@@ -54,9 +54,6 @@ if (!empty($formData)) {
     }
     if (isset($formData['project_name'])) {
         $application['project_name'] = $formData['project_name'];
-    }
-    if (isset($formData['project_description'])) {
-        $application['project_description'] = $formData['project_description'];
     }
 }
 ?>
@@ -105,10 +102,6 @@ if (!empty($formData)) {
             <div class="form-group">
                 <label class="form-label required" for="project_name">Nome del Progetto</label>
                 <input type="text" id="project_name" name="project_name" class="form-input" value="<?php echo htmlspecialchars($application['project_name']); ?>" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label required" for="project_description">Descrizione del Progetto</label>
-                <textarea id="project_description" name="project_description" class="form-input" required><?php echo htmlspecialchars($application['project_description']); ?></textarea>
             </div>
             <div class="form-group">
                 <label class="form-label" for="current_application_pdf">PDF attuale della risposta al bando</label>

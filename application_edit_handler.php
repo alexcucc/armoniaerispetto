@@ -20,9 +20,7 @@ $callId = filter_input(INPUT_POST, 'call_id', FILTER_VALIDATE_INT);
 $organizationId = filter_input(INPUT_POST, 'organization_id', FILTER_VALIDATE_INT);
 $supervisorId = filter_input(INPUT_POST, 'supervisor_id', FILTER_VALIDATE_INT);
 $projectName = trim(filter_input(INPUT_POST, 'project_name', FILTER_UNSAFE_RAW));
-$projectDescription = trim(filter_input(INPUT_POST, 'project_description', FILTER_UNSAFE_RAW));
-
-if (!$id || !$callId || !$organizationId || !$supervisorId || !$projectName || !$projectDescription) {
+if (!$id || !$callId || !$organizationId || !$supervisorId || !$projectName) {
     header('Location: application_edit.php?id=' . urlencode($id));
     exit();
 }
@@ -40,8 +38,7 @@ if ($duplicateCheckStmt->fetchColumn() > 0) {
         'call_id' => $callId,
         'organization_id' => $organizationId,
         'supervisor_id' => $supervisorId,
-        'project_name' => $projectName,
-        'project_description' => $projectDescription
+        'project_name' => $projectName
     ];
     header('Location: application_edit.php?id=' . urlencode($id));
     exit();
@@ -89,13 +86,12 @@ try {
         }
     }
 
-    $query = 'UPDATE application SET call_for_proposal_id = :call_id, organization_id = :org_id, supervisor_id = :sup_id, project_name = :name, project_description = :description';
+    $query = 'UPDATE application SET call_for_proposal_id = :call_id, organization_id = :org_id, supervisor_id = :sup_id, project_name = :name';
     $params = [
         ':call_id' => $callId,
         ':org_id' => $organizationId,
         ':sup_id' => $supervisorId,
         ':name' => $projectName,
-        ':description' => $projectDescription,
         ':id' => $id
     ];
 

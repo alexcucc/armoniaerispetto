@@ -29,7 +29,6 @@ if (isset($formData['call_id']) && $formData['call_id']) {
 $selectedOrganizationId = $formData['organization_id'] ?? null;
 $selectedSupervisorId = $formData['supervisor_id'] ?? null;
 $projectNameValue = $formData['project_name'] ?? '';
-$projectDescriptionValue = $formData['project_description'] ?? '';
 
 // Load organizations
 $orgStmt = $pdo->prepare('SELECT id, name FROM organization ORDER BY name');
@@ -88,10 +87,6 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="form-group">
             <label class="form-label required" for="project_name">Nome del Progetto</label>
             <input type="text" id="project_name" name="project_name" class="form-input" value="<?php echo htmlspecialchars($projectNameValue); ?>" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label required" for="project_description">Descrizione del Progetto</label>
-            <textarea id="project_description" name="project_description" class="form-input" required><?php echo htmlspecialchars($projectDescriptionValue); ?></textarea>
           </div>
           <div class="form-group">
             <label class="form-label required" for="application_pdf">PDF della risposta al bando</label>

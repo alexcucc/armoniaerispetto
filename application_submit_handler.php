@@ -19,9 +19,8 @@ $callId = filter_input(INPUT_POST, 'call_id', FILTER_VALIDATE_INT);
 $organizationId = filter_input(INPUT_POST, 'organization_id', FILTER_VALIDATE_INT);
 $supervisorId = filter_input(INPUT_POST, 'supervisor_id', FILTER_VALIDATE_INT);
 $projectName = trim(filter_input(INPUT_POST, 'project_name', FILTER_UNSAFE_RAW));
-$projectDescription = trim(filter_input(INPUT_POST, 'project_description', FILTER_UNSAFE_RAW));
 
-if (!$callId || !$organizationId || !$supervisorId || !$projectName || !$projectDescription) {
+if (!$callId || !$organizationId || !$supervisorId || !$projectName) {
     header('Location: applications.php');
     exit();
 }
@@ -39,7 +38,6 @@ if ($duplicateCheckStmt->fetchColumn() > 0) {
         'organization_id' => $organizationId,
         'supervisor_id' => $supervisorId,
         'project_name' => $projectName,
-        'project_description' => $projectDescription
     ];
     header('Location: application_submit.php?call_id=' . urlencode($callId));
     exit();
@@ -68,13 +66,12 @@ if ($pdfExtension !== 'pdf') {
 
 try {
     $pdo->beginTransaction();
-    $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, project_description, status) VALUES (:call_id, :org_id, :sup_id, :name, :description, "SUBMITTED")');
+    $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, status) VALUES (:call_id, :org_id, :sup_id, :name, "SUBMITTED")');
     $insertStmt->execute([
         'call_id' => $callId,
         'org_id' => $organizationId,
         'sup_id' => $supervisorId,
-        'name' => $projectName,
-        'description' => $projectDescription
+        'name' => $projectName
     ]);
 $applicationId = $pdo->lastInsertId();
 

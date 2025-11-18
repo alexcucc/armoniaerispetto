@@ -17,7 +17,7 @@ if (!$appId) {
 }
 
 $stmt = $pdo->prepare(
-    'SELECT a.project_name, a.project_description, a.status, a.checklist_path, '
+    'SELECT a.project_name, a.status, a.checklist_path, '
     . 'c.title AS call_title, o.name AS organization_name, a.supervisor_id, '
     . 's.user_id AS supervisor_user_id '
     . 'FROM application a '
@@ -59,7 +59,6 @@ $hasExistingChecklist = !empty($application['checklist_path']);
             <p><strong>Bando:</strong> <?php echo htmlspecialchars($application['call_title']); ?></p>
             <p><strong>Ente:</strong> <?php echo htmlspecialchars($application['organization_name']); ?></p>
             <p><strong>Nome del Progetto:</strong> <?php echo htmlspecialchars($application['project_name']); ?></p>
-            <p><strong>Descrizione del Progetto:</strong> <?php echo nl2br(htmlspecialchars($application['project_description'])); ?></p>
         </div>
         <form class="contact-form" action="application_review_handler.php" method="POST" enctype="multipart/form-data">
             <div class="form-group">
