@@ -68,14 +68,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <option value="0">Non verificata</option>
                             </select>
                         </div>
-                        <div class="filter-group">
-                            <label for="filter-registered-from">Registrato dal</label>
-                            <input type="date" id="filter-registered-from" data-filter-key="registeredFrom" />
-                        </div>
-                        <div class="filter-group">
-                            <label for="filter-registered-to">Registrato al</label>
-                            <input type="date" id="filter-registered-to" data-filter-key="registeredTo" />
-                        </div>
                         <div class="filter-actions">
                             <button type="button" id="clear-filters" class="page-button secondary">Pulisci filtri</button>
                         </div>
@@ -104,7 +96,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     data-organization="<?php echo htmlspecialchars($user['organization'], ENT_QUOTES, 'UTF-8'); ?>"
                                     data-email-verified="<?php echo $user['email_verified'] ? '1' : '0'; ?>"
                                     data-created-at-timestamp="<?php echo htmlspecialchars((string) strtotime($user['created_at']), ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-created-at-date="<?php echo htmlspecialchars(date('Y-m-d', strtotime($user['created_at'])), ENT_QUOTES, 'UTF-8'); ?>"
                                 >
                                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                                     <td><?php echo htmlspecialchars($user['first_name']); ?></td>
@@ -291,9 +282,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     return accumulator;
                 }, {});
 
-                const fromDate = filters.registeredFrom ? filters.registeredFrom.trim() : '';
-                const toDate = filters.registeredTo ? filters.registeredTo.trim() : '';
-
                 rows.forEach(row => {
                     let isVisible = true;
 
@@ -327,18 +315,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             row.style.display = 'none';
                             return;
                         }
-                    }
-
-                    const rowDate = row.dataset.createdAtDate || '';
-
-                    if (fromDate && rowDate < fromDate) {
-                        row.style.display = 'none';
-                        return;
-                    }
-
-                    if (toDate && rowDate > toDate) {
-                        row.style.display = 'none';
-                        return;
                     }
 
                     row.style.display = '';
