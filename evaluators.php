@@ -10,6 +10,11 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     exit();
 }
 
+$canImpersonate = $rolePermissionManager->userHasPermission(
+    $_SESSION['user_id'],
+    RolePermissionManager::$PERMISSIONS['USER_IMPERSONATE']
+);
+
 $allowedSortFields = ['name', 'email'];
 $allowedSortOrders = ['asc', 'desc'];
 
@@ -30,7 +35,7 @@ switch ($sortField) {
 }
 
 $stmt = $pdo->prepare(
-    "SELECT e.id, u.first_name, u.last_name, u.email "
+    "SELECT e.id, u.id AS user_id, u.first_name, u.last_name, u.email "
     . "FROM evaluator e "
     . "JOIN user u ON e.user_id = u.id "
     . "ORDER BY $orderByClause"
@@ -87,6 +92,15 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars($evaluator['email']); ?></td>
                                 <td>
                                     <div class="actions-cell">
+                                        <?php if ($canImpersonate): ?>
+                                            <button
+                                                class="impersonate-btn"
+                                                data-id="<?php echo $evaluator['user_id']; ?>"
+                                                data-name="<?php echo htmlspecialchars($evaluator['first_name'] . ' ' . $evaluator['last_name']); ?>"
+                                            >
+                                                <i class="fas fa-user-secret"></i> Assumi ruolo
+                                            </button>
+                                        <?php endif; ?>
                                         <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATOR_DELETE'])): ?>
                                             <button class="delete-btn" data-id="<?php echo $evaluator['id']; ?>">
                                                 <i class="fas fa-trash"></i> Elimina
@@ -108,6 +122,7 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.addEventListener('DOMContentLoaded', function() {
         const deleteButtons = document.querySelectorAll('.delete-btn');
         const messageDiv = document.getElementById('message');
+        const impersonateButtons = document.querySelectorAll('.impersonate-btn');
 
         deleteButtons.forEach(button => {
             button.addEventListener('click', async function() {
@@ -136,6 +151,41 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         messageDiv.className = 'message error';
                         messageDiv.style.display = 'block';
                     }
+                }
+            });
+        });
+
+        impersonateButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                const userId = this.dataset.id;
+                const userName = this.dataset.name;
+
+                if (!confirm('Vuoi agire come ' + userName + '?')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch('impersonate_user.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: userId })
+                    });
+
+                    const data = await response.json();
+
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
+                    messageDiv.style.display = 'block';
+
+                    if (data.success && data.redirect) {
+                        window.location.href = data.redirect;
+                    }
+                } catch (error) {
+                    messageDiv.textContent = 'Si è verificato un errore durante il cambio di utente.';
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
                 }
             });
         });
