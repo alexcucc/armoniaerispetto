@@ -99,7 +99,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           </div>
           <div class="button-container">
             <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
-            <button type="submit" class="page-button">Invia</button>
+            <button type="submit" class="page-button">Carica</button>
           </div>
         </form>
       </div>
