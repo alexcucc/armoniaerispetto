@@ -105,14 +105,14 @@ $statusLabels = [
 <html lang="it">
 <head>
     <?php include 'common-head.php'; ?>
-    <title>Risposte ai bandi da convalidare</title>
+    <title>Convalida risposte ai bandi</title>
 </head>
 <body class="management-page">
 <?php include 'header.php'; ?>
 <main>
     <div class="hero">
         <div class="title">
-            <h1>Risposte ai bandi da convalidare</h1>
+            <h1>Convalida risposte ai bandi</h1>
         </div>
         <div class="content-container">
             <div class="content">
