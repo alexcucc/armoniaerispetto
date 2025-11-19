@@ -294,8 +294,9 @@ $statusLabels = [
                                     <?php $supervisorName = trim((string) ($app['supervisor_name'] ?? '')); ?>
                                     <td><?php echo htmlspecialchars($supervisorName !== '' ? $supervisorName : 'Non assegnato'); ?></td>
                                     <?php
-                                    $statusKey = (string) $app['status'];
+                                    $statusKey = strtoupper((string) $app['status']);
                                     $statusLabel = $statusLabels[$statusKey] ?? ucwords(strtolower(str_replace('_', ' ', $statusKey)));
+                                    $isApproved = $statusKey === 'APPROVED';
                                     ?>
                                     <td><?php echo htmlspecialchars($statusLabel); ?></td>
                                     <td>
@@ -311,7 +312,7 @@ $statusLabels = [
                                     </td>
                                     <td>
                                         <div class="actions-cell">
-                                            <?php if ($canUpdate): ?>
+                                            <?php if ($canUpdate && !$isApproved): ?>
                                                 <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
                                                     <i class="fas fa-edit"></i> Modifica
                                                 </button>
