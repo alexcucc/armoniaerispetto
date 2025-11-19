@@ -66,7 +66,7 @@ $stmt = $pdo->prepare("
     WHERE e.application_id = a.id
       AND e.evaluator_id = :uid
   )
-    AND a.status = 'APPROVED'
+    AND a.status = 'FINAL_VALIDATION'
 ");
 $stmt->execute([':uid' => $_SESSION['user_id']]);
 foreach ($stmt->fetchAll() as $row) {
@@ -169,7 +169,7 @@ $pendingQuery = "
     SELECT 1 FROM evaluation e
     WHERE e.application_id = a.id
       AND e.evaluator_id = :uid
-  ) AND a.status = 'APPROVED'
+  ) AND a.status = 'FINAL_VALIDATION'
 ";
 $pendingParams = [':uid' => $_SESSION['user_id']];
 if ($selectedCall !== '') {

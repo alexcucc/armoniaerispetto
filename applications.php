@@ -115,7 +115,7 @@ if (!empty($whereClauses)) {
     $whereClause = 'WHERE ' . implode(' AND ', $whereClauses);
 }
 
-$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.application_pdf_path FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
+$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.application_pdf_path, a.rejection_reason FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
 $stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -149,8 +149,9 @@ $resetUrl = 'applications.php?' . http_build_query([
 
 $statusLabels = [
     'SUBMITTED' => 'In attesa',
-    'APPROVED' => 'Approvata',
+    'APPROVED' => 'Convalidata',
     'REJECTED' => 'Respinta',
+    'FINAL_VALIDATION' => 'Convalida in definitiva',
 ];
 ?>
 <!DOCTYPE html>
@@ -273,6 +274,7 @@ $statusLabels = [
                                     echo '<th><a href="' . htmlspecialchars($link) . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
                                 }
                                 ?>
+                                <th>Motivazione</th>
                                 <th>Documento</th>
                                 <?php
                                 ?>
@@ -283,7 +285,7 @@ $statusLabels = [
                         <tbody>
                             <?php if (empty($applications)): ?>
                                 <tr>
-                                    <td colspan="7">Nessuna risposta al bando trovata.</td>
+                                    <td colspan="8">Nessuna risposta al bando trovata.</td>
                                 </tr>
                             <?php else: ?>
                             <?php foreach ($applications as $app): ?>
@@ -296,9 +298,21 @@ $statusLabels = [
                                     <?php
                                     $statusKey = strtoupper((string) $app['status']);
                                     $statusLabel = $statusLabels[$statusKey] ?? ucwords(strtolower(str_replace('_', ' ', $statusKey)));
-                                    $isApproved = $statusKey === 'APPROVED';
+                                    $isLocked = in_array($statusKey, ['APPROVED', 'FINAL_VALIDATION'], true);
+                                    $rejectionReason = trim((string) ($app['rejection_reason'] ?? ''));
                                     ?>
                                     <td><?php echo htmlspecialchars($statusLabel); ?></td>
+                                    <td>
+                                        <?php if ($statusKey === 'REJECTED'): ?>
+                                            <?php if ($rejectionReason !== ''): ?>
+                                                <?php echo nl2br(htmlspecialchars($rejectionReason)); ?>
+                                            <?php else: ?>
+                                                <span class="text-warning">Motivazione mancante</span>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <div class="actions-cell">
                                             <?php if (!empty($app['application_pdf_path'])): ?>
@@ -312,7 +326,7 @@ $statusLabels = [
                                     </td>
                                     <td>
                                         <div class="actions-cell">
-                                            <?php if ($canUpdate && !$isApproved): ?>
+                                            <?php if ($canUpdate && !$isLocked): ?>
                                                 <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
                                                     <i class="fas fa-edit"></i> Modifica
                                                 </button>

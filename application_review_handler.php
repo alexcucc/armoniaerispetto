@@ -21,8 +21,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $applicationId = filter_input(INPUT_POST, 'application_id', FILTER_VALIDATE_INT);
 $decision = filter_input(INPUT_POST, 'decision', FILTER_UNSAFE_RAW);
+$finalValidationRequested = isset($_POST['final_validation']) && $_POST['final_validation'] === '1';
+$rejectionReason = trim((string) ($_POST['rejection_reason'] ?? ''));
 
 if (!$applicationId || !in_array($decision, ['APPROVED', 'REJECTED'], true)) {
+    header('Location: supervisor_applications.php?error=1');
+    exit();
+}
+
+if ($decision === 'REJECTED' && $rejectionReason === '') {
+    header('Location: supervisor_applications.php?error=1');
+    exit();
+}
+
+if ($finalValidationRequested && $decision !== 'APPROVED') {
     header('Location: supervisor_applications.php?error=1');
     exit();
 }
@@ -78,11 +90,20 @@ try {
         exit();
     }
 
-    $newStatus = $decision === 'APPROVED' ? 'APPROVED' : 'REJECTED';
-    $updateStmt = $pdo->prepare('UPDATE application SET status = :status, checklist_path = :path WHERE id = :id');
+    $newStatus = 'REJECTED';
+    if ($decision === 'APPROVED') {
+        $newStatus = $finalValidationRequested ? 'FINAL_VALIDATION' : 'APPROVED';
+    }
+
+    $rejectionReasonToSave = $decision === 'REJECTED' ? $rejectionReason : null;
+
+    $updateStmt = $pdo->prepare(
+        'UPDATE application SET status = :status, checklist_path = :path, rejection_reason = :reason WHERE id = :id'
+    );
     $updateStmt->execute([
         ':status' => $newStatus,
         ':path' => $destinationPath,
+        ':reason' => $rejectionReasonToSave,
         ':id' => $applicationId
     ]);
 

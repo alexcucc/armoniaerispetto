@@ -19,11 +19,24 @@
   
   // Query to fetch the organization name of the proponent
   $stmt = $pdo->prepare(
-      "SELECT o.name FROM application a LEFT JOIN organization o ON a.organization_id = o.id WHERE a.id = :application_id"
+      "SELECT o.name AS organization_name, a.status FROM application a LEFT JOIN organization o ON a.organization_id = o.id WHERE a.id = :application_id"
   );
   $stmt->execute([':application_id' => $application_id]);
-  $entity_name = $stmt->fetchColumn();
-  if ($entity_name === false || $entity_name === null || $entity_name === '') {
+  $applicationInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+  if (!$applicationInfo) {
+      $_SESSION['evaluation_error'] = 'Risposta al bando non trovata.';
+      header('Location: evaluations.php');
+      exit;
+  }
+
+  if (($applicationInfo['status'] ?? '') !== 'FINAL_VALIDATION') {
+      $_SESSION['evaluation_error'] = 'È possibile valutare solo le risposte in stato "Convalida in definitiva".';
+      header('Location: evaluations.php');
+      exit;
+  }
+
+  $entity_name = $applicationInfo['organization_name'] ?? '';
+  if ($entity_name === '') {
       $entity_name = 'Soggetto proponente';
   }
 

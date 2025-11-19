@@ -21,6 +21,7 @@ $supervisorId = $stmt->fetchColumn();
 
 $organizationId = isset($_GET['organization_id']) ? (int) $_GET['organization_id'] : null;
 $callId = isset($_GET['call_id']) ? (int) $_GET['call_id'] : null;
+$statusFilter = isset($_GET['status']) ? strtoupper(trim($_GET['status'])) : '';
 $selectedOrganizationName = null;
 $selectedCallTitle = null;
 
@@ -50,56 +51,60 @@ $callOptions = $callOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
 $organizationOptionsStmt = $pdo->query('SELECT id, name FROM organization ORDER BY name');
 $organizationOptions = $organizationOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($supervisorId) {
-    $baseWhere = ['a.supervisor_id = :sid'];
-    $baseParams = [':sid' => $supervisorId];
-
-    if ($organizationId) {
-        $baseWhere[] = 'a.organization_id = :organization_id';
-        $baseParams[':organization_id'] = $organizationId;
-    }
-
-    if ($callId) {
-        $baseWhere[] = 'a.call_for_proposal_id = :call_id';
-        $baseParams[':call_id'] = $callId;
-    }
-
-    $pendingWhere = array_merge(['a.status = :pending_status'], $baseWhere);
-    $pendingSql = 'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, a.status '
-        . 'FROM application a '
-        . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
-        . 'JOIN organization o ON a.organization_id = o.id '
-        . 'WHERE ' . implode(' AND ', $pendingWhere)
-        . ' ORDER BY c.title, o.name, a.project_name';
-    $pendingStmt = $pdo->prepare($pendingSql);
-    $pendingParams = $baseParams;
-    $pendingParams[':pending_status'] = 'SUBMITTED';
-    $pendingStmt->execute($pendingParams);
-    $pendingApplications = $pendingStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $reviewedWhere = array_merge(['a.status IN ("APPROVED", "REJECTED")'], $baseWhere);
-    $reviewedSql = 'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, a.status '
-        . 'FROM application a '
-        . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
-        . 'JOIN organization o ON a.organization_id = o.id '
-        . 'WHERE ' . implode(' AND ', $reviewedWhere)
-        . ' ORDER BY a.updated_at DESC';
-    $reviewedStmt = $pdo->prepare($reviewedSql);
-    $reviewedStmt->execute($baseParams);
-    $reviewedApplications = $reviewedStmt->fetchAll(PDO::FETCH_ASSOC);
-} else {
-    $pendingApplications = [];
-    $reviewedApplications = [];
-}
-
-$filtersApplied = $selectedCallTitle || $selectedOrganizationName;
+$applications = [];
+$filtersApplied = $selectedCallTitle || $selectedOrganizationName || $statusFilter !== '';
 $resetUrl = 'supervisor_applications.php';
 
 $statusLabels = [
     'SUBMITTED' => 'In attesa',
-    'APPROVED' => 'Approvata',
-    'REJECTED' => 'Respinta'
+    'APPROVED' => 'Convalidata',
+    'REJECTED' => 'Respinta',
+    'FINAL_VALIDATION' => 'Convalida in definitiva',
 ];
+$allowedStatuses = array_keys($statusLabels);
+if ($statusFilter !== '' && !in_array($statusFilter, $allowedStatuses, true)) {
+    $statusFilter = '';
+}
+$statusOptions = ['' => 'Tutti gli stati'];
+foreach ($allowedStatuses as $statusKey) {
+    $statusOptions[$statusKey] = $statusLabels[$statusKey] ?? $statusKey;
+}
+
+if ($supervisorId) {
+    $where = ['a.supervisor_id = :sid'];
+    $params = [':sid' => $supervisorId];
+
+    if ($organizationId) {
+        $where[] = 'a.organization_id = :organization_id';
+        $params[':organization_id'] = $organizationId;
+        $filtersApplied = true;
+    }
+
+    if ($callId) {
+        $where[] = 'a.call_for_proposal_id = :call_id';
+        $params[':call_id'] = $callId;
+        $filtersApplied = true;
+    }
+
+    if ($statusFilter !== '') {
+        $where[] = 'a.status = :status_filter';
+        $params[':status_filter'] = $statusFilter;
+        $filtersApplied = true;
+    } else {
+        $where[] = 'a.status IN ("SUBMITTED", "APPROVED", "REJECTED", "FINAL_VALIDATION")';
+    }
+
+    $sql = 'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, a.status, a.rejection_reason '
+        . 'FROM application a '
+        . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
+        . 'JOIN organization o ON a.organization_id = o.id '
+        . 'WHERE ' . implode(' AND ', $where)
+        . ' ORDER BY a.updated_at DESC';
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -142,6 +147,16 @@ $statusLabels = [
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label class="form-label" for="status">Stato</label>
+                        <select id="status" name="status" class="form-input">
+                            <?php foreach ($statusOptions as $value => $label): ?>
+                                <option value="<?php echo htmlspecialchars($value); ?>" <?php echo $statusFilter === $value ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($label); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="filters-actions">
                         <button type="submit" class="page-button">Applica filtri</button>
                         <a href="<?php echo htmlspecialchars($resetUrl); ?>" class="page-button secondary-button">Reset</a>
@@ -160,117 +175,75 @@ $statusLabels = [
                                 per
                             <?php endif; ?>
                             l'ente "<strong><?php echo htmlspecialchars($selectedOrganizationName); ?></strong>"
+                        <?php endif; ?>
+                        <?php if ($statusFilter !== ''): ?>
+                            <?php if ($selectedCallTitle || $selectedOrganizationName): ?>
+                                con lo stato
+                            <?php else: ?>
+                                nello stato
+                            <?php endif; ?>
+                            "<strong><?php echo htmlspecialchars($statusLabels[$statusFilter] ?? $statusFilter); ?></strong>"
                         <?php endif; ?>.
                         <a href="<?php echo htmlspecialchars($resetUrl); ?>">Mostra tutte le risposte ai bandi</a>
                     </p>
                 <?php endif; ?>
-                <div class="tab-container">
-                    <div class="tab-buttons" role="tablist" aria-label="Filtra risposte per stato">
-                        <button
-                            type="button"
-                            class="tab-button active"
-                            role="tab"
-                            id="applications-reviewed-tab"
-                            aria-controls="applications-reviewed"
-                            aria-selected="true"
-                        >
-                            Risposte convalidate
-                        </button>
-                        <button
-                            type="button"
-                            class="tab-button"
-                            role="tab"
-                            id="applications-pending-tab"
-                            aria-controls="applications-pending"
-                            aria-selected="false"
-                        >
-                            Risposte da convalidare
-                        </button>
-                    </div>
-                    <div class="tab-panels">
-                        <section
-                            id="applications-reviewed"
-                            class="tab-panel active users-table-container"
-                            role="tabpanel"
-                            aria-labelledby="applications-reviewed-tab"
-                        >
-                            <table class="users-table">
-                                <thead>
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Bando</th>
+                                <th>Ente</th>
+                                <th>Nome Progetto</th>
+                                <th>Stato</th>
+                                <th>Motivazione</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($applications)): ?>
+                                <tr>
+                                    <td colspan="6">Nessuna risposta al bando trovata.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($applications as $app): ?>
+                                    <?php
+                                        $statusKey = strtoupper((string) $app['status']);
+                                        $statusLabel = $statusLabels[$statusKey] ?? $statusKey;
+                                        $rejectionReason = trim((string) ($app['rejection_reason'] ?? ''));
+                                        $isRejected = $statusKey === 'REJECTED';
+                                        $isFinal = $statusKey === 'FINAL_VALIDATION';
+                                        $canEdit = !$isFinal;
+                                    ?>
                                     <tr>
-                                        <th>Bando</th>
-                                        <th>Ente</th>
-                                        <th>Nome Progetto</th>
-                                        <th>Esito</th>
-                                        <th>Azioni</th>
+                                        <td><?php echo htmlspecialchars($app['call_title']); ?></td>
+                                        <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($app['project_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($statusLabel); ?></td>
+                                        <td>
+                                            <?php if ($isRejected): ?>
+                                                <?php if ($rejectionReason !== ''): ?>
+                                                    <?php echo nl2br(htmlspecialchars($rejectionReason)); ?>
+                                                <?php else: ?>
+                                                    <span class="text-warning">Motivazione mancante</span>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <span class="text-muted">-</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <div class="actions-cell">
+                                                <?php if ($canEdit): ?>
+                                                    <a class="page-button<?php echo $statusKey === 'SUBMITTED' ? '' : ' secondary-button'; ?>" href="application_review.php?application_id=<?php echo $app['id']; ?>">
+                                                        <?php echo $statusKey === 'SUBMITTED' ? 'Convalida' : 'Modifica'; ?>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($reviewedApplications)): ?>
-                                        <tr>
-                                            <td colspan="5">Nessuna risposta al bando convalidata.</td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <?php foreach ($reviewedApplications as $app): ?>
-                                            <tr>
-                                                <td><?php echo htmlspecialchars($app['call_title']); ?></td>
-                                                <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($app['project_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($statusLabels[$app['status']] ?? $app['status']); ?></td>
-                                                <td>
-                                                    <div class="actions-cell">
-                                                        <a
-                                                            class="page-button secondary-button"
-                                                            href="application_review.php?application_id=<?php echo $app['id']; ?>"
-                                                        >
-                                                            Modifica
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </section>
-                        <section
-                            id="applications-pending"
-                            class="tab-panel users-table-container"
-                            role="tabpanel"
-                            aria-labelledby="applications-pending-tab"
-                            hidden
-                        >
-                            <table class="users-table">
-                                <thead>
-                                    <tr>
-                                        <th>Bando</th>
-                                        <th>Ente</th>
-                                        <th>Nome Progetto</th>
-                                        <th>Azioni</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (empty($pendingApplications)): ?>
-                                        <tr>
-                                            <td colspan="4">Nessuna risposta al bando da convalidare.</td>
-                                        </tr>
-                                    <?php else: ?>
-                                        <?php foreach ($pendingApplications as $app): ?>
-                                            <tr>
-                                                <td><?php echo htmlspecialchars($app['call_title']); ?></td>
-                                                <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($app['project_name']); ?></td>
-                                                <td>
-                                                    <div class="actions-cell">
-                                                        <a class="page-button" href="application_review.php?application_id=<?php echo $app['id']; ?>">Convalida</a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </section>
-                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

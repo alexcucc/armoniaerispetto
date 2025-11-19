@@ -74,6 +74,16 @@ if (!in_array($action, ['save', 'submit'], true)) {
 }
 $isSubmitAction = $action === 'submit';
 
+$applicationStatusStmt = $pdo->prepare('SELECT status FROM application WHERE id = :application_id');
+$applicationStatusStmt->execute([':application_id' => $applicationId]);
+$applicationStatus = $applicationStatusStmt->fetchColumn();
+if ($applicationStatus === false) {
+    sendResponseAndExit($isAjaxRequest, false, 'Risposta al bando non trovata.');
+}
+if ($applicationStatus !== 'FINAL_VALIDATION') {
+    sendResponseAndExit($isAjaxRequest, false, 'È possibile valutare solo le risposte in stato "Convalida in definitiva".');
+}
+
 $providedEvaluationId = null;
 if (isset($_POST['evaluation_id'])) {
     $evaluationIdParam = $_POST['evaluation_id'];

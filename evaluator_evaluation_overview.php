@@ -85,7 +85,7 @@ $pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS
     . "COALESCE(e.status, 'NOT_STARTED') AS status, a.updated_at "
     . "FROM evaluator ev "
     . "JOIN user u ON ev.user_id = u.id "
-    . "JOIN application a ON a.status IN ('SUBMITTED', 'APPROVED', 'REJECTED') "
+    . "JOIN application a ON a.status = 'FINAL_VALIDATION' "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
     . "JOIN organization o ON a.organization_id = o.id "
     . "JOIN supervisor s ON a.supervisor_id = s.id "

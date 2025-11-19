@@ -17,7 +17,7 @@ if (!$appId) {
 }
 
 $stmt = $pdo->prepare(
-    'SELECT a.project_name, a.status, a.checklist_path, '
+    'SELECT a.project_name, a.status, a.checklist_path, a.rejection_reason, '
     . 'c.title AS call_title, o.name AS organization_name, a.supervisor_id, '
     . 's.user_id AS supervisor_user_id '
     . 'FROM application a '
@@ -43,6 +43,8 @@ if (!in_array($application['status'], $editableStatuses, true)) {
 $isEditing = $application['status'] !== 'SUBMITTED';
 $currentDecision = $isEditing ? $application['status'] : null;
 $hasExistingChecklist = !empty($application['checklist_path']);
+$existingRejectionReason = $application['rejection_reason'] ?? '';
+$showRejectionReason = $currentDecision === 'REJECTED';
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -68,6 +70,21 @@ $hasExistingChecklist = !empty($application['checklist_path']);
                     <label><input type="radio" name="decision" value="REJECTED" <?php echo $currentDecision === 'REJECTED' ? 'checked' : ''; ?> required> Respingi</label>
                 </div>
             </div>
+            <div
+                class="form-group"
+                id="rejection-reason-group"
+                style="display: <?php echo $showRejectionReason ? 'block' : 'none'; ?>;"
+            >
+                <label class="form-label<?php echo $showRejectionReason ? ' required' : ''; ?>" id="rejection_reason_label" for="rejection_reason">Motivazione del rifiuto</label>
+                <textarea
+                    id="rejection_reason"
+                    name="rejection_reason"
+                    class="form-input"
+                    rows="4"
+                    <?php echo $showRejectionReason ? 'required' : ''; ?>
+                ><?php echo htmlspecialchars($existingRejectionReason); ?></textarea>
+                <p class="form-help">Campo obbligatorio quando la risposta viene respinta.</p>
+            </div>
             <div class="form-group">
                 <label class="form-label<?php echo $isEditing ? '' : ' required'; ?>" for="checklist">checklist.pdf</label>
                 <input
@@ -86,6 +103,17 @@ $hasExistingChecklist = !empty($application['checklist_path']);
                     </p>
                 <?php endif; ?>
             </div>
+            <div class="form-group">
+                <label class="form-label" for="final_validation">Convalida in definitiva</label>
+                <p class="form-help">
+                    Attiva questa opzione per impostare la risposta nello stato "Convalida in definitiva". Una volta confermato
+                    non sarà più possibile modificarla e i valutatori potranno analizzarla.
+                </p>
+                <label>
+                    <input type="checkbox" id="final_validation" name="final_validation" value="1">
+                    Imposta lo stato finale
+                </label>
+            </div>
             <input type="hidden" name="supervisor_id" value="<?php echo htmlspecialchars($application['supervisor_id']); ?>">
             <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($appId); ?>">
             <div class="button-container">
@@ -96,5 +124,44 @@ $hasExistingChecklist = !empty($application['checklist_path']);
     </div>
 </main>
 <?php include 'footer.php'; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const decisionInputs = document.querySelectorAll('input[name="decision"]');
+        const rejectionGroup = document.getElementById('rejection-reason-group');
+        const rejectionTextarea = document.getElementById('rejection_reason');
+        const rejectionLabel = document.getElementById('rejection_reason_label');
+        const finalValidationInput = document.getElementById('final_validation');
+
+        function updateFormState() {
+            const selectedDecision = document.querySelector('input[name="decision"]:checked');
+            const decisionValue = selectedDecision ? selectedDecision.value : null;
+            const isRejected = decisionValue === 'REJECTED';
+            const canFinalize = decisionValue === 'APPROVED';
+
+            if (rejectionGroup) {
+                rejectionGroup.style.display = isRejected ? 'block' : 'none';
+            }
+            if (rejectionTextarea) {
+                rejectionTextarea.required = isRejected;
+                rejectionTextarea.setAttribute('aria-required', isRejected ? 'true' : 'false');
+            }
+            if (rejectionLabel) {
+                rejectionLabel.classList.toggle('required', isRejected);
+            }
+            if (finalValidationInput) {
+                finalValidationInput.disabled = !canFinalize;
+                if (!canFinalize) {
+                    finalValidationInput.checked = false;
+                }
+            }
+        }
+
+        decisionInputs.forEach(function (input) {
+            input.addEventListener('change', updateFormState);
+        });
+
+        updateFormState();
+    });
+</script>
 </body>
 </html>
