@@ -331,7 +331,7 @@ $pending = $stmt->fetchAll();
                                   href="applications.php?application_id=<?php echo $row['application_id']; ?>"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                >Visualizza risposta</a>
+                                >Apri risposta</a>
                               </div>
                             </td>
                             <td>
@@ -390,7 +390,7 @@ $pending = $stmt->fetchAll();
                                   href="applications.php?application_id=<?php echo $row['application_id']; ?>"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                >Visualizza risposta</a>
+                                >Apri risposta</a>
                               </div>
                             </td>
                             <td>
@@ -454,7 +454,7 @@ $pending = $stmt->fetchAll();
                                   href="applications.php?application_id=<?php echo $row['application_id']; ?>"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                >Visualizza risposta</a>
+                                >Apri risposta</a>
                               </div>
                             </td>
                             <td>
