@@ -39,8 +39,8 @@ if (!$org) {
         <form class="contact-form" action="organization_edit_handler.php" method="POST">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($org['id']); ?>">
             <div class="form-group">
-                <label class="form-label required" for="name">Denominazione</label>
-                <input type="text" id="name" name="name" class="form-input" required value="<?php echo htmlspecialchars($org['name']); ?>">
+                <label class="form-label" for="name">Denominazione</label>
+                <input type="text" id="name" name="name" class="form-input" value="<?php echo htmlspecialchars($org['name']); ?>" readonly>
             </div>
             <div class="form-group">
                 <label class="form-label required" for="type">Tipo</label>
