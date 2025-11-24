@@ -218,12 +218,12 @@
         background-color: #ffffff;
         border: 1px solid #d1d5db;
         border-radius: 0.75rem;
-        padding: 1rem 1.25rem;
+        padding: 0.85rem 1rem;
         box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
         font-weight: 600;
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         color: #1f2937;
-        min-width: 12rem;
+        min-width: 11rem;
         text-align: center;
         z-index: 1000;
       }
@@ -253,6 +253,209 @@
           max-width: 22rem;
         }
       }
+
+      .evaluation-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+
+      .contact-form-container {
+        max-width: 1220px;
+      }
+
+      .contact-form {
+        padding-bottom: 3.5rem;
+      }
+
+      .evaluation-stepper {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.75rem;
+      }
+
+      .evaluation-stepper__item {
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        overflow: hidden;
+      }
+
+      .evaluation-stepper__button {
+        width: 100%;
+        border: none;
+        background: none;
+        padding: 0.75rem 0.9rem;
+        text-align: left;
+        font-weight: 600;
+        color: #111827;
+        display: flex;
+        gap: 0.65rem;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .evaluation-stepper__number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 9999px;
+        background: #e5e7eb;
+        color: #1f2937;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      .evaluation-stepper__label {
+        flex: 1;
+      }
+
+      .evaluation-stepper__item.active {
+        background: #ecfeff;
+        border-color: #06b6d4;
+      }
+
+      .evaluation-stepper__item.active .evaluation-stepper__number {
+        background: #06b6d4;
+        color: #fff;
+      }
+
+      .evaluation-stepper__item:focus-within {
+        outline: 2px solid #0ea5e9;
+        outline-offset: 2px;
+      }
+
+      .evaluation-step {
+        display: none;
+      }
+
+      .evaluation-step.active {
+        display: block;
+      }
+
+      .evaluation-actions {
+        position: fixed;
+        bottom: 1.25rem;
+        right: 1.25rem;
+        left: auto;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
+        padding: 0.65rem 0.9rem;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        justify-content: flex-start;
+        align-items: flex-end;
+        border-radius: 0.75rem;
+        z-index: 1100;
+      }
+
+      .evaluation-actions__nav,
+      .evaluation-actions__main {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: nowrap;
+      }
+
+      .evaluation-actions__nav .page-button {
+        background: #0ea5e9;
+        color: #fff;
+        border: none;
+        padding: 0.55rem 0.85rem;
+        border-radius: 0.4rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.92rem;
+      }
+
+      .evaluation-actions__nav .page-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .evaluation-actions__back-link {
+        color: #0f172a;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .evaluation-actions .submit-btn,
+      .evaluation-actions .page-button,
+      .evaluation-actions .back-button {
+        width: auto;
+        min-width: 8rem;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.95rem;
+      }
+
+      .evaluation-actions .submit-btn {
+        border-radius: 0.4rem;
+      }
+
+      @media (max-width: 640px) {
+        .evaluation-stepper__button {
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .evaluation-actions {
+          width: calc(100% - 2.5rem);
+          left: 1.25rem;
+          right: 1.25rem;
+          align-items: flex-start;
+        }
+
+        .evaluation-actions__nav,
+        .evaluation-actions__main {
+          flex-wrap: wrap;
+        }
+      }
+
+      .score-buttons {
+        gap: 0.35rem;
+      }
+
+      .score-buttons .score-button {
+        width: 1.65rem;
+        height: 1.65rem;
+        font-size: 0.82rem;
+        border-radius: 0.3rem;
+      }
+
+      .criteria-info {
+        display: none;
+        margin-top: 0.25rem;
+      }
+
+      .info-toggle {
+        margin: 0.25rem 0 0.2rem;
+        padding: 0.2rem;
+        background-color: #e7f2fa;
+        color: #0c4a6e;
+        border: 1px solid #cbe7fb;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        width: 1.8rem;
+        height: 1.8rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
     </style>
   </head>
   <body class="management-page">
@@ -263,9 +466,6 @@
     </div>
     <main>
       <div class="contact-form-container" style="margin-top:2em;">
-        <div class="button-container" style="margin-bottom: 1.5em;">
-          <a href="evaluations.php" class="page-button back-button">Indietro</a>
-        </div>
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
           <input type="hidden" name="application_id" value="<?php echo $application_id; ?>">
@@ -273,14 +473,75 @@
           <?php if ($existingEvaluationId !== null): ?>
             <input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>">
           <?php endif; ?>
+          <div class="evaluation-header">
+            <div>
+              <h2>Valutazione <?php echo htmlspecialchars($entity_name); ?></h2>
+              <p class="form-note">Tutte le valutazioni utilizzano una scala da 1 (livello minimo) a 10 (livello massimo). Seleziona il punteggio desiderato cliccando sui pulsanti numerici.</p>
+              <?php if ($existingEvaluationId !== null): ?>
+                <p class="form-note"><strong>Stato corrente:</strong> bozza modificabile.</p>
+              <?php endif; ?>
+            </div>
+          </div>
 
-          <h2>Valutazione <?php echo htmlspecialchars($entity_name); ?></h2>
-          <p class="form-note">Tutte le valutazioni utilizzano una scala da 1 (livello minimo) a 10 (livello massimo). Seleziona il punteggio desiderato cliccando sui pulsanti numerici.</p>
-          <?php if ($existingEvaluationId !== null): ?>
-            <p class="form-note"><strong>Stato corrente:</strong> bozza modificabile.</p>
-          <?php endif; ?>
-          <hr>
-          <h3>Soggetto Proponente</h3>
+          <ol class="evaluation-stepper" id="evaluation-stepper" aria-label="Percorso di valutazione">
+            <li class="evaluation-stepper__item active" data-step-index="0">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">1</span>
+                <span class="evaluation-stepper__label">Soggetto Proponente</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="1">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">2</span>
+                <span class="evaluation-stepper__label">Progetto</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="2">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">3</span>
+                <span class="evaluation-stepper__label">Piano Finanziario</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="3">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">4</span>
+                <span class="evaluation-stepper__label">Elementi Qualitativi</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="4">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">5</span>
+                <span class="evaluation-stepper__label">Criteri Tematici - Ripopolamento</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="5">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">6</span>
+                <span class="evaluation-stepper__label">Criteri Tematici - Salvaguardia</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="6">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">7</span>
+                <span class="evaluation-stepper__label">Criteri Tematici - Coabitazione</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="7">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">8</span>
+                <span class="evaluation-stepper__label">Criteri Tematici - Supporto di comunità</span>
+              </button>
+            </li>
+            <li class="evaluation-stepper__item" data-step-index="8">
+              <button type="button" class="evaluation-stepper__button">
+                <span class="evaluation-stepper__number">9</span>
+                <span class="evaluation-stepper__label">Criteri Tematici - Cultura - Educazione - Sensibilizzazione</span>
+              </button>
+            </li>
+          </ol>
+
+          <div class="evaluation-step active" data-step-index="0">
+            <h3>Soggetto Proponente</h3>
           <div class="form-group">
             <label class="form-label required">Informazioni Generali</label>
             <?php renderScoreButtons('proposing_entity[general_information_score]', 'Informazioni Generali', $evaluationData['proposing_entity']['general_information_score']); ?>
@@ -375,8 +636,10 @@
             </small>
           </div>
 
-          <hr>
-          <h3>Progetto</h3>
+          </div>
+
+          <div class="evaluation-step" data-step-index="1">
+            <h3>Progetto</h3>
           <div class="form-group">
             <label class="form-label required">Identificazione dei bisogni e analisi dei problemi</label>
             <?php renderScoreButtons('project[needs_identification_and_problem_analysis_score]', 'Identificazione dei bisogni e analisi dei problemi', $evaluationData['project']['needs_identification_and_problem_analysis_score']); ?>
@@ -495,8 +758,10 @@
             </small>
           </div>
 
-          <hr>
-          <h3>Piano Finanziario</h3>
+          </div>
+
+          <div class="evaluation-step" data-step-index="2">
+            <h3>Piano Finanziario</h3>
           <div class="form-group">
             <label class="form-label required">Completezza e chiarezza del budget</label>
             <?php renderScoreButtons('financial_plan[completeness_and_clarity_of_budget_score]', 'Completezza e chiarezza del budget', $evaluationData['financial_plan']['completeness_and_clarity_of_budget_score']); ?>
@@ -540,8 +805,10 @@
             </small>
           </div>
 
-          <hr>
-          <h2>Elementi Qualitativi</h2>
+          </div>
+
+          <div class="evaluation-step" data-step-index="3">
+            <h3>Elementi Qualitativi</h3>
           <div class="form-group">
             <label class="form-label required">L'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento</label>
             <?php renderScoreButtons('qualitative_elements[impact_score]', 'L\'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento', $evaluationData['qualitative_elements']['impact_score']); ?>
@@ -629,8 +896,10 @@
             </small>
           </div>
 
-          <hr>
-          <h3>Criteri Tematici - Ripopolamento</h3>
+          </div>
+
+          <div class="evaluation-step" data-step-index="4">
+            <h3>Criteri Tematici - Ripopolamento</h3>
           <div class="form-group">
             <label class="form-label required">Habitat dell'intervento</label>
             <?php renderScoreButtons('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
@@ -672,240 +941,248 @@
             </small>
           </div>
 
-          <hr>
-          <h3>Criteri Tematici - Salvaguardia</h3>
-          <div class="form-group">
-            <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
-            <?php renderScoreButtons('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto adotta un approccio sistemico per affrontare le problematiche ambientali?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Advocacy e rafforzamento giuridico</label>
-            <?php renderScoreButtons('thematic_safeguard[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_safeguard']['advocacy_and_legal_strengthening_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto promuove l'advocacy e il rafforzamento giuridico per la tutela dell'ambiente?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Salvaguardia dell'habitat (flora e fauna)</label>
-            <?php renderScoreButtons('thematic_safeguard[habitat_safeguard_score]', 'Salvaguardia dell\'habitat (flora e fauna)', $evaluationData['thematic_safeguard']['habitat_safeguard_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto contribuisce alla salvaguardia degli habitat naturali (flora e fauna)?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.</label>
-            <?php renderScoreButtons('thematic_safeguard[reservers_development_participation_score]', 'Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.', $evaluationData['thematic_safeguard']['reservers_development_participation_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede la compartecipazione allo sviluppo di riserve, oasi, CRAS, ecc.?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Attività dedicate a specie cruciali e/o a rischio estinzione</label>
-            <?php renderScoreButtons('thematic_safeguard[crucial_species_activities_score]', 'Attività dedicate a specie cruciali e/o a rischio estinzione', $evaluationData['thematic_safeguard']['crucial_species_activities_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
-            <?php renderScoreButtons('thematic_safeguard[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_safeguard']['multistakeholder_involvement_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede il coinvolgimento di più attori (comunità locale, istituzioni, privato sociale)?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-            <?php renderScoreButtons('thematic_safeguard[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_safeguard']['multidisciplinary_sustainability_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede un approccio multidisciplinare per garantire la sostenibilità (istituzionale, ambientale, culturale, economica)?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
           </div>
 
-          <hr>
-          <h3>Criteri Tematici - Coabitazione</h3>
-          <div class="form-group">
-            <label class="form-label required">Strategia di riduzione dei rischi</label>
-            <?php renderScoreButtons('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede una strategia di riduzione dei rischi?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Tutela della biodiversità e integrazione della presenza animale  alle attività umane (es Rwanda)</label>
-            <?php renderScoreButtons('thematic_cohabitation[biodiversity_protection_and_animal_integrity_score]', 'Tutela della biodiversità e integrazione della presenza animale alle attività umane (es Rwanda)', $evaluationData['thematic_cohabitation']['biodiversity_protection_and_animal_integrity_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Coinvolgimento comunità locale</label>
-            <?php renderScoreButtons('thematic_cohabitation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_cohabitation']['local_community_involvement_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede il coinvolgimento della comunità locale?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Sostegno allo sviluppo di un'economia circolare per il sostentamento locale</label>
-            <?php renderScoreButtons('thematic_cohabitation[circular_economy_development_score]', 'Sostegno allo sviluppo di un\'economia circolare per il sostentamento locale', $evaluationData['thematic_cohabitation']['circular_economy_development_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede il sostegno allo sviluppo di un'economia circolare per il sostentamento locale?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-            <?php renderScoreButtons('thematic_cohabitation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_cohabitation']['multidisciplinary_sustainability_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-
-          <hr>
-          <h3>Criteri Tematici - Supporto di comunità</h3>
-          <div class="form-group">
-            <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
-            <?php renderScoreButtons('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede un approccio sistemico per lo sviluppo della comunità?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Contrasto alle discriminazione sociali</label>
-            <?php renderScoreButtons('thematic_community_support[social_discrimination_fighting_score]', 'Contrasto alle discriminazione sociali', $evaluationData['thematic_community_support']['social_discrimination_fighting_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede misure per contrastare le discriminazioni sociali?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Salvaguardia dell'habitat</label>
-            <?php renderScoreButtons('thematic_community_support[habitat_protection_score]', 'Salvaguardia dell\'habitat', $evaluationData['thematic_community_support']['habitat_protection_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede misure per la salvaguardia dell'habitat?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
-            <?php renderScoreButtons('thematic_community_support[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_community_support']['multistakeholder_involvement_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-            <?php renderScoreButtons('thematic_community_support[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_community_support']['multidisciplinary_sustainability_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
+          <div class="evaluation-step" data-step-index="5">
+            <h3>Criteri Tematici - Salvaguardia</h3>
+            <div class="form-group">
+              <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
+              <?php renderScoreButtons('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto adotta un approccio sistemico per affrontare le problematiche ambientali?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Advocacy e rafforzamento giuridico</label>
+              <?php renderScoreButtons('thematic_safeguard[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_safeguard']['advocacy_and_legal_strengthening_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto promuove l'advocacy e il rafforzamento giuridico per la tutela dell'ambiente?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Salvaguardia dell'habitat (flora e fauna)</label>
+              <?php renderScoreButtons('thematic_safeguard[habitat_safeguard_score]', 'Salvaguardia dell\'habitat (flora e fauna)', $evaluationData['thematic_safeguard']['habitat_safeguard_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto contribuisce alla salvaguardia degli habitat naturali (flora e fauna)?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.</label>
+              <?php renderScoreButtons('thematic_safeguard[reservers_development_participation_score]', 'Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.', $evaluationData['thematic_safeguard']['reservers_development_participation_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede la compartecipazione allo sviluppo di riserve, oasi, CRAS, ecc.?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Attività dedicate a specie cruciali e/o a rischio estinzione</label>
+              <?php renderScoreButtons('thematic_safeguard[crucial_species_activities_score]', 'Attività dedicate a specie cruciali e/o a rischio estinzione', $evaluationData['thematic_safeguard']['crucial_species_activities_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
+              <?php renderScoreButtons('thematic_safeguard[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_safeguard']['multistakeholder_involvement_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede il coinvolgimento di più attori (comunità locale, istituzioni, privato sociale)?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
+              <?php renderScoreButtons('thematic_safeguard[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_safeguard']['multidisciplinary_sustainability_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede un approccio multidisciplinare per garantire la sostenibilità (istituzionale, ambientale, culturale, economica)?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
           </div>
 
-          <hr>
-          <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione</h3>
-          <div class="form-group">
-            <label class="form-label required">Strumenti di disseminazione</label>
-            <?php renderScoreButtons('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede strumenti di disseminazione efficaci?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
+          <div class="evaluation-step" data-step-index="6">
+            <h3>Criteri Tematici - Coabitazione</h3>
+            <div class="form-group">
+              <label class="form-label required">Strategia di riduzione dei rischi</label>
+              <?php renderScoreButtons('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede una strategia di riduzione dei rischi?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Tutela della biodiversità e integrazione della presenza animale  alle attività umane (es Rwanda)</label>
+              <?php renderScoreButtons('thematic_cohabitation[biodiversity_protection_and_animal_integrity_score]', 'Tutela della biodiversità e integrazione della presenza animale alle attività umane (es Rwanda)', $evaluationData['thematic_cohabitation']['biodiversity_protection_and_animal_integrity_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Coinvolgimento comunità locale</label>
+              <?php renderScoreButtons('thematic_cohabitation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_cohabitation']['local_community_involvement_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede il coinvolgimento della comunità locale?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Sostegno allo sviluppo di un'economia circolare per il sostentamento locale</label>
+              <?php renderScoreButtons('thematic_cohabitation[circular_economy_development_score]', 'Sostegno allo sviluppo di un\'economia circolare per il sostentamento locale', $evaluationData['thematic_cohabitation']['circular_economy_development_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede il sostegno allo sviluppo di un'economia circolare per il sostentamento locale?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
+              <?php renderScoreButtons('thematic_cohabitation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_cohabitation']['multidisciplinary_sustainability_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label required">Advocacy e rafforzamento giuridico</label>
-            <?php renderScoreButtons('thematic_culture_education[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_culture_education']['advocacy_and_legal_strengthening_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede attività di advocacy e rafforzamento giuridico?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
+          <div class="evaluation-step" data-step-index="7">
+            <h3>Criteri Tematici - Supporto di comunità</h3>
+            <div class="form-group">
+              <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
+              <?php renderScoreButtons('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede un approccio sistemico per lo sviluppo della comunità?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Contrasto alle discriminazione sociali</label>
+              <?php renderScoreButtons('thematic_community_support[social_discrimination_fighting_score]', 'Contrasto alle discriminazione sociali', $evaluationData['thematic_community_support']['social_discrimination_fighting_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede misure per contrastare le discriminazioni sociali?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Salvaguardia dell'habitat</label>
+              <?php renderScoreButtons('thematic_community_support[habitat_protection_score]', 'Salvaguardia dell\'habitat', $evaluationData['thematic_community_support']['habitat_protection_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede misure per la salvaguardia dell'habitat?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
+              <?php renderScoreButtons('thematic_community_support[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_community_support']['multistakeholder_involvement_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
+              <?php renderScoreButtons('thematic_community_support[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_community_support']['multidisciplinary_sustainability_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label required">Grado di innovazione</label>
-            <?php renderScoreButtons('thematic_culture_education[innovation_score]', 'Grado di innovazione', $evaluationData['thematic_culture_education']['innovation_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede elementi innovativi?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
+          <div class="evaluation-step" data-step-index="8">
+            <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione</h3>
+            <div class="form-group">
+              <label class="form-label required">Strumenti di disseminazione</label>
+              <?php renderScoreButtons('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede strumenti di disseminazione efficaci?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Advocacy e rafforzamento giuridico</label>
+              <?php renderScoreButtons('thematic_culture_education[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_culture_education']['advocacy_and_legal_strengthening_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede attività di advocacy e rafforzamento giuridico?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Grado di innovazione</label>
+              <?php renderScoreButtons('thematic_culture_education[innovation_score]', 'Grado di innovazione', $evaluationData['thematic_culture_education']['innovation_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede elementi innovativi?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)</label>
+              <?php renderScoreButtons('thematic_culture_education[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)', $evaluationData['thematic_culture_education']['multistakeholder_involvement_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
+              <?php renderScoreButtons('thematic_culture_education[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_culture_education']['multidisciplinary_sustainability_score']); ?>
+              <small>
+                <ul>
+                  <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
+                </ul>
+                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
+              </small>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label required">Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)</label>
-            <?php renderScoreButtons('thematic_culture_education[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)', $evaluationData['thematic_culture_education']['multistakeholder_involvement_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-            <?php renderScoreButtons('thematic_culture_education[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_culture_education']['multidisciplinary_sustainability_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
-              </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
-            </small>
-          </div>
-          
-          <div class="form-group" style="margin-top:1em;">
-            <div class="actions-cell" style="gap: 1rem; display: flex; flex-wrap: wrap;">
+<div class="evaluation-actions" aria-label="Navigazione e azioni di salvataggio">
+            <div class="evaluation-actions__nav">
+              <button type="button" class="page-button" id="previous-step-button">Sezione precedente</button>
+              <button type="button" class="page-button" id="next-step-button">Sezione successiva</button>
+            </div>
+            <div class="evaluation-actions__main">
+              <a href="evaluations.php" class="page-button back-button evaluation-actions__back-link">Indietro</a>
               <button class="submit-btn secondary-button" type="submit" name="action" value="save">Salva bozza</button>
               <button class="submit-btn" type="submit" name="action" value="submit">Invia Valutazione</button>
             </div>
@@ -930,6 +1207,155 @@
         const modal = document.getElementById('evaluation-success-modal');
         const closeButton = document.getElementById('close-evaluation-modal');
         const totalScoreElement = document.getElementById('total-score-value');
+        const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
+        const stepperItems = Array.from(document.querySelectorAll('.evaluation-stepper__item'));
+        const nextStepButton = document.getElementById('next-step-button');
+        const previousStepButton = document.getElementById('previous-step-button');
+        let activeStepIndex = 0;
+
+        const setupInfoToggles = () => {
+          const infoBlocks = Array.from(document.querySelectorAll('.form-group > small'));
+
+          infoBlocks.forEach((info, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'criteria-info';
+
+            const infoId = `criteria-info-${index + 1}`;
+            wrapper.id = infoId;
+
+            info.parentNode.insertBefore(wrapper, info);
+            wrapper.appendChild(info);
+
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'info-toggle';
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.setAttribute('aria-controls', infoId);
+            toggle.textContent = 'ℹ️';
+            toggle.setAttribute('aria-label', 'Mostra informazioni');
+            toggle.setAttribute('title', 'Mostra informazioni');
+
+            wrapper.parentNode.insertBefore(toggle, wrapper);
+
+            toggle.addEventListener('click', () => {
+              const isVisible = wrapper.style.display === 'block';
+              wrapper.style.display = isVisible ? 'none' : 'block';
+              toggle.setAttribute('aria-expanded', isVisible ? 'false' : 'true');
+              toggle.setAttribute('aria-label', isVisible ? 'Mostra informazioni' : 'Nascondi informazioni');
+              toggle.setAttribute('title', isVisible ? 'Mostra informazioni' : 'Nascondi informazioni');
+            });
+
+            wrapper.style.display = 'none';
+          });
+        };
+
+        const scrollToStep = (stepElement) => {
+          if (!stepElement) {
+            return;
+          }
+
+          const offset = 90;
+          const topPosition = stepElement.getBoundingClientRect().top + window.scrollY - offset;
+
+          window.scrollTo({
+            top: topPosition < 0 ? 0 : topPosition,
+            behavior: 'smooth'
+          });
+        };
+
+        const updateNavigationState = () => {
+          if (!nextStepButton || !previousStepButton || stepElements.length === 0) {
+            return;
+          }
+
+          previousStepButton.disabled = activeStepIndex <= 0;
+          nextStepButton.disabled = activeStepIndex >= stepElements.length - 1;
+        };
+
+        const isStepValid = (stepElement) => {
+          if (!stepElement) {
+            return true;
+          }
+
+          const inputs = Array.from(stepElement.querySelectorAll('input'));
+          for (const input of inputs) {
+            if (!input.checkValidity()) {
+              input.reportValidity();
+              return false;
+            }
+          }
+
+          return true;
+        };
+
+        const setActiveStep = (targetIndex, { forceScroll = true } = {}) => {
+          if (stepElements.length === 0 || targetIndex < 0 || targetIndex >= stepElements.length) {
+            return;
+          }
+
+          activeStepIndex = targetIndex;
+
+          stepElements.forEach((step, index) => {
+            step.classList.toggle('active', index === activeStepIndex);
+          });
+
+          stepperItems.forEach((item, index) => {
+            const isActive = index === activeStepIndex;
+            item.classList.toggle('active', isActive);
+            const button = item.querySelector('.evaluation-stepper__button');
+            if (button) {
+              if (isActive) {
+                button.setAttribute('aria-current', 'step');
+              } else {
+                button.removeAttribute('aria-current');
+              }
+            }
+          });
+
+          updateNavigationState();
+
+          if (forceScroll) {
+            scrollToStep(stepElements[activeStepIndex]);
+          }
+        };
+
+        const attemptStepChange = (targetIndex) => {
+          if (targetIndex === activeStepIndex) {
+            return;
+          }
+
+          if (targetIndex > activeStepIndex) {
+            const currentStep = stepElements[activeStepIndex];
+            if (!isStepValid(currentStep)) {
+              return;
+            }
+          }
+
+          setActiveStep(targetIndex);
+        };
+
+        if (stepperItems.length > 0) {
+          stepperItems.forEach((item, index) => {
+            const button = item.querySelector('.evaluation-stepper__button');
+            if (button) {
+              button.addEventListener('click', () => attemptStepChange(index));
+            }
+          });
+        }
+
+        if (nextStepButton) {
+          nextStepButton.addEventListener('click', () => attemptStepChange(activeStepIndex + 1));
+        }
+
+        if (previousStepButton) {
+          previousStepButton.addEventListener('click', () => attemptStepChange(activeStepIndex - 1));
+        }
+
+        setupInfoToggles();
+
+        if (stepElements.length > 0) {
+          setActiveStep(0, { forceScroll: false });
+        }
 
         const calculateTotalScore = () => {
           if (!form || !totalScoreElement) {
