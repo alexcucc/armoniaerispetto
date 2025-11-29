@@ -32,6 +32,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="contact-form-container">
         <h2>Aggiungi Valutatore</h2>
         <form class="contact-form" action="evaluator_add_handler.php" method="POST">
+            <div class="button-container">
+                <a href="evaluators.php" class="page-button" style="background-color: #007bff;">Indietro</a>
+                <button type="submit" class="page-button">Aggiungi</button>
+            </div>
             <div class="form-group">
                 <label class="form-label required" for="user_id">Utente</label>
                 <select id="user_id" name="user_id" class="form-input" required>
@@ -39,10 +43,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <option value="<?php echo $user['id']; ?>"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name'] . ' (' . $user['email'] . ')'); ?></option>
                     <?php endforeach; ?>
                 </select>
-            </div>
-            <div class="button-container">
-                <a href="evaluators.php" class="page-button" style="background-color: #007bff;">Indietro</a>
-                <button type="submit" class="page-button">Aggiungi</button>
             </div>
         </form>
     </div>
