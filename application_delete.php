@@ -24,13 +24,19 @@ if (!$appId) {
 try {
     $pdo->beginTransaction();
 
-    $selectStmt = $pdo->prepare('SELECT application_pdf_path FROM application WHERE id = :id');
+    $selectStmt = $pdo->prepare('SELECT application_pdf_path, status FROM application WHERE id = :id');
     $selectStmt->execute([':id' => $appId]);
     $application = $selectStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$application) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Risposta al bando non trovata']);
+        exit();
+    }
+
+    if (($application['status'] ?? null) !== 'SUBMITTED') {
+        $pdo->rollBack();
+        echo json_encode(['success' => false, 'message' => 'È possibile eliminare solo le risposte in attesa']);
         exit();
     }
 

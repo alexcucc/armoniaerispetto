@@ -299,6 +299,7 @@ $statusLabels = [
                                     $statusKey = strtoupper((string) $app['status']);
                                     $statusLabel = $statusLabels[$statusKey] ?? ucwords(strtolower(str_replace('_', ' ', $statusKey)));
                                     $isLocked = in_array($statusKey, ['APPROVED', 'FINAL_VALIDATION'], true);
+                                    $canDeleteApplication = $statusKey === 'SUBMITTED';
                                     $rejectionReason = trim((string) ($app['rejection_reason'] ?? ''));
                                     ?>
                                     <td><?php echo htmlspecialchars($statusLabel); ?></td>
@@ -331,7 +332,7 @@ $statusLabels = [
                                                     <i class="fas fa-edit"></i> Modifica
                                                 </button>
                                             <?php endif; ?>
-                                            <?php if ($canDelete): ?>
+                                            <?php if ($canDelete && $canDeleteApplication): ?>
                                                 <button class="delete-btn" data-id="<?php echo $app['id']; ?>">
                                                     <i class="fas fa-trash"></i> Elimina
                                                 </button>
