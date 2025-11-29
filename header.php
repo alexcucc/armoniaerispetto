@@ -122,11 +122,11 @@
                                     <?php if ($canUserList): ?>
                                         <li class="nav-item"><a class="nav-link" href="users.php">Utenti</a></li>
                                     <?php endif; ?>
-                                    <?php if ($canSupervisorList): ?>
-                                        <li class="nav-item"><a class="nav-link" href="supervisors.php">Convalidatori</a></li>
-                                    <?php endif; ?>
                                     <?php if ($canEvaluatorList): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluators.php">Valutatori</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canSupervisorList): ?>
+                                        <li class="nav-item"><a class="nav-link" href="supervisors.php">Convalidatori</a></li>
                                     <?php endif; ?>
                                     <?php if ($canCallForProposalList): ?>
                                         <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Bandi</a></li>
