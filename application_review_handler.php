@@ -21,20 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $applicationId = filter_input(INPUT_POST, 'application_id', FILTER_VALIDATE_INT);
 $decision = filter_input(INPUT_POST, 'decision', FILTER_UNSAFE_RAW);
-$finalValidationRequested = isset($_POST['final_validation']) && $_POST['final_validation'] === '1';
 $rejectionReason = trim((string) ($_POST['rejection_reason'] ?? ''));
 
-if (!$applicationId || !in_array($decision, ['APPROVED', 'REJECTED'], true)) {
+if (!$applicationId || !in_array($decision, ['APPROVED', 'REJECTED', 'FINAL_VALIDATION'], true)) {
     header('Location: supervisor_applications.php?error=1');
     exit();
 }
 
 if ($decision === 'REJECTED' && $rejectionReason === '') {
-    header('Location: supervisor_applications.php?error=1');
-    exit();
-}
-
-if ($finalValidationRequested && $decision !== 'APPROVED') {
     header('Location: supervisor_applications.php?error=1');
     exit();
 }
@@ -48,6 +42,11 @@ try {
     $application = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$application || !in_array($application['status'], ['SUBMITTED', 'APPROVED', 'REJECTED'], true)) {
+        header('Location: supervisor_applications.php?error=1');
+        exit();
+    }
+
+    if ($decision === 'FINAL_VALIDATION' && $application['status'] !== 'APPROVED') {
         header('Location: supervisor_applications.php?error=1');
         exit();
     }
@@ -91,8 +90,8 @@ try {
     }
 
     $newStatus = 'REJECTED';
-    if ($decision === 'APPROVED') {
-        $newStatus = $finalValidationRequested ? 'FINAL_VALIDATION' : 'APPROVED';
+    if ($decision === 'APPROVED' || $decision === 'FINAL_VALIDATION') {
+        $newStatus = $decision === 'FINAL_VALIDATION' ? 'FINAL_VALIDATION' : 'APPROVED';
     }
 
     $rejectionReasonToSave = $decision === 'REJECTED' ? $rejectionReason : null;

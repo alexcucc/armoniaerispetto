@@ -45,6 +45,7 @@ $currentDecision = $isEditing ? $application['status'] : null;
 $hasExistingChecklist = !empty($application['checklist_path']);
 $existingRejectionReason = $application['rejection_reason'] ?? '';
 $showRejectionReason = $currentDecision === 'REJECTED';
+$canFinalize = $application['status'] === 'APPROVED';
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -68,6 +69,9 @@ $showRejectionReason = $currentDecision === 'REJECTED';
                 <div>
                     <label><input type="radio" name="decision" value="APPROVED" <?php echo $currentDecision === 'APPROVED' ? 'checked' : ''; ?> required> Approva</label>
                     <label><input type="radio" name="decision" value="REJECTED" <?php echo $currentDecision === 'REJECTED' ? 'checked' : ''; ?> required> Respingi</label>
+                    <?php if ($canFinalize): ?>
+                        <label><input type="radio" name="decision" value="FINAL_VALIDATION" <?php echo $currentDecision === 'FINAL_VALIDATION' ? 'checked' : ''; ?> required> Convalida in definitivo</label>
+                    <?php endif; ?>
                 </div>
             </div>
             <div
@@ -103,17 +107,6 @@ $showRejectionReason = $currentDecision === 'REJECTED';
                     </p>
                 <?php endif; ?>
             </div>
-            <div class="form-group">
-                <label class="form-label" for="final_validation">Convalida in definitiva</label>
-                <p class="form-help">
-                    Attiva questa opzione per impostare la risposta nello stato "Convalida in definitiva". Una volta confermato
-                    non sarà più possibile modificarla e i valutatori potranno analizzarla.
-                </p>
-                <label>
-                    <input type="checkbox" id="final_validation" name="final_validation" value="1">
-                    Imposta lo stato finale
-                </label>
-            </div>
             <input type="hidden" name="supervisor_id" value="<?php echo htmlspecialchars($application['supervisor_id']); ?>">
             <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($appId); ?>">
             <div class="button-container">
@@ -130,13 +123,11 @@ $showRejectionReason = $currentDecision === 'REJECTED';
         const rejectionGroup = document.getElementById('rejection-reason-group');
         const rejectionTextarea = document.getElementById('rejection_reason');
         const rejectionLabel = document.getElementById('rejection_reason_label');
-        const finalValidationInput = document.getElementById('final_validation');
 
         function updateFormState() {
             const selectedDecision = document.querySelector('input[name="decision"]:checked');
             const decisionValue = selectedDecision ? selectedDecision.value : null;
             const isRejected = decisionValue === 'REJECTED';
-            const canFinalize = decisionValue === 'APPROVED';
 
             if (rejectionGroup) {
                 rejectionGroup.style.display = isRejected ? 'block' : 'none';
@@ -147,12 +138,6 @@ $showRejectionReason = $currentDecision === 'REJECTED';
             }
             if (rejectionLabel) {
                 rejectionLabel.classList.toggle('required', isRejected);
-            }
-            if (finalValidationInput) {
-                finalValidationInput.disabled = !canFinalize;
-                if (!canFinalize) {
-                    finalValidationInput.checked = false;
-                }
             }
         }
 
