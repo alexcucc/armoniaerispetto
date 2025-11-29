@@ -370,9 +370,10 @@ header {
   box-shadow: 0 1px 10px 3px rgba(0,0,0,0.5);
 }
 
-h1 {
+h1, h2 {
   text-align: center;
-  margin: 0;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem
 }
 
 .page-button {
@@ -1011,7 +1012,10 @@ body.management-page .users-table {
 
 .contact-form-container {
   max-width: 600px;
-  margin: 0 auto;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0px;
   background-color: #f9f9f9;
   border-radius: 0.5em;
@@ -1019,7 +1023,7 @@ body.management-page .users-table {
 }
 
 .contact-form {
-  padding: 1em
+  padding: 0.2rem
 }
 
 .form-group {
