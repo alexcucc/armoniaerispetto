@@ -35,7 +35,8 @@ switch ($sortField) {
 }
 
 $stmt = $pdo->prepare(
-    "SELECT e.id, u.id AS user_id, u.first_name, u.last_name, u.email "
+    "SELECT e.id, u.id AS user_id, u.first_name, u.last_name, u.email, "
+    . "EXISTS (SELECT 1 FROM supervisor s WHERE s.user_id = u.id) AS is_supervisor "
     . "FROM evaluator e "
     . "JOIN user u ON e.user_id = u.id "
     . "ORDER BY $orderByClause"
@@ -101,7 +102,13 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <i class="fas fa-user-secret"></i> Assumi ruolo
                                             </button>
                                         <?php endif; ?>
-                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATOR_DELETE'])): ?>
+                                        <?php if (
+                                            $rolePermissionManager->userHasPermission(
+                                                $_SESSION['user_id'],
+                                                RolePermissionManager::$PERMISSIONS['EVALUATOR_DELETE']
+                                            )
+                                            && !(int) $evaluator['is_supervisor']
+                                        ): ?>
                                             <button class="delete-btn" data-id="<?php echo $evaluator['id']; ?>">
                                                 <i class="fas fa-trash"></i> Elimina
                                             </button>

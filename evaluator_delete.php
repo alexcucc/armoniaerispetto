@@ -33,6 +33,15 @@ try {
         exit();
     }
 
+    $supervisorStmt = $pdo->prepare("SELECT id FROM supervisor WHERE user_id = ?");
+    $supervisorStmt->execute([$userId]);
+
+    if ($supervisorStmt->fetchColumn()) {
+        $pdo->rollBack();
+        echo json_encode(['success' => false, 'message' => 'Non è possibile eliminare il valutatore perché è anche un convalidatore']);
+        exit();
+    }
+
     $stmt = $pdo->prepare("DELETE FROM evaluator WHERE id = ?");
     $stmt->execute([$evaluatorId]);
 
