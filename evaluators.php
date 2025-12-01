@@ -30,7 +30,7 @@ switch ($sortField) {
         break;
     case 'name':
     default:
-        $orderByClause = "u.first_name $sortOrder, u.last_name $sortOrder";
+        $orderByClause = "u.last_name $sortOrder, u.first_name $sortOrder";
         break;
 }
 
@@ -89,7 +89,7 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tbody>
                         <?php foreach ($evaluators as $evaluator): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($evaluator['first_name'] . ' ' . $evaluator['last_name']); ?></td>
+                                <td><?php echo htmlspecialchars($evaluator['last_name'] . ' ' . $evaluator['first_name']); ?></td>
                                 <td><?php echo htmlspecialchars($evaluator['email']); ?></td>
                                 <td>
                                     <div class="actions-cell">
@@ -97,7 +97,7 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <button
                                                 class="impersonate-btn"
                                                 data-id="<?php echo $evaluator['user_id']; ?>"
-                                                data-name="<?php echo htmlspecialchars($evaluator['first_name'] . ' ' . $evaluator['last_name']); ?>"
+                                                data-name="<?php echo htmlspecialchars($evaluator['last_name'] . ' ' . $evaluator['first_name']); ?>"
                                             >
                                                 <i class="fas fa-user-secret"></i> Assumi ruolo
                                             </button>

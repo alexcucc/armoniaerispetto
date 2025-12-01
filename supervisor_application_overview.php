@@ -59,7 +59,7 @@ if (!empty($filters)) {
 }
 
 $applicationsQuery = "SELECT a.id, c.title AS call_title, o.name AS organization_name, "
-    . "CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.updated_at, a.rejection_reason "
+    . "CONCAT(u.last_name, ' ', u.first_name) AS supervisor_name, a.status, a.updated_at, a.rejection_reason "
     . "FROM application a "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
     . "JOIN organization o ON a.organization_id = o.id "
@@ -73,10 +73,10 @@ $applicationsStmt->execute($params);
 $applications = $applicationsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $supervisorsStmt = $pdo->query(
-    "SELECT s.id, CONCAT(u.first_name, ' ', u.last_name) AS full_name " .
+    "SELECT s.id, CONCAT(u.last_name, ' ', u.first_name) AS full_name " .
     "FROM supervisor s " .
     "JOIN user u ON s.user_id = u.id " .
-    "ORDER BY u.first_name, u.last_name"
+    "ORDER BY u.last_name, u.first_name"
 );
 $supervisors = $supervisorsStmt->fetchAll(PDO::FETCH_ASSOC);
 

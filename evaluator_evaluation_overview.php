@@ -61,8 +61,8 @@ $completedFilterClause = $filterClause === ''
     : $filterClause . " AND e.status = 'SUBMITTED'";
 
 $completedQuery = "SELECT e.id, c.title AS call_title, o.name AS organization_name, "
-    . "CONCAT(u.first_name, ' ', u.last_name) AS evaluator_name, "
-    . "CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name, "
+    . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
+    . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
     . "'SUBMITTED' AS status, e.updated_at "
     . "FROM evaluation e "
     . "JOIN application a ON e.application_id = a.id "
@@ -80,8 +80,8 @@ $completedStmt->execute($params);
 $completedEvaluations = $completedStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS organization_name, "
-    . "CONCAT(u.first_name, ' ', u.last_name) AS evaluator_name, "
-    . "CONCAT(su.first_name, ' ', su.last_name) AS supervisor_name, "
+    . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
+    . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
     . "COALESCE(e.status, 'NOT_STARTED') AS status, a.updated_at "
     . "FROM evaluator ev "
     . "JOIN user u ON ev.user_id = u.id "
@@ -101,10 +101,10 @@ $pendingStmt->execute($params);
 $pendingEvaluations = $pendingStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $evaluatorsStmt = $pdo->query(
-    "SELECT ev.id, CONCAT(u.first_name, ' ', u.last_name) AS full_name "
+    "SELECT ev.id, CONCAT(u.last_name, ' ', u.first_name) AS full_name "
     . "FROM evaluator ev "
     . "JOIN user u ON ev.user_id = u.id "
-    . "ORDER BY u.first_name, u.last_name"
+    . "ORDER BY u.last_name, u.first_name"
 );
 $evaluators = $evaluatorsStmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -119,10 +119,10 @@ $callsStmt = $pdo->query(
 $calls = $callsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $supervisorsStmt = $pdo->query(
-    "SELECT s.id, CONCAT(u.first_name, ' ', u.last_name) AS full_name "
+    "SELECT s.id, CONCAT(u.last_name, ' ', u.first_name) AS full_name "
     . "FROM supervisor s "
     . "JOIN user u ON s.user_id = u.id "
-    . "ORDER BY u.first_name, u.last_name"
+    . "ORDER BY u.last_name, u.first_name"
 );
 $supervisors = $supervisorsStmt->fetchAll(PDO::FETCH_ASSOC);
 

@@ -15,7 +15,12 @@ $canImpersonate = $rolePermissionManager->userHasPermission(
     RolePermissionManager::$PERMISSIONS['USER_IMPERSONATE']
 );
 
-$stmt = $pdo->prepare("SELECT s.id, u.id AS user_id, u.first_name, u.last_name, u.email FROM supervisor s JOIN user u ON s.user_id = u.id");
+$stmt = $pdo->prepare(
+    "SELECT s.id, u.id AS user_id, u.first_name, u.last_name, u.email " .
+    "FROM supervisor s " .
+    "JOIN user u ON s.user_id = u.id " .
+    "ORDER BY u.last_name ASC, u.first_name ASC"
+);
 $stmt->execute();
 $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -51,7 +56,7 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tbody>
                         <?php foreach ($supervisors as $supervisor): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($supervisor['first_name'] . ' ' . $supervisor['last_name']); ?></td>
+                                <td><?php echo htmlspecialchars($supervisor['last_name'] . ' ' . $supervisor['first_name']); ?></td>
                                 <td><?php echo htmlspecialchars($supervisor['email']); ?></td>
                                 <td>
                                     <div class="actions-cell">
@@ -59,7 +64,7 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <button
                                                 class="impersonate-btn"
                                                 data-id="<?php echo $supervisor['user_id']; ?>"
-                                                data-name="<?php echo htmlspecialchars($supervisor['first_name'] . ' ' . $supervisor['last_name']); ?>"
+                                                data-name="<?php echo htmlspecialchars($supervisor['last_name'] . ' ' . $supervisor['first_name']); ?>"
                                             >
                                                 <i class="fas fa-user-secret"></i> Assumi ruolo
                                             </button>
