@@ -185,24 +185,19 @@
       }
   }
 
-  function renderScoreButtons(string $name, string $ariaLabel, ?int $selected = null): void
+  function renderScoreInput(string $name, string $ariaLabel, ?int $selected = null): void
   {
       $sanitizedName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
-      $baseId = preg_replace('/[^a-zA-Z0-9_-]/', '_', $name);
+      $inputId = preg_replace('/[^a-zA-Z0-9_-]/', '_', $name) . '_score_input';
+      $inputIdAttr = htmlspecialchars($inputId, ENT_QUOTES, 'UTF-8');
       $ariaLabelAttr = htmlspecialchars($ariaLabel, ENT_QUOTES, 'UTF-8');
 
-      echo '<div class="score-buttons" role="radiogroup" aria-label="' . $ariaLabelAttr . '">';
-      for ($i = 1; $i <= 10; $i++) {
-          $inputId = $baseId . '_' . $i;
-          $inputIdAttr = htmlspecialchars($inputId, ENT_QUOTES, 'UTF-8');
-          $requiredAttr = $i === 1 ? ' required' : '';
-
-          $checkedAttr = ($selected !== null && (int) $selected === $i) ? ' checked' : '';
-
-          echo '<input type="radio" id="' . $inputIdAttr . '" name="' . $sanitizedName . '" value="' . $i . '"' . $requiredAttr . $checkedAttr . '>';
-          echo '<label for="' . $inputIdAttr . '" class="score-button">' . $i . '</label>';
+      $valueAttr = '';
+      if ($selected !== null) {
+          $valueAttr = ' value="' . (int) $selected . '"';
       }
-      echo '</div>';
+
+      echo '<input type="number" class="score-input" id="' . $inputIdAttr . '" name="' . $sanitizedName . '" aria-label="' . $ariaLabelAttr . '" min="1" max="10" step="1" required' . $valueAttr . '>';
   }
   ?>
 <!DOCTYPE html>
@@ -217,28 +212,28 @@
         right: 1.5rem;
         background-color: #ffffff;
         border: 1px solid #d1d5db;
-        border-radius: 0.75rem;
-        padding: 0.85rem 1rem;
-        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+        border-radius: 0.65rem;
+        padding: 0.6rem 0.75rem;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
         font-weight: 600;
-        font-size: 1.05rem;
+        font-size: 0.95rem;
         color: #1f2937;
-        min-width: 11rem;
+        min-width: 8.5rem;
         text-align: center;
         z-index: 1000;
       }
 
       .total-score-overlay__label {
         display: block;
-        font-size: 0.9rem;
+        font-size: 0.82rem;
         font-weight: 500;
         color: #4b5563;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.25rem;
         letter-spacing: 0.02em;
       }
 
       .total-score-overlay__value {
-        font-size: 1.8rem;
+        font-size: 1.4rem;
         color: #0c4a6e;
       }
 
@@ -422,39 +417,45 @@
         }
       }
 
-      .score-buttons {
-        gap: 0.35rem;
-      }
-
-      .score-buttons .score-button {
-        width: 1.65rem;
-        height: 1.65rem;
-        font-size: 0.82rem;
-        border-radius: 0.3rem;
-      }
-
-      .criteria-info {
-        display: none;
+      .score-input-row {
+        display: grid;
+        grid-template-columns: minmax(110px, 150px) 1fr;
+        align-items: start;
+        gap: 1rem;
         margin-top: 0.25rem;
       }
 
-      .info-toggle {
-        margin: 0.25rem 0 0.2rem;
-        padding: 0.2rem;
-        background-color: #e7f2fa;
-        color: #0c4a6e;
-        border: 1px solid #cbe7fb;
-        border-radius: 999px;
-        font-weight: 700;
-        font-size: 0.95rem;
-        cursor: pointer;
-        width: 1.8rem;
-        height: 1.8rem;
-        display: inline-flex;
+      .score-input-col {
+        display: flex;
         align-items: center;
-        justify-content: center;
-        line-height: 1;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      .score-input {
+        width: 100%;
+        max-width: 140px;
+        padding: 0.55rem 0.65rem;
+        border-radius: 0.4rem;
+        border: 1px solid #cbd5e1;
+        font-weight: 600;
+      }
+
+      .score-input:focus {
+        outline: 2px solid #0ea5e9;
+        outline-offset: 1px;
+        border-color: #0ea5e9;
+      }
+
+      .criteria-inline-info {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.8rem;
+        font-size: 0.92rem;
+        color: #0f172a;
+      }
+
+      .criteria-inline-info ul {
+        margin: 0.3rem 0 0.2rem 1.2rem;
       }
     </style>
   </head>
@@ -476,7 +477,7 @@
           <div class="evaluation-header">
             <div>
               <h2>Valutazione <?php echo htmlspecialchars($entity_name); ?></h2>
-              <p class="form-note">Tutte le valutazioni utilizzano una scala da 1 (livello minimo) a 10 (livello massimo). Seleziona il punteggio desiderato cliccando sui pulsanti numerici.</p>
+              <p class="form-note">Tutte le valutazioni utilizzano una scala da 1 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
               <?php if ($existingEvaluationId !== null): ?>
                 <p class="form-note"><strong>Stato corrente:</strong> bozza modificabile.</p>
               <?php endif; ?>
@@ -544,7 +545,7 @@
             <h3>Soggetto Proponente</h3>
           <div class="form-group">
             <label class="form-label required">Informazioni Generali</label>
-            <?php renderScoreButtons('proposing_entity[general_information_score]', 'Informazioni Generali', $evaluationData['proposing_entity']['general_information_score']); ?>
+            <?php renderScoreInput('proposing_entity[general_information_score]', 'Informazioni Generali', $evaluationData['proposing_entity']['general_information_score']); ?>
             <small class="form-text">
               <ul>
                 <li>Ha un'identità chiara?</li>
@@ -557,7 +558,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Esperienza</label>
-            <?php renderScoreButtons('proposing_entity[experience_score]', 'Esperienza', $evaluationData['proposing_entity']['experience_score']); ?>
+            <?php renderScoreInput('proposing_entity[experience_score]', 'Esperienza', $evaluationData['proposing_entity']['experience_score']); ?>
             <small class="form-text">
               <p class="form-note">Utilizza la scala 1-10 considerando questi riferimenti:</p>
               <ul>
@@ -571,7 +572,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Modalità organizzative, gestionali e di assunzione delle decisioni</label>
-            <?php renderScoreButtons('proposing_entity[organizational_capacity_score]', 'Modalità organizzative, gestionali e di assunzione delle decisioni', $evaluationData['proposing_entity']['organizational_capacity_score']); ?>
+            <?php renderScoreInput('proposing_entity[organizational_capacity_score]', 'Modalità organizzative, gestionali e di assunzione delle decisioni', $evaluationData['proposing_entity']['organizational_capacity_score']); ?>
             <small>
               <ul>
                 <li>Che tipo di governance ha l'ente?</li>
@@ -584,7 +585,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Policy (welfare aziendale, gender equality, child safeguarding, politiche ambientali ecc.)</label>
-            <?php renderScoreButtons('proposing_entity[policy_score]', 'Policy (welfare aziendale, gender equality, child safeguarding, politiche ambientali ecc.)', $evaluationData['proposing_entity']['policy_score']); ?>
+            <?php renderScoreInput('proposing_entity[policy_score]', 'Policy (welfare aziendale, gender equality, child safeguarding, politiche ambientali ecc.)', $evaluationData['proposing_entity']['policy_score']); ?>
             <small>
               <ul>
                 <li>Esiste un codice etico?</li>
@@ -600,7 +601,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Bilancio</label>
-            <?php renderScoreButtons('proposing_entity[budget_score]', 'Bilancio', $evaluationData['proposing_entity']['budget_score']); ?>
+            <?php renderScoreInput('proposing_entity[budget_score]', 'Bilancio', $evaluationData['proposing_entity']['budget_score']); ?>
             <small>
               <ul>
                 <li>Come incide la raccolta fondi?</li>
@@ -613,7 +614,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Finalità e coinvolgimento locale</label>
-            <?php renderScoreButtons('proposing_entity[purpose_and_local_involvement_score]', 'Finalità e coinvolgimento locale', $evaluationData['proposing_entity']['purpose_and_local_involvement_score']); ?>
+            <?php renderScoreInput('proposing_entity[purpose_and_local_involvement_score]', 'Finalità e coinvolgimento locale', $evaluationData['proposing_entity']['purpose_and_local_involvement_score']); ?>
             <small>
               <ul>
                 <li>Le attività e la mission sono in linea con un corretto sviluppo locale?</li>
@@ -625,7 +626,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Partnership e visibilità</label>
-            <?php renderScoreButtons('proposing_entity[partnership_and_visibility_score]', 'Partnership e visibilità', $evaluationData['proposing_entity']['partnership_and_visibility_score']); ?>
+            <?php renderScoreInput('proposing_entity[partnership_and_visibility_score]', 'Partnership e visibilità', $evaluationData['proposing_entity']['partnership_and_visibility_score']); ?>
             <small>
               <ul>
                 <li>Fa parte di network riconosciuti?</li>
@@ -642,7 +643,7 @@
             <h3>Progetto</h3>
           <div class="form-group">
             <label class="form-label required">Identificazione dei bisogni e analisi dei problemi</label>
-            <?php renderScoreButtons('project[needs_identification_and_problem_analysis_score]', 'Identificazione dei bisogni e analisi dei problemi', $evaluationData['project']['needs_identification_and_problem_analysis_score']); ?>
+            <?php renderScoreInput('project[needs_identification_and_problem_analysis_score]', 'Identificazione dei bisogni e analisi dei problemi', $evaluationData['project']['needs_identification_and_problem_analysis_score']); ?>
             <small>
               <ul>
                 <li>L'analisi è completa, sufficientemente dettagliata e coerente?</li>
@@ -654,7 +655,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Aderenza alle finalità statutarie</label>
-            <?php renderScoreButtons('project[adherence_to_statuary_purposes_score]', 'Aderenza alle finalità statutarie', $evaluationData['project']['adherence_to_statuary_purposes_score']); ?>
+            <?php renderScoreInput('project[adherence_to_statuary_purposes_score]', 'Aderenza alle finalità statutarie', $evaluationData['project']['adherence_to_statuary_purposes_score']); ?>
             <small>
               <ul>
                 <li>Il progetto è in linea con le finalità statutarie dell'ente?</li>
@@ -664,7 +665,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Peso sociale (es. aiuto a fragili per cura animali)</label>
-            <?php renderScoreButtons('project[social_weight_score]', 'Peso sociale (es. aiuto a fragili per cura animali)', $evaluationData['project']['social_weight_score']); ?>
+            <?php renderScoreInput('project[social_weight_score]', 'Peso sociale (es. aiuto a fragili per cura animali)', $evaluationData['project']['social_weight_score']); ?>
             <small>
               <ul>
                 <li>Il progetto ha un impatto sociale positivo?</li>
@@ -674,7 +675,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Obiettivi</label>
-            <?php renderScoreButtons('project[objectives_score]', 'Obiettivi', $evaluationData['project']['objectives_score']); ?>
+            <?php renderScoreInput('project[objectives_score]', 'Obiettivi', $evaluationData['project']['objectives_score']); ?>
             <small>
               <ul>
                 <li>Sono coerenti?</li>
@@ -685,7 +686,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Risultati attesi</label>
-            <?php renderScoreButtons('project[expected_results_score]', 'Risultati attesi', $evaluationData['project']['expected_results_score']); ?>
+            <?php renderScoreInput('project[expected_results_score]', 'Risultati attesi', $evaluationData['project']['expected_results_score']); ?>
             <small>
               <ul>
                 <li>Sono concreti?</li>
@@ -697,7 +698,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Attività</label>
-            <?php renderScoreButtons('project[activity_score]', 'Attività', $evaluationData['project']['activity_score']); ?>
+            <?php renderScoreInput('project[activity_score]', 'Attività', $evaluationData['project']['activity_score']); ?>
             <small>
               <ul>
                 <li>Sono coerenti?</li>
@@ -711,7 +712,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Finalità locale</label>
-            <?php renderScoreButtons('project[local_purpose_score]', 'Finalità locale', $evaluationData['project']['local_purpose_score']); ?>
+            <?php renderScoreInput('project[local_purpose_score]', 'Finalità locale', $evaluationData['project']['local_purpose_score']); ?>
             <small>
               <ul>
                 <li>Il progetto ha una chiara finalità locale?</li>
@@ -721,7 +722,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Partenariato e rapporti con autorità locali/nazionali</label>
-            <?php renderScoreButtons('project[partnership_and_relations_with_local_authorities_score]', 'Partenariato e rapporti con autorità locali/nazionali', $evaluationData['project']['partnership_and_relations_with_local_authorities_score']); ?>
+            <?php renderScoreInput('project[partnership_and_relations_with_local_authorities_score]', 'Partenariato e rapporti con autorità locali/nazionali', $evaluationData['project']['partnership_and_relations_with_local_authorities_score']); ?>
             <small>
               <ul>
                 <li>Il/i partner è/sono un valore aggiunto?</li>
@@ -734,7 +735,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Sinergie e inefficienze progettuali</label>
-            <?php renderScoreButtons('project[synergies_and_design_inefficiencies_score]', 'Sinergie e inefficienze progettuali', $evaluationData['project']['synergies_and_design_inefficiencies_score']); ?>
+            <?php renderScoreInput('project[synergies_and_design_inefficiencies_score]', 'Sinergie e inefficienze progettuali', $evaluationData['project']['synergies_and_design_inefficiencies_score']); ?>
             <small>
               <ul>
                 <li>È un progetto che condivide obiettivi, stakeholder, risorse, metodologie o deliverable con altri progetti precedenti o in corso?</li>
@@ -747,7 +748,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Comunicazione e visibilità</label>
-            <?php renderScoreButtons('project[communication_and_visibility_score]', 'Comunicazione e visibilità', $evaluationData['project']['communication_and_visibility_score']); ?>
+            <?php renderScoreInput('project[communication_and_visibility_score]', 'Comunicazione e visibilità', $evaluationData['project']['communication_and_visibility_score']); ?>
             <small>
               <ul>
                 <li>La proposta è in linea con le aspettative?</li>
@@ -764,7 +765,7 @@
             <h3>Piano Finanziario</h3>
           <div class="form-group">
             <label class="form-label required">Completezza e chiarezza del budget</label>
-            <?php renderScoreButtons('financial_plan[completeness_and_clarity_of_budget_score]', 'Completezza e chiarezza del budget', $evaluationData['financial_plan']['completeness_and_clarity_of_budget_score']); ?>
+            <?php renderScoreInput('financial_plan[completeness_and_clarity_of_budget_score]', 'Completezza e chiarezza del budget', $evaluationData['financial_plan']['completeness_and_clarity_of_budget_score']); ?>
             <small>
               <ul>
                 <li>Il budget è chiaro e completo in tutte le sue parti?</li>
@@ -774,7 +775,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Coerenza con obiettivi, risultati, impatto e cronogramma</label>
-            <?php renderScoreButtons('financial_plan[consistency_with_objectives_score]', 'Coerenza con obiettivi, risultati, impatto e cronogramma', $evaluationData['financial_plan']['consistency_with_objectives_score']); ?>
+            <?php renderScoreInput('financial_plan[consistency_with_objectives_score]', 'Coerenza con obiettivi, risultati, impatto e cronogramma', $evaluationData['financial_plan']['consistency_with_objectives_score']); ?>
             <small>
               <ul>
                 <li>Il budget risulta coerente con gli obiettivi e i risultati del Progetto?</li>
@@ -785,7 +786,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Cofinanziamento</label>
-            <?php renderScoreButtons('financial_plan[cofinancing_score]', 'Cofinanziamento', $evaluationData['financial_plan']['cofinancing_score']); ?>
+            <?php renderScoreInput('financial_plan[cofinancing_score]', 'Cofinanziamento', $evaluationData['financial_plan']['cofinancing_score']); ?>
             <small>
               <ul>
                 <li>La percentuale del cofinanziamento è adeguata?</li>
@@ -796,7 +797,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Flessibilità</label>
-            <?php renderScoreButtons('financial_plan[flexibility_score]', 'Flessibilità', $evaluationData['financial_plan']['flexibility_score']); ?>
+            <?php renderScoreInput('financial_plan[flexibility_score]', 'Flessibilità', $evaluationData['financial_plan']['flexibility_score']); ?>
             <small>
               <ul>
                 <li>Il budget è in grado di far fronte a eventuali cambiamenti di sviluppo progettuale senza variazioni onerose?</li>
@@ -811,7 +812,7 @@
             <h3>Elementi Qualitativi</h3>
           <div class="form-group">
             <label class="form-label required">L'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento</label>
-            <?php renderScoreButtons('qualitative_elements[impact_score]', 'L\'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento', $evaluationData['qualitative_elements']['impact_score']); ?>
+            <?php renderScoreInput('qualitative_elements[impact_score]', 'L\'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento', $evaluationData['qualitative_elements']['impact_score']); ?>
             <small>
               <ul>
                 <li>Il progetto ha la potenzialità di influire in maniera sistemica nel lungo periodo?</li>
@@ -822,7 +823,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Pertinenza del progetto rispetto ai bisogni e criticità specifiche del Paese, della Regione, del settore d’intervento, della sinergia con altri programmi</label>
-            <?php renderScoreButtons('qualitative_elements[relevance_score]', 'Pertinenza del progetto rispetto ai bisogni e criticità specifiche del Paese, della Regione, del settore d’intervento, della sinergia con altri programmi', $evaluationData['qualitative_elements']['relevance_score']); ?>
+            <?php renderScoreInput('qualitative_elements[relevance_score]', 'Pertinenza del progetto rispetto ai bisogni e criticità specifiche del Paese, della Regione, del settore d’intervento, della sinergia con altri programmi', $evaluationData['qualitative_elements']['relevance_score']); ?>
             <small>
               <ul>
                 <li>Il progetto è in linea con i bisogni prioritari dell'area d'intervento?</li>
@@ -834,7 +835,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Congruità del Progetto e della capacità operativa di realizzarla da parte del Soggetto Proponente</label>
-            <?php renderScoreButtons('qualitative_elements[congruity_score]', 'Congruità del Progetto e della capacità operativa di realizzarla da parte del Soggetto Proponente', $evaluationData['qualitative_elements']['congruity_score']); ?>
+            <?php renderScoreInput('qualitative_elements[congruity_score]', 'Congruità del Progetto e della capacità operativa di realizzarla da parte del Soggetto Proponente', $evaluationData['qualitative_elements']['congruity_score']); ?>
             <small>
               <ul>
                 <li>Il progetto è coerente con le capacità e le risorse del soggetto proponente?</li>
@@ -844,7 +845,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Innovatività del Progetto</label>
-            <?php renderScoreButtons('qualitative_elements[innovation_score]', 'Innovatività del Progetto', $evaluationData['qualitative_elements']['innovation_score']); ?>
+            <?php renderScoreInput('qualitative_elements[innovation_score]', 'Innovatività del Progetto', $evaluationData['qualitative_elements']['innovation_score']); ?>
             <small>
               <ul>
                 <li>È previsto l'utilizzo di tecnologie o metodi e approcci nuovi per il raggiungimento degli obiettivi dichiarati?</li>
@@ -854,7 +855,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Rigore e validità scientifica</label>
-            <?php renderScoreButtons('qualitative_elements[rigor_and_scientific_validity_score]', 'Rigore e validità scientifica', $evaluationData['qualitative_elements']['rigor_and_scientific_validity_score']); ?>
+            <?php renderScoreInput('qualitative_elements[rigor_and_scientific_validity_score]', 'Rigore e validità scientifica', $evaluationData['qualitative_elements']['rigor_and_scientific_validity_score']); ?>
             <small>
               <ul>
                 <li>La proposta è basata su evidenze scientifiche, opportunamente spiegate e con le fonti?</li>
@@ -864,7 +865,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Replicabilità e scalabilità</label>
-            <?php renderScoreButtons('qualitative_elements[replicability_and_scalability_score]', 'Replicabilità e scalabilità', $evaluationData['qualitative_elements']['replicability_and_scalability_score']); ?>
+            <?php renderScoreInput('qualitative_elements[replicability_and_scalability_score]', 'Replicabilità e scalabilità', $evaluationData['qualitative_elements']['replicability_and_scalability_score']); ?>
             <small>
               <ul>
                 <li>Il progetto può essere adattato e applicato in altri contesti?</li>
@@ -874,7 +875,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Evidenza dello sviluppo progettuale in linea con un'equilibrata coabitazione uomo-animale che preveda adeguate misure di mitigazione ove necessario</label>
-            <?php renderScoreButtons('qualitative_elements[cohabitation_evidence_score]', 'Evidenza dello sviluppo progettuale in linea con un\'equilibrata coabitazione uomo-animale che preveda adeguate misure di mitigazione ove necessario', $evaluationData['qualitative_elements']['cohabitation_evidence_score']); ?>
+            <?php renderScoreInput('qualitative_elements[cohabitation_evidence_score]', 'Evidenza dello sviluppo progettuale in linea con un\'equilibrata coabitazione uomo-animale che preveda adeguate misure di mitigazione ove necessario', $evaluationData['qualitative_elements']['cohabitation_evidence_score']); ?>
             <small>
               <ul>
                 <li>Il progetto ha valutato la compatibilità con una coabitazione uomo-animale?</li>
@@ -885,7 +886,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Partecipazione enti di ricerca e università</label>
-            <?php renderScoreButtons('qualitative_elements[research_and_university_partnership_score]', 'Partecipazione enti di ricerca e università', $evaluationData['qualitative_elements']['research_and_university_partnership_score']); ?>
+            <?php renderScoreInput('qualitative_elements[research_and_university_partnership_score]', 'Partecipazione enti di ricerca e università', $evaluationData['qualitative_elements']['research_and_university_partnership_score']); ?>
             <small>
               <ul>
                 <li>È prevista la partecipazione di enti di ricerca?</li>
@@ -902,7 +903,7 @@
             <h3>Criteri Tematici - Ripopolamento</h3>
           <div class="form-group">
             <label class="form-label required">Habitat dell'intervento</label>
-            <?php renderScoreButtons('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
+            <?php renderScoreInput('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
             <small>
               <ul>
                 <li>Il progetto considera le caratteristiche ecologiche dell'habitat?</li>
@@ -912,7 +913,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Strategia di mitigazione delle minacce</label>
-            <?php renderScoreButtons('thematic_repopulation[threat_mitigation_strategy_score]', 'Strategia di mitigazione delle minacce', $evaluationData['thematic_repopulation']['threat_mitigation_strategy_score']); ?>
+            <?php renderScoreInput('thematic_repopulation[threat_mitigation_strategy_score]', 'Strategia di mitigazione delle minacce', $evaluationData['thematic_repopulation']['threat_mitigation_strategy_score']); ?>
             <small>
               <ul>
                 <li>Il progetto prevede misure per mitigare le minacce all'habitat?</li>
@@ -922,7 +923,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Coinvolgimento comunità locale</label>
-            <?php renderScoreButtons('thematic_repopulation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_repopulation']['local_community_involvement_score']); ?>
+            <?php renderScoreInput('thematic_repopulation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_repopulation']['local_community_involvement_score']); ?>
             <small>
               <ul>
                 <li>Il progetto coinvolge attivamente la comunità locale?</li>
@@ -932,7 +933,7 @@
           </div>
           <div class="form-group">
             <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-            <?php renderScoreButtons('thematic_repopulation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_repopulation']['multidisciplinary_sustainability_score']); ?>
+            <?php renderScoreInput('thematic_repopulation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_repopulation']['multidisciplinary_sustainability_score']); ?>
             <small>
               <ul>
                 <li>Il progetto considera le interconnessioni tra diversi ambiti (sociale, economico, ambientale)?</li>
@@ -947,7 +948,7 @@
             <h3>Criteri Tematici - Salvaguardia</h3>
             <div class="form-group">
               <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
-              <?php renderScoreButtons('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
+              <?php renderScoreInput('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto adotta un approccio sistemico per affrontare le problematiche ambientali?</li>
@@ -957,7 +958,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Advocacy e rafforzamento giuridico</label>
-              <?php renderScoreButtons('thematic_safeguard[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_safeguard']['advocacy_and_legal_strengthening_score']); ?>
+              <?php renderScoreInput('thematic_safeguard[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_safeguard']['advocacy_and_legal_strengthening_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto promuove l'advocacy e il rafforzamento giuridico per la tutela dell'ambiente?</li>
@@ -967,7 +968,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Salvaguardia dell'habitat (flora e fauna)</label>
-              <?php renderScoreButtons('thematic_safeguard[habitat_safeguard_score]', 'Salvaguardia dell\'habitat (flora e fauna)', $evaluationData['thematic_safeguard']['habitat_safeguard_score']); ?>
+              <?php renderScoreInput('thematic_safeguard[habitat_safeguard_score]', 'Salvaguardia dell\'habitat (flora e fauna)', $evaluationData['thematic_safeguard']['habitat_safeguard_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto contribuisce alla salvaguardia degli habitat naturali (flora e fauna)?</li>
@@ -977,7 +978,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.</label>
-              <?php renderScoreButtons('thematic_safeguard[reservers_development_participation_score]', 'Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.', $evaluationData['thematic_safeguard']['reservers_development_participation_score']); ?>
+              <?php renderScoreInput('thematic_safeguard[reservers_development_participation_score]', 'Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.', $evaluationData['thematic_safeguard']['reservers_development_participation_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede la compartecipazione allo sviluppo di riserve, oasi, CRAS, ecc.?</li>
@@ -987,7 +988,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Attività dedicate a specie cruciali e/o a rischio estinzione</label>
-              <?php renderScoreButtons('thematic_safeguard[crucial_species_activities_score]', 'Attività dedicate a specie cruciali e/o a rischio estinzione', $evaluationData['thematic_safeguard']['crucial_species_activities_score']); ?>
+              <?php renderScoreInput('thematic_safeguard[crucial_species_activities_score]', 'Attività dedicate a specie cruciali e/o a rischio estinzione', $evaluationData['thematic_safeguard']['crucial_species_activities_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
@@ -997,7 +998,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
-              <?php renderScoreButtons('thematic_safeguard[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_safeguard']['multistakeholder_involvement_score']); ?>
+              <?php renderScoreInput('thematic_safeguard[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_safeguard']['multistakeholder_involvement_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede il coinvolgimento di più attori (comunità locale, istituzioni, privato sociale)?</li>
@@ -1007,7 +1008,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreButtons('thematic_safeguard[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_safeguard']['multidisciplinary_sustainability_score']); ?>
+              <?php renderScoreInput('thematic_safeguard[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_safeguard']['multidisciplinary_sustainability_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per garantire la sostenibilità (istituzionale, ambientale, culturale, economica)?</li>
@@ -1021,7 +1022,7 @@
             <h3>Criteri Tematici - Coabitazione</h3>
             <div class="form-group">
               <label class="form-label required">Strategia di riduzione dei rischi</label>
-              <?php renderScoreButtons('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
+              <?php renderScoreInput('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede una strategia di riduzione dei rischi?</li>
@@ -1031,7 +1032,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Tutela della biodiversità e integrazione della presenza animale  alle attività umane (es Rwanda)</label>
-              <?php renderScoreButtons('thematic_cohabitation[biodiversity_protection_and_animal_integrity_score]', 'Tutela della biodiversità e integrazione della presenza animale alle attività umane (es Rwanda)', $evaluationData['thematic_cohabitation']['biodiversity_protection_and_animal_integrity_score']); ?>
+              <?php renderScoreInput('thematic_cohabitation[biodiversity_protection_and_animal_integrity_score]', 'Tutela della biodiversità e integrazione della presenza animale alle attività umane (es Rwanda)', $evaluationData['thematic_cohabitation']['biodiversity_protection_and_animal_integrity_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
@@ -1041,7 +1042,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Coinvolgimento comunità locale</label>
-              <?php renderScoreButtons('thematic_cohabitation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_cohabitation']['local_community_involvement_score']); ?>
+              <?php renderScoreInput('thematic_cohabitation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_cohabitation']['local_community_involvement_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede il coinvolgimento della comunità locale?</li>
@@ -1051,7 +1052,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Sostegno allo sviluppo di un'economia circolare per il sostentamento locale</label>
-              <?php renderScoreButtons('thematic_cohabitation[circular_economy_development_score]', 'Sostegno allo sviluppo di un\'economia circolare per il sostentamento locale', $evaluationData['thematic_cohabitation']['circular_economy_development_score']); ?>
+              <?php renderScoreInput('thematic_cohabitation[circular_economy_development_score]', 'Sostegno allo sviluppo di un\'economia circolare per il sostentamento locale', $evaluationData['thematic_cohabitation']['circular_economy_development_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede il sostegno allo sviluppo di un'economia circolare per il sostentamento locale?</li>
@@ -1061,7 +1062,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreButtons('thematic_cohabitation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_cohabitation']['multidisciplinary_sustainability_score']); ?>
+              <?php renderScoreInput('thematic_cohabitation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_cohabitation']['multidisciplinary_sustainability_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
@@ -1074,7 +1075,7 @@
             <h3>Criteri Tematici - Supporto di comunità</h3>
             <div class="form-group">
               <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
-              <?php renderScoreButtons('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
+              <?php renderScoreInput('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede un approccio sistemico per lo sviluppo della comunità?</li>
@@ -1084,7 +1085,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Contrasto alle discriminazione sociali</label>
-              <?php renderScoreButtons('thematic_community_support[social_discrimination_fighting_score]', 'Contrasto alle discriminazione sociali', $evaluationData['thematic_community_support']['social_discrimination_fighting_score']); ?>
+              <?php renderScoreInput('thematic_community_support[social_discrimination_fighting_score]', 'Contrasto alle discriminazione sociali', $evaluationData['thematic_community_support']['social_discrimination_fighting_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede misure per contrastare le discriminazioni sociali?</li>
@@ -1094,7 +1095,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Salvaguardia dell'habitat</label>
-              <?php renderScoreButtons('thematic_community_support[habitat_protection_score]', 'Salvaguardia dell\'habitat', $evaluationData['thematic_community_support']['habitat_protection_score']); ?>
+              <?php renderScoreInput('thematic_community_support[habitat_protection_score]', 'Salvaguardia dell\'habitat', $evaluationData['thematic_community_support']['habitat_protection_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede misure per la salvaguardia dell'habitat?</li>
@@ -1104,7 +1105,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
-              <?php renderScoreButtons('thematic_community_support[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_community_support']['multistakeholder_involvement_score']); ?>
+              <?php renderScoreInput('thematic_community_support[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_community_support']['multistakeholder_involvement_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
@@ -1114,7 +1115,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreButtons('thematic_community_support[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_community_support']['multidisciplinary_sustainability_score']); ?>
+              <?php renderScoreInput('thematic_community_support[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_community_support']['multidisciplinary_sustainability_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
@@ -1127,7 +1128,7 @@
             <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione</h3>
             <div class="form-group">
               <label class="form-label required">Strumenti di disseminazione</label>
-              <?php renderScoreButtons('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
+              <?php renderScoreInput('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede strumenti di disseminazione efficaci?</li>
@@ -1137,7 +1138,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Advocacy e rafforzamento giuridico</label>
-              <?php renderScoreButtons('thematic_culture_education[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_culture_education']['advocacy_and_legal_strengthening_score']); ?>
+              <?php renderScoreInput('thematic_culture_education[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_culture_education']['advocacy_and_legal_strengthening_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede attività di advocacy e rafforzamento giuridico?</li>
@@ -1147,7 +1148,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Grado di innovazione</label>
-              <?php renderScoreButtons('thematic_culture_education[innovation_score]', 'Grado di innovazione', $evaluationData['thematic_culture_education']['innovation_score']); ?>
+              <?php renderScoreInput('thematic_culture_education[innovation_score]', 'Grado di innovazione', $evaluationData['thematic_culture_education']['innovation_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede elementi innovativi?</li>
@@ -1157,7 +1158,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)</label>
-              <?php renderScoreButtons('thematic_culture_education[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)', $evaluationData['thematic_culture_education']['multistakeholder_involvement_score']); ?>
+              <?php renderScoreInput('thematic_culture_education[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)', $evaluationData['thematic_culture_education']['multistakeholder_involvement_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
@@ -1167,7 +1168,7 @@
             </div>
             <div class="form-group">
               <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreButtons('thematic_culture_education[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_culture_education']['multidisciplinary_sustainability_score']); ?>
+              <?php renderScoreInput('thematic_culture_education[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_culture_education']['multidisciplinary_sustainability_score']); ?>
               <small>
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
@@ -1213,39 +1214,35 @@
         const previousStepButton = document.getElementById('previous-step-button');
         let activeStepIndex = 0;
 
-        const setupInfoToggles = () => {
-          const infoBlocks = Array.from(document.querySelectorAll('.form-group > small'));
+        const arrangeCriteriaInfo = () => {
+          const groups = Array.from(document.querySelectorAll('.form-group'));
 
-          infoBlocks.forEach((info, index) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'criteria-info';
+          groups.forEach((group) => {
+            const info = group.querySelector(':scope > small');
+            const input = group.querySelector(':scope > input.score-input');
 
-            const infoId = `criteria-info-${index + 1}`;
-            wrapper.id = infoId;
+            if (!info || !input || input.closest('.score-input-row')) {
+              return;
+            }
 
-            info.parentNode.insertBefore(wrapper, info);
-            wrapper.appendChild(info);
+            const row = document.createElement('div');
+            row.className = 'score-input-row';
 
-            const toggle = document.createElement('button');
-            toggle.type = 'button';
-            toggle.className = 'info-toggle';
-            toggle.setAttribute('aria-expanded', 'false');
-            toggle.setAttribute('aria-controls', infoId);
-            toggle.textContent = 'ℹ️';
-            toggle.setAttribute('aria-label', 'Mostra informazioni');
-            toggle.setAttribute('title', 'Mostra informazioni');
+            const inputWrapper = document.createElement('div');
+            inputWrapper.className = 'score-input-col';
+            inputWrapper.appendChild(input);
 
-            wrapper.parentNode.insertBefore(toggle, wrapper);
+            info.classList.add('criteria-inline-info');
 
-            toggle.addEventListener('click', () => {
-              const isVisible = wrapper.style.display === 'block';
-              wrapper.style.display = isVisible ? 'none' : 'block';
-              toggle.setAttribute('aria-expanded', isVisible ? 'false' : 'true');
-              toggle.setAttribute('aria-label', isVisible ? 'Mostra informazioni' : 'Nascondi informazioni');
-              toggle.setAttribute('title', isVisible ? 'Mostra informazioni' : 'Nascondi informazioni');
-            });
+            row.appendChild(inputWrapper);
+            row.appendChild(info);
 
-            wrapper.style.display = 'none';
+            const label = group.querySelector(':scope > label');
+            if (label && label.nextSibling) {
+              group.insertBefore(row, label.nextSibling);
+            } else {
+              group.appendChild(row);
+            }
           });
         };
 
@@ -1351,7 +1348,7 @@
           previousStepButton.addEventListener('click', () => attemptStepChange(activeStepIndex - 1));
         }
 
-        setupInfoToggles();
+        arrangeCriteriaInfo();
 
         if (stepElements.length > 0) {
           setActiveStep(0, { forceScroll: false });
@@ -1362,14 +1359,12 @@
             return;
           }
 
-          const scoreInputs = form.querySelectorAll('input[type="radio"]');
+          const scoreInputs = form.querySelectorAll('input.score-input');
           let total = 0;
-          const processedNames = new Set();
-
           scoreInputs.forEach((input) => {
-            if (input.checked && !processedNames.has(input.name)) {
-              total += Number.parseInt(input.value, 10) || 0;
-              processedNames.add(input.name);
+            const value = Number.parseInt(input.value, 10);
+            if (!Number.isNaN(value)) {
+              total += Math.min(Math.max(value, 0), 10);
             }
           });
 
@@ -1377,9 +1372,9 @@
         };
 
         if (form && totalScoreElement) {
-          const scoreInputs = form.querySelectorAll('input[type="radio"]');
+          const scoreInputs = form.querySelectorAll('input.score-input');
           scoreInputs.forEach((input) => {
-            input.addEventListener('change', calculateTotalScore);
+            input.addEventListener('input', calculateTotalScore);
           });
 
           calculateTotalScore();
