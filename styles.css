@@ -194,9 +194,10 @@ img {
 }
 
 .search-results-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  width: 100%;
+  max-width: none;
+  margin: 2rem 0;
+  padding: 0 1.5rem;
 }
 
 .search-result {
@@ -349,6 +350,8 @@ img {
   display: flex;
   flex-direction: column;
   animation: fadeIn 0.8s ease-out;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .logo {
@@ -364,6 +367,7 @@ header h1 {
 
 main {
   flex: 1;
+  width: 100%;
 }
 
 header {
@@ -885,10 +889,13 @@ footer {
 .content-container {
   display: flex;
   gap: 1em;
-  margin: 0.2em;
+  margin: 0.2em 0;
   align-items: center;
   justify-content: center;
   height: 100%;
+  width: 100%;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
 }
 
 .content {
@@ -959,8 +966,8 @@ body.management-page .users-table {
 
 .main-image {
   max-height: min(80vh, 600px);
-  max-width: min(100%, 1200px);
-  width: auto;
+  max-width: 100%;
+  width: 100%;
   height: auto;
   display: block;
   margin: auto;
@@ -1036,12 +1043,9 @@ body.management-page .users-table {
 }
 
 .contact-form-container {
-  max-width: 600px;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0px;
+  max-width: none;
+  margin: 0.5rem 0;
+  padding: 0px 1.5rem;
   background-color: #f9f9f9;
   border-radius: 0.5em;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -1061,7 +1065,6 @@ body.management-page .users-table {
 .form-textarea {
   box-sizing: border-box;
   width: 100%;
-  padding: 12px;
   border: 2px solid #ddd;
   border-radius: 0.5em;
   transition: border-color 0.3s ease;
@@ -1174,7 +1177,7 @@ textarea:focus-visible {
   height: 100%;
   border: none;
   margin: auto;
-  max-width: 800px;
+  max-width: none;
   display: flex;
   align-items: center;
   justify-content: center;
