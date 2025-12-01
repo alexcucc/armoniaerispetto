@@ -729,6 +729,10 @@ ul.nav-links {
   justify-content: center;
 }
 
+.application-actions {
+  flex-wrap: nowrap;
+}
+
 .impersonation-banner {
   background-color: #fff3cd;
   border: 1px solid #ffeeba;

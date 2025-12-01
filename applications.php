@@ -326,7 +326,7 @@ $statusLabels = [
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="actions-cell">
+                                        <div class="actions-cell application-actions">
                                             <?php if ($canUpdate && !$isLocked): ?>
                                                 <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
                                                     <i class="fas fa-edit"></i> Modifica
