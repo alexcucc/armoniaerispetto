@@ -33,6 +33,13 @@ if ($applicationId === false) {
 
 $allowedSortFields = ['call_title', 'organization_name', 'project_name', 'supervisor_name', 'status'];
 $allowedSortOrders = ['asc', 'desc'];
+$statusLabels = [
+    'SUBMITTED' => 'In attesa',
+    'APPROVED' => 'Convalidata',
+    'REJECTED' => 'Respinta',
+    'FINAL_VALIDATION' => 'Convalida in definitiva',
+];
+$allowedStatuses = array_keys($statusLabels);
 
 $sortField = isset($_GET['sort']) && in_array($_GET['sort'], $allowedSortFields)
     ? $_GET['sort']
@@ -106,6 +113,15 @@ if ($supervisorId) {
     $params[':supervisor_id'] = $supervisorId;
 }
 
+$statusFilter = isset($_GET['status']) ? strtoupper((string) $_GET['status']) : null;
+if ($statusFilter && !in_array($statusFilter, $allowedStatuses, true)) {
+    $statusFilter = null;
+}
+if ($statusFilter) {
+    $whereClauses[] = 'a.status = :status';
+    $params[':status'] = $statusFilter;
+}
+
 $whereClause = '';
 if ($applicationId !== null) {
     $whereClauses[] = 'a.id = :application_id';
@@ -123,6 +139,7 @@ $currentFilters = [
     'call_id' => $callId ?: null,
     'organization_id' => $organizationId ?: null,
     'supervisor_id' => $supervisorId ?: null,
+    'status' => $statusFilter ?: null,
     'application_id' => $applicationId !== null ? $applicationId : null,
 ];
 
@@ -147,12 +164,6 @@ $resetUrl = 'applications.php?' . http_build_query([
     'order' => strtolower($sortOrder),
 ]);
 
-$statusLabels = [
-    'SUBMITTED' => 'In attesa',
-    'APPROVED' => 'Convalidata',
-    'REJECTED' => 'Respinta',
-    'FINAL_VALIDATION' => 'Convalida in definitiva',
-];
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -210,6 +221,17 @@ $statusLabels = [
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label class="form-label" for="status">Stato</label>
+                            <select id="status" name="status" class="form-input">
+                                <option value="">Tutti gli stati</option>
+                                <?php foreach ($statusLabels as $statusKey => $statusLabel): ?>
+                                    <option value="<?php echo htmlspecialchars($statusKey); ?>" <?php echo $statusFilter === $statusKey ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($statusLabel); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                         <?php if ($applicationId !== null): ?>
                             <input type="hidden" name="application_id" value="<?php echo htmlspecialchars((string) $applicationId); ?>">
                         <?php endif; ?>
@@ -220,7 +242,7 @@ $statusLabels = [
                             <a href="<?php echo htmlspecialchars($resetUrl); ?>" class="page-button secondary-button">Reset</a>
                         </div>
                     </form>
-                    <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName || $applicationId !== null): ?>
+                    <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName || $statusFilter || $applicationId !== null): ?>
                         <p class="filter-info">
                             Visualizzando le risposte ai bandi
                             <?php if ($selectedCallTitle): ?>
@@ -241,6 +263,14 @@ $statusLabels = [
                                     per
                                 <?php endif; ?>
                                 il convalidatore "<strong><?php echo htmlspecialchars($selectedSupervisorName); ?></strong>"
+                            <?php endif; ?>
+                            <?php if ($statusFilter): ?>
+                                <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName): ?>
+                                    e
+                                <?php else: ?>
+                                    per
+                                <?php endif; ?>
+                                lo stato "<strong><?php echo htmlspecialchars($statusLabels[$statusFilter] ?? $statusFilter); ?></strong>"
                             <?php endif; ?>
                             <?php if ($applicationId !== null): ?>
                                 <?php if ($selectedCallTitle || $selectedOrganizationName || $selectedSupervisorName): ?>
