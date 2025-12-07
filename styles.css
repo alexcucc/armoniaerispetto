@@ -670,7 +670,8 @@ ul.nav-links {
 .delete-btn,
 .view-btn,
 .download-btn,
-.impersonate-btn {
+.impersonate-btn,
+.close-btn {
   color: white;
   border: none;
   padding: 0.5em 1em;
@@ -724,6 +725,16 @@ ul.nav-links {
 
 .impersonate-btn:hover {
   background-color: #59359a;
+}
+
+.close-btn {
+  background-color: #ff9800;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+}
+
+.close-btn:hover {
+  background-color: #f57c00;
 }
 
 .actions-cell {
@@ -1536,7 +1547,8 @@ p {
 
     .delete-btn,
     .modify-btn,
-    .impersonate-btn {
+    .impersonate-btn,
+    .close-btn {
         padding: 0.3em 0.6em;
         font-size: 0.9rem;
         width: auto;
