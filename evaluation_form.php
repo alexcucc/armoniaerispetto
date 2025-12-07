@@ -19,12 +19,21 @@
   
   // Query to fetch the organization name of the proponent
   $stmt = $pdo->prepare(
-      "SELECT o.name AS organization_name, a.status FROM application a LEFT JOIN organization o ON a.organization_id = o.id WHERE a.id = :application_id"
+      "SELECT o.name AS organization_name, a.status, c.status AS call_status FROM application a "
+      . "LEFT JOIN organization o ON a.organization_id = o.id "
+      . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
+      . "WHERE a.id = :application_id"
   );
   $stmt->execute([':application_id' => $application_id]);
   $applicationInfo = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$applicationInfo) {
       $_SESSION['evaluation_error'] = 'Risposta al bando non trovata.';
+      header('Location: evaluations.php');
+      exit;
+  }
+
+  if (($applicationInfo['call_status'] ?? null) === 'CLOSED') {
+      $_SESSION['evaluation_error'] = 'Il bando è chiuso e non è più possibile valutare.';
       header('Location: evaluations.php');
       exit;
   }

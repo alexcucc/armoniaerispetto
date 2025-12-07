@@ -10,8 +10,8 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     exit();
 }
 
-// Load all calls for proposals
-$stmt = $pdo->prepare('SELECT id, title, description, start_date, end_date FROM call_for_proposal');
+// Load all open calls for proposals
+$stmt = $pdo->prepare('SELECT id, title, description, start_date, end_date FROM call_for_proposal WHERE status = "OPEN"');
 $stmt->execute();
 $availableCalls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

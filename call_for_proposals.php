@@ -45,6 +45,8 @@ $stmt = $pdo->prepare(
             cfp.start_date,
             cfp.end_date,
             cfp.pdf_path,
+            cfp.status,
+            cfp.closed_at,
             cfp.created_at,
             cfp.updated_at,
             (
@@ -88,6 +90,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th>Descrizione</th>
                                 <th>Inizio</th>
                                 <th>Fine</th>
+                                <th>Stato</th>
                                 <th>Creato il</th>
                                 <th>Aggiornato il</th>
                                 <th>Azioni</th>
@@ -100,6 +103,9 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($cfp['description']); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['start_date']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['end_date']))); ?></td>
+                                    <td class="status-tag <?php echo $cfp['status'] === 'CLOSED' ? 'status-closed' : 'status-open'; ?>">
+                                        <?php echo $cfp['status'] === 'CLOSED' ? 'Chiuso' : 'Aperto'; ?>
+                                    </td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                     <td>
@@ -110,6 +116,11 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
                                             <?php if ($canUpdate): ?>
                                                 <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?php echo $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
+                                                <?php if ($cfp['status'] === 'OPEN'): ?>
+                                                    <button class="close-btn" data-id="<?php echo $cfp['id']; ?>">
+                                                        <i class="fas fa-ban"></i> Chiudi
+                                                    </button>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                             <?php if ($canDelete && (int) $cfp['application_count'] === 0): ?>
                                                 <button class="delete-btn" data-id="<?php echo $cfp['id']; ?>"><i class="fas fa-trash"></i> Elimina</button>
@@ -129,6 +140,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const deleteButtons = document.querySelectorAll('.delete-btn');
+        const closeButtons = document.querySelectorAll('.close-btn');
         const messageDiv = document.getElementById('message');
 
         deleteButtons.forEach(button => {
@@ -155,6 +167,42 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         }
                     } catch (error) {
                         messageDiv.textContent = "Si è verificato un errore durante l'eliminazione.";
+                        messageDiv.className = 'message error';
+                        messageDiv.style.display = 'block';
+                    }
+                }
+            });
+        });
+
+        closeButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                if (confirm('Sei sicuro di voler chiudere questo bando? L\'operazione è irreversibile.')) {
+                    const id = this.dataset.id;
+                    try {
+                        const response = await fetch('call_for_proposal_close.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ id })
+                        });
+
+                        const data = await response.json();
+
+                        messageDiv.textContent = data.message;
+                        messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
+                        messageDiv.style.display = 'block';
+
+                        if (data.success) {
+                            const row = this.closest('tr');
+                            const statusCell = row.querySelector('.status-tag');
+                            statusCell.textContent = 'Chiuso';
+                            statusCell.classList.remove('status-open');
+                            statusCell.classList.add('status-closed');
+                            this.remove();
+                        }
+                    } catch (error) {
+                        messageDiv.textContent = "Si è verificato un errore durante la chiusura.";
                         messageDiv.className = 'message error';
                         messageDiv.style.display = 'block';
                     }

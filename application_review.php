@@ -19,6 +19,7 @@ if (!$appId) {
 $stmt = $pdo->prepare(
     'SELECT a.project_name, a.status, a.checklist_path, a.rejection_reason, '
     . 'c.title AS call_title, o.name AS organization_name, a.supervisor_id, '
+    . 'c.status AS call_status, '
     . 's.user_id AS supervisor_user_id '
     . 'FROM application a '
     . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
@@ -31,6 +32,11 @@ $application = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$application || $application['supervisor_user_id'] != $_SESSION['user_id']) {
     header('Location: applications.php');
+    exit();
+}
+
+if (($application['call_status'] ?? null) === 'CLOSED') {
+    header('Location: supervisor_applications.php?error=1');
     exit();
 }
 

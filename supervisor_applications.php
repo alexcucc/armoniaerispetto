@@ -94,7 +94,7 @@ if ($supervisorId) {
         $where[] = 'a.status IN ("SUBMITTED", "APPROVED", "REJECTED", "FINAL_VALIDATION")';
     }
 
-    $sql = 'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, a.status, a.rejection_reason '
+    $sql = 'SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, a.status, a.rejection_reason, c.status AS call_status '
         . 'FROM application a '
         . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
         . 'JOIN organization o ON a.organization_id = o.id '
@@ -212,7 +212,8 @@ if ($supervisorId) {
                                         $rejectionReason = trim((string) ($app['rejection_reason'] ?? ''));
                                         $isRejected = $statusKey === 'REJECTED';
                                         $isFinal = $statusKey === 'FINAL_VALIDATION';
-                                        $canEdit = !$isFinal;
+                                        $isClosed = ($app['call_status'] ?? null) === 'CLOSED';
+                                        $canEdit = !$isFinal && !$isClosed;
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($app['call_title']); ?></td>
@@ -226,13 +227,15 @@ if ($supervisorId) {
                                                 <?php else: ?>
                                                     <span class="text-warning">Motivazione mancante</span>
                                                 <?php endif; ?>
-                                            <?php else: ?>
-                                                <span class="text-muted">-</span>
-                                            <?php endif; ?>
-                                        </td>
+                                                <?php else: ?>
+                                                    <span class="text-muted">-</span>
+                                                <?php endif; ?>
+                                            </td>
                                         <td>
                                             <div class="actions-cell">
-                                                <?php if ($canEdit): ?>
+                                                <?php if ($isClosed): ?>
+                                                    <span class="text-muted">Bando chiuso</span>
+                                                <?php elseif ($canEdit): ?>
                                                     <a class="page-button<?php echo $statusKey === 'SUBMITTED' ? '' : ' secondary-button'; ?>" href="application_review.php?application_id=<?php echo $app['id']; ?>">
                                                         <?php echo $statusKey === 'SUBMITTED' ? 'Convalida' : 'Modifica'; ?>
                                                     </a>

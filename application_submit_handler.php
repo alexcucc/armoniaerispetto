@@ -25,6 +25,22 @@ if (!$callId || !$organizationId || !$supervisorId || !$projectName) {
     exit();
 }
 
+$callStatusStmt = $pdo->prepare('SELECT status FROM call_for_proposal WHERE id = :call_id');
+$callStatusStmt->execute([':call_id' => $callId]);
+$callStatus = $callStatusStmt->fetchColumn();
+
+if ($callStatus === false || $callStatus === 'CLOSED') {
+    $_SESSION['error_message'] = 'Il bando selezionato è chiuso e non accetta nuove risposte.';
+    $_SESSION['form_data'] = [
+        'call_id' => $callId,
+        'organization_id' => $organizationId,
+        'supervisor_id' => $supervisorId,
+        'project_name' => $projectName,
+    ];
+    header('Location: application_submit.php');
+    exit();
+}
+
 $duplicateCheckStmt = $pdo->prepare('SELECT COUNT(*) FROM application WHERE call_for_proposal_id = :call_id AND organization_id = :org_id');
 $duplicateCheckStmt->execute([
     ':call_id' => $callId,

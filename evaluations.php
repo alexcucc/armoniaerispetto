@@ -55,7 +55,7 @@ $stmt = $pdo->prepare("
   JOIN application a ON e.application_id = a.id
   JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
   LEFT JOIN organization o ON a.organization_id = o.id
-  WHERE e.evaluator_id = :uid
+  WHERE e.evaluator_id = :uid AND c.status = 'OPEN'
 ");
 $stmt->execute([':uid' => $_SESSION['user_id']]);
 foreach ($stmt->fetchAll() as $row) {
@@ -77,6 +77,7 @@ $stmt = $pdo->prepare("
       AND e.evaluator_id = :uid
   )
     AND a.status = 'FINAL_VALIDATION'
+    AND c.status = 'OPEN'
 ");
 $stmt->execute([':uid' => $_SESSION['user_id']]);
 foreach ($stmt->fetchAll() as $row) {
@@ -117,7 +118,7 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
       JOIN application a ON e.application_id = a.id
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
       LEFT JOIN organization o ON a.organization_id = o.id
-      WHERE e.evaluator_id = :uid AND e.status = 'SUBMITTED'
+      WHERE e.evaluator_id = :uid AND e.status = 'SUBMITTED' AND c.status = 'OPEN'
     ";
     $submittedParams = [':uid' => $_SESSION['user_id']];
     if ($selectedCall !== '') {
@@ -149,7 +150,7 @@ if ($selectedStatus === '' || $selectedStatus === 'DRAFT') {
       JOIN application a ON e.application_id = a.id
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
       LEFT JOIN organization o ON a.organization_id = o.id
-      WHERE e.evaluator_id = :uid AND e.status = 'DRAFT'
+      WHERE e.evaluator_id = :uid AND e.status = 'DRAFT' AND c.status = 'OPEN'
     ";
     $draftsParams = [':uid' => $_SESSION['user_id']];
     if ($selectedCall !== '') {
@@ -184,7 +185,7 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
         SELECT 1 FROM evaluation e
         WHERE e.application_id = a.id
           AND e.evaluator_id = :uid
-      ) AND a.status = 'FINAL_VALIDATION'
+      ) AND a.status = 'FINAL_VALIDATION' AND c.status = 'OPEN'
     ";
     $pendingParams = [':uid' => $_SESSION['user_id']];
     if ($selectedCall !== '') {

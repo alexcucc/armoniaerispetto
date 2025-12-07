@@ -1559,3 +1559,16 @@ p {
         font-size: 0.8em;
     }
 }
+
+.status-tag {
+    font-weight: 600;
+}
+
+.status-open {
+    color: #28a745;
+}
+
+.status-closed {
+    color: #dc3545;
+}
+

@@ -74,13 +74,21 @@ if (!in_array($action, ['save', 'submit'], true)) {
 }
 $isSubmitAction = $action === 'submit';
 
-$applicationStatusStmt = $pdo->prepare('SELECT status FROM application WHERE id = :application_id');
+$applicationStatusStmt = $pdo->prepare(
+    'SELECT a.status, c.status AS call_status '
+    . 'FROM application a '
+    . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
+    . 'WHERE a.id = :application_id'
+);
 $applicationStatusStmt->execute([':application_id' => $applicationId]);
-$applicationStatus = $applicationStatusStmt->fetchColumn();
+$applicationStatus = $applicationStatusStmt->fetch(PDO::FETCH_ASSOC);
 if ($applicationStatus === false) {
     sendResponseAndExit($isAjaxRequest, false, 'Risposta al bando non trovata.');
 }
-if ($applicationStatus !== 'FINAL_VALIDATION') {
+if (($applicationStatus['call_status'] ?? null) === 'CLOSED') {
+    sendResponseAndExit($isAjaxRequest, false, 'Il bando è chiuso e non è più possibile valutare.');
+}
+if (($applicationStatus['status'] ?? '') !== 'FINAL_VALIDATION') {
     sendResponseAndExit($isAjaxRequest, false, 'È possibile valutare solo le risposte in stato "Convalida in definitiva".');
 }
 

@@ -34,7 +34,7 @@ if ($decision === 'REJECTED' && $rejectionReason === '') {
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT a.status, a.checklist_path FROM application a JOIN supervisor s ON a.supervisor_id = s.id WHERE a.id = :id AND s.user_id = :user_id');
+    $stmt = $pdo->prepare('SELECT a.status, a.checklist_path, c.status AS call_status FROM application a JOIN supervisor s ON a.supervisor_id = s.id JOIN call_for_proposal c ON a.call_for_proposal_id = c.id WHERE a.id = :id AND s.user_id = :user_id');
     $stmt->execute([
         ':id' => $applicationId,
         ':user_id' => $_SESSION['user_id']
@@ -42,6 +42,11 @@ try {
     $application = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$application || !in_array($application['status'], ['SUBMITTED', 'APPROVED', 'REJECTED'], true)) {
+        header('Location: supervisor_applications.php?error=1');
+        exit();
+    }
+
+    if (($application['call_status'] ?? null) === 'CLOSED') {
         header('Location: supervisor_applications.php?error=1');
         exit();
     }
