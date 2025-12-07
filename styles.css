@@ -397,7 +397,7 @@ h1, h2 {
   justify-content: center; /* Horizontal centering */
   text-align: center;     /* Ensure text is centered if wraps to multiple lines */
   line-height: 1.2;       /* Optimal line height for readability */
-  min-height: 2em;      /* Ensure consistent height with other buttons */
+  min-height: 1em;      /* Ensure consistent height with other buttons */
   margin: 0.25em auto;
   padding: 0.1em 0.8em;
   font-size: 1em;
