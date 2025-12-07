@@ -266,68 +266,6 @@
         padding-bottom: 3.5rem;
       }
 
-      .evaluation-stepper {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 1.5rem;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 0.75rem;
-      }
-
-      .evaluation-stepper__item {
-        background: #f3f4f6;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        overflow: hidden;
-      }
-
-      .evaluation-stepper__button {
-        width: 100%;
-        border: none;
-        background: none;
-        padding: 0.75rem 0.9rem;
-        text-align: left;
-        font-weight: 600;
-        color: #111827;
-        display: flex;
-        gap: 0.65rem;
-        align-items: center;
-        cursor: pointer;
-      }
-
-      .evaluation-stepper__number {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 2rem;
-        height: 2rem;
-        border-radius: 9999px;
-        background: #e5e7eb;
-        color: #1f2937;
-        font-weight: 700;
-        font-size: 0.95rem;
-      }
-
-      .evaluation-stepper__label {
-        flex: 1;
-      }
-
-      .evaluation-stepper__item.active {
-        background: #ecfeff;
-        border-color: #06b6d4;
-      }
-
-      .evaluation-stepper__item.active .evaluation-stepper__number {
-        background: #06b6d4;
-        color: #fff;
-      }
-
-      .evaluation-stepper__item:focus-within {
-        outline: 2px solid #0ea5e9;
-        outline-offset: 2px;
-      }
-
       .evaluation-step {
         display: none;
       }
@@ -399,10 +337,6 @@
       }
 
       @media (max-width: 640px) {
-        .evaluation-stepper__button {
-          flex-direction: row;
-          align-items: center;
-        }
 
         .evaluation-actions {
           width: calc(100% - 2.5rem);
@@ -459,7 +393,7 @@
       }
     </style>
   </head>
-  <body class="management-page">
+  <body>
     <?php include 'header.php'; ?>
     <div class="total-score-overlay" role="status" aria-live="polite">
       <span class="total-score-overlay__label">Totale punteggio</span>
@@ -484,63 +418,6 @@
             </div>
           </div>
 
-          <ol class="evaluation-stepper" id="evaluation-stepper" aria-label="Percorso di valutazione">
-            <li class="evaluation-stepper__item active" data-step-index="0">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">1</span>
-                <span class="evaluation-stepper__label">Soggetto Proponente</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="1">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">2</span>
-                <span class="evaluation-stepper__label">Progetto</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="2">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">3</span>
-                <span class="evaluation-stepper__label">Piano Finanziario</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="3">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">4</span>
-                <span class="evaluation-stepper__label">Elementi Qualitativi</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="4">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">5</span>
-                <span class="evaluation-stepper__label">Criteri Tematici - Ripopolamento</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="5">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">6</span>
-                <span class="evaluation-stepper__label">Criteri Tematici - Salvaguardia</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="6">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">7</span>
-                <span class="evaluation-stepper__label">Criteri Tematici - Coabitazione</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="7">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">8</span>
-                <span class="evaluation-stepper__label">Criteri Tematici - Supporto di comunità</span>
-              </button>
-            </li>
-            <li class="evaluation-stepper__item" data-step-index="8">
-              <button type="button" class="evaluation-stepper__button">
-                <span class="evaluation-stepper__number">9</span>
-                <span class="evaluation-stepper__label">Criteri Tematici - Cultura - Educazione - Sensibilizzazione</span>
-              </button>
-            </li>
-          </ol>
-
           <div class="evaluation-step active" data-step-index="0">
             <h3>Soggetto Proponente</h3>
           <div class="form-group">
@@ -553,7 +430,6 @@
                 <li>La mission è in linea con le attività realizzate?</li>
                 <li>La sua reputazione e il suo impatto sono chiare e dimostrabili?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -567,7 +443,6 @@
                 <li><strong>7-8:</strong> Enti con solida esperienza, struttura organizzativa definita e collaborazioni stabili.</li>
                 <li><strong>9-10:</strong> Lunga tradizione, ampia rete di collaborazioni e forte riconoscimento istituzionale e sociale.</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -580,7 +455,6 @@
                 <li>Valorizza il personale locale?</li>
                 <li>Si tratta di una grande o piccola organizzazione?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -596,7 +470,6 @@
                 <li>Procedure di autovalutazione?</li>
                 <li>L'ente risulta trasparente?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -609,7 +482,6 @@
                 <li>Hanno debiti difficili da sostenere?</li>
                 <li>Il bilancio è in crescita o in decrescita negli ultimi anni?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -621,7 +493,6 @@
                 <li>Ha partnership locali?</li>
                 <li>Vi è evidenza di una buona reputazione a livello locale?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -633,7 +504,6 @@
                 <li>Ha vinto dei premi?</li>
                 <li>Ha partnership attive con università, istituzioni, aziende, altri ETS?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
 
@@ -650,7 +520,6 @@
                 <li>Le fonti sono autorevoli?</li>
                 <li>Risulta effettivamente rispondente a un bisogno emerso?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -660,7 +529,6 @@
               <ul>
                 <li>Il progetto è in linea con le finalità statutarie dell'ente?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -670,7 +538,6 @@
               <ul>
                 <li>Il progetto ha un impatto sociale positivo?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -681,7 +548,6 @@
                 <li>Sono coerenti?</li>
                 <li>Sono realizzabili?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -693,7 +559,6 @@
                 <li>Sono Misurabili?</li>
                 <li>Sono Ambiziosi?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -707,7 +572,6 @@
                 <li>Sono Realizzabili?</li>
                 <li>Sono Efficaci?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -717,7 +581,6 @@
               <ul>
                 <li>Il progetto ha una chiara finalità locale?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -730,7 +593,6 @@
                 <li>Permettono di raggiungere un maggior numero di beneficiari?</li>
                 <li>I rapporti con le autorità locali sono sviluppati e fruttuosi?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -743,7 +605,6 @@
                 <li>Risulta una duplicazione eccessiva di attività, obiettivi o output?</li>
                 <li>Ripete processi già implementati altrove?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -755,7 +616,6 @@
                 <li>Valorizza il progetto?</li>
                 <li>Valorizza la collaborazione Ente - Fondazione AR?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
 
@@ -770,7 +630,6 @@
               <ul>
                 <li>Il budget è chiaro e completo in tutte le sue parti?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -781,7 +640,6 @@
                 <li>Il budget risulta coerente con gli obiettivi e i risultati del Progetto?</li>
                 <li>Permette il rispetto del cronogramma e il raggiungimento dell'impatto atteso?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -792,7 +650,6 @@
                 <li>La percentuale del cofinanziamento è adeguata?</li>
                 <li>Le fonti sono diversificate e autorevoli?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -802,7 +659,6 @@
               <ul>
                 <li>Il budget è in grado di far fronte a eventuali cambiamenti di sviluppo progettuale senza variazioni onerose?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
 
@@ -818,7 +674,6 @@
                 <li>Il progetto ha la potenzialità di influire in maniera sistemica nel lungo periodo?</li>
                 <li>Sono valutati i rischi di un "impatto negativo"?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -830,7 +685,6 @@
                 <li>È rilevante rispetto alle criticità territoriali?</li>
                 <li>È coerente con le politiche pubbliche e i relativi piani di sviluppo? È supportato dalle istituzioni?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -840,7 +694,6 @@
               <ul>
                 <li>Il progetto è coerente con le capacità e le risorse del soggetto proponente?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -850,7 +703,6 @@
               <ul>
                 <li>È previsto l'utilizzo di tecnologie o metodi e approcci nuovi per il raggiungimento degli obiettivi dichiarati?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -860,7 +712,6 @@
               <ul>
                 <li>La proposta è basata su evidenze scientifiche, opportunamente spiegate e con le fonti?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -870,7 +721,6 @@
               <ul>
                 <li>Il progetto può essere adattato e applicato in altri contesti?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -881,7 +731,6 @@
                 <li>Il progetto ha valutato la compatibilità con una coabitazione uomo-animale?</li>
                 <li>Sono previste azioni di tutela e di mitigazione dei rischi?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -893,7 +742,6 @@
                 <li>È/sono un valore aggiunto?</li>
                 <li>Completano e/o arricchiscono il progetto?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
 
@@ -908,7 +756,6 @@
               <ul>
                 <li>Il progetto considera le caratteristiche ecologiche dell'habitat?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -918,7 +765,6 @@
               <ul>
                 <li>Il progetto prevede misure per mitigare le minacce all'habitat?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -928,7 +774,6 @@
               <ul>
                 <li>Il progetto coinvolge attivamente la comunità locale?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
           <div class="form-group">
@@ -938,7 +783,6 @@
               <ul>
                 <li>Il progetto considera le interconnessioni tra diversi ambiti (sociale, economico, ambientale)?</li>
               </ul>
-              <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
             </small>
           </div>
 
@@ -953,7 +797,6 @@
                 <ul>
                   <li>Il progetto adotta un approccio sistemico per affrontare le problematiche ambientali?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -963,7 +806,6 @@
                 <ul>
                   <li>Il progetto promuove l'advocacy e il rafforzamento giuridico per la tutela dell'ambiente?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -973,7 +815,6 @@
                 <ul>
                   <li>Il progetto contribuisce alla salvaguardia degli habitat naturali (flora e fauna)?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -983,7 +824,6 @@
                 <ul>
                   <li>Il progetto prevede la compartecipazione allo sviluppo di riserve, oasi, CRAS, ecc.?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -993,7 +833,6 @@
                 <ul>
                   <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1003,7 +842,6 @@
                 <ul>
                   <li>Il progetto prevede il coinvolgimento di più attori (comunità locale, istituzioni, privato sociale)?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1013,7 +851,6 @@
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per garantire la sostenibilità (istituzionale, ambientale, culturale, economica)?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
           </div>
@@ -1027,7 +864,6 @@
                 <ul>
                   <li>Il progetto prevede una strategia di riduzione dei rischi?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1037,7 +873,6 @@
                 <ul>
                   <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1047,7 +882,6 @@
                 <ul>
                   <li>Il progetto prevede il coinvolgimento della comunità locale?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1057,7 +891,6 @@
                 <ul>
                   <li>Il progetto prevede il sostegno allo sviluppo di un'economia circolare per il sostentamento locale?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1067,7 +900,6 @@
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
           </div>
@@ -1080,7 +912,6 @@
                 <ul>
                   <li>Il progetto prevede un approccio sistemico per lo sviluppo della comunità?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1090,7 +921,6 @@
                 <ul>
                   <li>Il progetto prevede misure per contrastare le discriminazioni sociali?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1100,7 +930,6 @@
                 <ul>
                   <li>Il progetto prevede misure per la salvaguardia dell'habitat?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1110,7 +939,6 @@
                 <ul>
                   <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1120,7 +948,6 @@
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
           </div>
@@ -1133,7 +960,6 @@
                 <ul>
                   <li>Il progetto prevede strumenti di disseminazione efficaci?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1143,7 +969,6 @@
                 <ul>
                   <li>Il progetto prevede attività di advocacy e rafforzamento giuridico?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1153,7 +978,6 @@
                 <ul>
                   <li>Il progetto prevede elementi innovativi?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1163,7 +987,6 @@
                 <ul>
                   <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
             <div class="form-group">
@@ -1173,7 +996,6 @@
                 <ul>
                   <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
                 </ul>
-                <small>Scala di valutazione: 1 (minimo) - 10 (massimo).</small>
               </small>
             </div>
           </div>
@@ -1209,7 +1031,6 @@
         const closeButton = document.getElementById('close-evaluation-modal');
         const totalScoreElement = document.getElementById('total-score-value');
         const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
-        const stepperItems = Array.from(document.querySelectorAll('.evaluation-stepper__item'));
         const nextStepButton = document.getElementById('next-step-button');
         const previousStepButton = document.getElementById('previous-step-button');
         let activeStepIndex = 0;
@@ -1296,19 +1117,6 @@
             step.classList.toggle('active', index === activeStepIndex);
           });
 
-          stepperItems.forEach((item, index) => {
-            const isActive = index === activeStepIndex;
-            item.classList.toggle('active', isActive);
-            const button = item.querySelector('.evaluation-stepper__button');
-            if (button) {
-              if (isActive) {
-                button.setAttribute('aria-current', 'step');
-              } else {
-                button.removeAttribute('aria-current');
-              }
-            }
-          });
-
           updateNavigationState();
 
           if (forceScroll) {
@@ -1330,15 +1138,6 @@
 
           setActiveStep(targetIndex);
         };
-
-        if (stepperItems.length > 0) {
-          stepperItems.forEach((item, index) => {
-            const button = item.querySelector('.evaluation-stepper__button');
-            if (button) {
-              button.addEventListener('click', () => attemptStepChange(index));
-            }
-          });
-        }
 
         if (nextStepButton) {
           nextStepButton.addEventListener('click', () => attemptStepChange(activeStepIndex + 1));
