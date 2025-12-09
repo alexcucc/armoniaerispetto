@@ -60,10 +60,10 @@ $completedFilterClause = $filterClause === ''
     ? " WHERE e.status = 'SUBMITTED'"
     : $filterClause . " AND e.status = 'SUBMITTED'";
 
-$completedQuery = "SELECT e.id, c.title AS call_title, o.name AS organization_name, "
+$completedQuery = "SELECT e.id AS evaluation_id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
     . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
-    . "'SUBMITTED' AS status, e.updated_at "
+    . "'SUBMITTED' AS status, COALESCE(e.updated_at, a.updated_at) AS updated_at "
     . "FROM evaluation e "
     . "JOIN application a ON e.application_id = a.id "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
@@ -72,12 +72,7 @@ $completedQuery = "SELECT e.id, c.title AS call_title, o.name AS organization_na
     . "JOIN user u ON ev.user_id = u.id "
     . "JOIN supervisor s ON a.supervisor_id = s.id "
     . "JOIN user su ON s.user_id = su.id"
-    . $completedFilterClause
-    . " ORDER BY $sortField $sortOrder";
-
-$completedStmt = $pdo->prepare($completedQuery);
-$completedStmt->execute($params);
-$completedEvaluations = $completedStmt->fetchAll(PDO::FETCH_ASSOC);
+    . $completedFilterClause;
 
 $pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
@@ -93,12 +88,13 @@ $pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS
     . "LEFT JOIN evaluation e ON e.application_id = a.id AND e.evaluator_id = ev.user_id"
     . $filterClause
     . ($filterClause === '' ? ' WHERE' : ' AND')
-    . " (e.id IS NULL OR e.status = 'DRAFT')"
-    . " ORDER BY $sortField $sortOrder";
+    . " (e.id IS NULL OR e.status = 'DRAFT')";
 
-$pendingStmt = $pdo->prepare($pendingQuery);
-$pendingStmt->execute($params);
-$pendingEvaluations = $pendingStmt->fetchAll(PDO::FETCH_ASSOC);
+$evaluationsQuery = "(" . $completedQuery . ") UNION ALL (" . $pendingQuery . ") ORDER BY $sortField $sortOrder";
+
+$evaluationsStmt = $pdo->prepare($evaluationsQuery);
+$evaluationsStmt->execute($params);
+$evaluations = $evaluationsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $evaluatorsStmt = $pdo->query(
     "SELECT ev.id, CONCAT(u.last_name, ' ', u.first_name) AS full_name "
@@ -219,146 +215,62 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         <a href="evaluator_evaluation_overview.php" class="page-button secondary-button">Reset</a>
                     </div>
                 </form>
-                <div class="tab-container">
-                    <div class="tab-buttons" role="tablist" aria-label="Filtra valutazioni per stato">
-                        <button
-                            type="button"
-                            class="tab-button active"
-                            role="tab"
-                            id="evaluations-completed-tab"
-                            aria-controls="evaluations-completed"
-                            aria-selected="true"
-                        >
-                            Valutazioni completate
-                        </button>
-                        <button
-                            type="button"
-                            class="tab-button"
-                            role="tab"
-                            id="evaluations-pending-tab"
-                            aria-controls="evaluations-pending"
-                            aria-selected="false"
-                        >
-                            Valutazioni da compilare
-                        </button>
-                    </div>
-                    <div class="tab-panels">
-                        <section
-                            id="evaluations-completed"
-                            class="tab-panel active users-table-container"
-                            role="tabpanel"
-                            aria-labelledby="evaluations-completed-tab">
-                            <table class="users-table">
-                                <thead>
-                                <tr>
-                                    <?php
-                                    $columns = [
-                                        'call_title' => 'Bando',
-                                        'organization_name' => 'Ente',
-                                        'evaluator_name' => 'Valutatore',
-                                        'supervisor_name' => 'Convalidatore',
-                                        'status' => 'Stato',
-                                        'updated_at' => 'Ultimo aggiornamento'
-                                    ];
-                                    foreach ($columns as $field => $label) {
-                                        $link = buildSortLink($field, $sortField, $sortOrder, $currentFilters);
-                                        $isActive = $sortField === $field;
-                                        $ariaSort = $isActive
-                                            ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
-                                            : 'none';
+                <div class="users-table-container">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <?php
+                                $columns = [
+                                    'call_title' => 'Bando',
+                                    'organization_name' => 'Ente',
+                                    'evaluator_name' => 'Valutatore',
+                                    'supervisor_name' => 'Convalidatore',
+                                    'status' => 'Stato',
+                                    'updated_at' => 'Ultimo aggiornamento'
+                                ];
+                                foreach ($columns as $field => $label) {
+                                    $link = buildSortLink($field, $sortField, $sortOrder, $currentFilters);
+                                    $isActive = $sortField === $field;
+                                    $ariaSort = $isActive
+                                        ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
+                                        : 'none';
 
-                                        echo '<th'
-                                            . ' scope="col"'
-                                            . ' class="sortable"'
-                                            . ' data-sort-url="' . htmlspecialchars($link) . '"'
-                                            . ' aria-sort="' . $ariaSort . '"'
-                                            . ' tabindex="0"'
-                                            . '>'
-                                            . '<span class="sortable-header">'
-                                            . htmlspecialchars($label)
-                                            . '<span class="sort-indicator" aria-hidden="true"></span>'
-                                            . '</span>'
-                                            . '</th>';
-                                    }
-                                    ?>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php if (empty($completedEvaluations)): ?>
-                                    <tr>
-                                        <td colspan="6">Nessuna valutazione trovata.</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($completedEvaluations as $evaluation): ?>
-                                        <?php $formattedDate = $evaluation['updated_at'] ? date('d/m/Y H:i', strtotime($evaluation['updated_at'])) : '-'; ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($evaluation['call_title']); ?></td>
-                                            <td><?php echo htmlspecialchars($evaluation['organization_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($evaluation['evaluator_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($evaluation['supervisor_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($statusLabels[$evaluation['status']] ?? $evaluation['status']); ?></td>
-                                            <td><?php echo htmlspecialchars($formattedDate); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </section>
-                        <section
-                            id="evaluations-pending"
-                            class="tab-panel users-table-container"
-                            role="tabpanel"
-                            aria-labelledby="evaluations-pending-tab"
-                            hidden>
-                            <table class="users-table">
-                                <thead>
+                                    echo '<th'
+                                        . ' scope="col"'
+                                        . ' class="sortable"'
+                                        . ' data-sort-url="' . htmlspecialchars($link) . '"'
+                                        . ' aria-sort="' . $ariaSort . '"'
+                                        . ' tabindex="0"'
+                                        . '>'
+                                        . '<span class="sortable-header">'
+                                        . htmlspecialchars($label)
+                                        . '<span class="sort-indicator" aria-hidden="true"></span>'
+                                        . '</span>'
+                                        . '</th>';
+                                }
+                                ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($evaluations)): ?>
                                 <tr>
-                                    <?php
-                                    foreach ($columns as $field => $label) {
-                                        $link = buildSortLink($field, $sortField, $sortOrder, $currentFilters);
-                                        $isActive = $sortField === $field;
-                                        $ariaSort = $isActive
-                                            ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
-                                            : 'none';
-
-                                        echo '<th'
-                                            . ' scope="col"'
-                                            . ' class="sortable"'
-                                            . ' data-sort-url="' . htmlspecialchars($link) . '"'
-                                            . ' aria-sort="' . $ariaSort . '"'
-                                            . ' tabindex="0"'
-                                            . '>'
-                                            . '<span class="sortable-header">'
-                                            . htmlspecialchars($label)
-                                            . '<span class="sort-indicator" aria-hidden="true"></span>'
-                                            . '</span>'
-                                            . '</th>';
-                                    }
-                                    ?>
+                                    <td colspan="6">Nessuna valutazione trovata.</td>
                                 </tr>
-                                </thead>
-                                <tbody>
-                                <?php if (empty($pendingEvaluations)): ?>
+                            <?php else: ?>
+                                <?php foreach ($evaluations as $evaluation): ?>
+                                    <?php $formattedDate = $evaluation['updated_at'] ? date('d/m/Y H:i', strtotime($evaluation['updated_at'])) : '-'; ?>
                                     <tr>
-                                        <td colspan="6">Nessuna valutazione in sospeso per i criteri selezionati.</td>
+                                        <td><?php echo htmlspecialchars($evaluation['call_title']); ?></td>
+                                        <td><?php echo htmlspecialchars($evaluation['organization_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($evaluation['evaluator_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($evaluation['supervisor_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($statusLabels[$evaluation['status']] ?? $evaluation['status']); ?></td>
+                                        <td><?php echo htmlspecialchars($formattedDate); ?></td>
                                     </tr>
-                                <?php else: ?>
-                                    <?php foreach ($pendingEvaluations as $evaluation): ?>
-                                        <?php $formattedDate = $evaluation['updated_at'] ? date('d/m/Y H:i', strtotime($evaluation['updated_at'])) : '-'; ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($evaluation['call_title']); ?></td>
-                                            <td><?php echo htmlspecialchars($evaluation['organization_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($evaluation['evaluator_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($evaluation['supervisor_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($statusLabels[$evaluation['status']] ?? $evaluation['status']); ?></td>
-                                            <td><?php echo htmlspecialchars($formattedDate); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </section>
-                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
