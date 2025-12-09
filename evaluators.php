@@ -43,6 +43,16 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute();
 $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function buildEvaluatorsSortLink(string $field, string $sortField, string $sortOrder): string
+{
+    $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
+
+    return '?' . http_build_query([
+        'sort' => $field,
+        'order' => $nextOrder,
+    ]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -74,13 +84,24 @@ $evaluators = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 'email' => 'Email',
                             ];
                             foreach ($columns as $field => $label) {
-                                $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
-                                $icon = '';
-                                if ($sortField === $field) {
-                                    $icon = $sortOrder === 'ASC' ? '▲' : '▼';
-                                }
-                                echo '<th><a href="?sort=' . $field . '&order=' . $nextOrder . '">' . $label
-                                    . '<span class="sort-icon">' . $icon . '</span></a></th>';
+                                $link = buildEvaluatorsSortLink($field, $sortField, $sortOrder);
+                                $isActive = $sortField === $field;
+                                $ariaSort = $isActive
+                                    ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
+                                    : 'none';
+
+                                echo '<th'
+                                    . ' scope="col"'
+                                    . ' class="sortable"'
+                                    . ' data-sort-url="' . htmlspecialchars($link) . '"'
+                                    . ' aria-sort="' . $ariaSort . '"'
+                                    . ' tabindex="0"'
+                                    . '>'
+                                    . '<span class="sortable-header">'
+                                    . htmlspecialchars($label)
+                                    . '<span class="sort-indicator" aria-hidden="true"></span>'
+                                    . '</span>'
+                                    . '</th>';
                             }
                             ?>
                             <th>Azioni</th>

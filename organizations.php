@@ -28,10 +28,10 @@ $sortOrder = isset($_GET['order']) && in_array(strtolower($_GET['order']), $allo
 
 // Fetch all organizations with sorting
 $stmt = $pdo->prepare(
-    "SELECT 
-        id, 
-        name, 
-        type, 
+    "SELECT
+        id,
+        name,
+        type,
         incorporation_year, 
         location AS location, 
         created_at, 
@@ -41,6 +41,16 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute();
 $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function buildOrganizationsSortLink(string $field, string $sortField, string $sortOrder): string
+{
+    $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
+
+    return '?' . http_build_query([
+        'sort' => $field,
+        'order' => $nextOrder,
+    ]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -78,12 +88,24 @@ $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 'updated_at' => 'Aggiornato il'
                             ];
                             foreach ($columns as $field => $label) {
-                                $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
-                                $icon = '';
-                                if ($sortField === $field) {
-                                    $icon = $sortOrder === 'ASC' ? '▲' : '▼';
-                                }
-                                echo '<th><a href="?sort=' . $field . '&order=' . $nextOrder . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
+                                $link = buildOrganizationsSortLink($field, $sortField, $sortOrder);
+                                $isActive = $sortField === $field;
+                                $ariaSort = $isActive
+                                    ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
+                                    : 'none';
+
+                                echo '<th'
+                                    . ' scope="col"'
+                                    . ' class="sortable"'
+                                    . ' data-sort-url="' . htmlspecialchars($link) . '"'
+                                    . ' aria-sort="' . $ariaSort . '"'
+                                    . ' tabindex="0"'
+                                    . '>'
+                                    . '<span class="sortable-header">'
+                                    . htmlspecialchars($label)
+                                    . '<span class="sort-indicator" aria-hidden="true"></span>'
+                                    . '</span>'
+                                    . '</th>';
                             }
                             ?>
                             <th>Azioni</th>

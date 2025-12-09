@@ -18,15 +18,14 @@ body {
   text-justify: inter-word;
 }
 
-.users-table th a {
-  color: white;
-  text-decoration: none;
+.users-table th .sortable-header {
   display: inline-flex;
   align-items: center;
-}
-
-.users-table th a .sort-icon {
-  margin-left: 5px;
+  justify-content: center;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+  gap: 0.35rem;
 }
 
 html {
@@ -1396,6 +1395,11 @@ p {
 .users-table th.sortable {
   cursor: pointer;
   user-select: none;
+}
+
+.users-table th.sortable:focus-visible {
+  outline: 2px solid #cde5d6;
+  outline-offset: -2px;
 }
 
 .users-table th .sort-indicator {

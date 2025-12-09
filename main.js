@@ -153,4 +153,28 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+
+  document.querySelectorAll('.users-table th.sortable[data-sort-url]').forEach((header) => {
+    const sortUrl = header.dataset.sortUrl;
+
+    if (!sortUrl) {
+      return;
+    }
+
+    header.setAttribute('role', 'button');
+    header.tabIndex = header.tabIndex >= 0 ? header.tabIndex : 0;
+
+    const navigateToSort = () => {
+      window.location.href = sortUrl;
+    };
+
+    header.addEventListener('click', navigateToSort);
+
+    header.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        navigateToSort();
+      }
+    });
+  });
 });

@@ -293,11 +293,23 @@ $resetUrl = 'applications.php?' . http_build_query([
                                 ];
                                 foreach ($columns as $field => $label) {
                                     $link = buildApplicationsSortLink($field, $sortField, $sortOrder, $currentFilters);
-                                    $icon = '';
-                                    if ($sortField === $field) {
-                                        $icon = $sortOrder === 'ASC' ? '▲' : '▼';
-                                    }
-                                    echo '<th><a href="' . htmlspecialchars($link) . '">' . $label . '<span class="sort-icon">' . $icon . '</span></a></th>';
+                                    $isActive = $sortField === $field;
+                                    $ariaSort = $isActive
+                                        ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
+                                        : 'none';
+
+                                    echo '<th'
+                                        . ' scope="col"'
+                                        . ' class="sortable"'
+                                        . ' data-sort-url="' . htmlspecialchars($link) . '"'
+                                        . ' aria-sort="' . $ariaSort . '"'
+                                        . ' tabindex="0"'
+                                        . '>'
+                                        . '<span class="sortable-header">'
+                                        . htmlspecialchars($label)
+                                        . '<span class="sort-indicator" aria-hidden="true"></span>'
+                                        . '</span>'
+                                        . '</th>';
                                 }
                                 ?>
                                 <th>Motivazione</th>

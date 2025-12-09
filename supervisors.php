@@ -15,14 +15,43 @@ $canImpersonate = $rolePermissionManager->userHasPermission(
     RolePermissionManager::$PERMISSIONS['USER_IMPERSONATE']
 );
 
+$allowedSortFields = ['name', 'email'];
+$allowedSortOrders = ['asc', 'desc'];
+
+$sortFieldParam = strtolower(filter_input(INPUT_GET, 'sort', FILTER_UNSAFE_RAW) ?? '');
+$sortField = in_array($sortFieldParam, $allowedSortFields, true) ? $sortFieldParam : 'name';
+
+$sortOrderParam = strtolower(filter_input(INPUT_GET, 'order', FILTER_UNSAFE_RAW) ?? '');
+$sortOrder = in_array($sortOrderParam, $allowedSortOrders, true) ? strtoupper($sortOrderParam) : 'ASC';
+
+switch ($sortField) {
+    case 'email':
+        $orderByClause = "u.email $sortOrder";
+        break;
+    case 'name':
+    default:
+        $orderByClause = "u.last_name $sortOrder, u.first_name $sortOrder";
+        break;
+}
+
 $stmt = $pdo->prepare(
     "SELECT s.id, u.id AS user_id, u.first_name, u.last_name, u.email " .
     "FROM supervisor s " .
     "JOIN user u ON s.user_id = u.id " .
-    "ORDER BY u.last_name ASC, u.first_name ASC"
+    "ORDER BY $orderByClause"
 );
 $stmt->execute();
 $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function buildSupervisorsSortLink(string $field, string $sortField, string $sortOrder): string
+{
+    $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
+
+    return '?' . http_build_query([
+        'sort' => $field,
+        'order' => $nextOrder,
+    ]);
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -44,15 +73,39 @@ $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                     <a class="page-button" href="supervisor_add.php">Aggiungi Convalidatore</a>
                 </div>
-                <div class="users-table-container">
-                    <table class="users-table">
-                        <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Azioni</th>
-                        </tr>
-                        </thead>
+                        <div class="users-table-container">
+                            <table class="users-table">
+                                <thead>
+                                <tr>
+                                    <?php
+                                    $columns = [
+                                        'name' => 'Nome',
+                                        'email' => 'Email',
+                                    ];
+                                    foreach ($columns as $field => $label) {
+                                        $link = buildSupervisorsSortLink($field, $sortField, $sortOrder);
+                                        $isActive = $sortField === $field;
+                                        $ariaSort = $isActive
+                                            ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
+                                            : 'none';
+
+                                        echo '<th'
+                                            . ' scope="col"'
+                                            . ' class="sortable"'
+                                            . ' data-sort-url="' . htmlspecialchars($link) . '"'
+                                            . ' aria-sort="' . $ariaSort . '"'
+                                            . ' tabindex="0"'
+                                            . '>'
+                                            . '<span class="sortable-header">'
+                                            . htmlspecialchars($label)
+                                            . '<span class="sort-indicator" aria-hidden="true"></span>'
+                                            . '</span>'
+                                            . '</th>';
+                                    }
+                                    ?>
+                                    <th>Azioni</th>
+                                </tr>
+                                </thead>
                         <tbody>
                         <?php foreach ($supervisors as $supervisor): ?>
                             <tr>
