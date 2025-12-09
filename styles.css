@@ -727,6 +727,38 @@ ul.nav-links {
   background-color: #59359a;
 }
 
+.icon-button {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+.motivation-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid #d0d7de;
+  background-color: #f0f4f8;
+  color: #17a2b8;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.motivation-icon:hover {
+  background-color: #e2e8f0;
+  border-color: #c0c7d0;
+}
+
+.motivation-missing {
+  color: #d39e00;
+  background-color: #fff8e1;
+  border-color: #f1cf7a;
+}
+
 .close-btn {
   background-color: #ff9800;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);

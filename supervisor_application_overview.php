@@ -235,9 +235,23 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                         <td>
                                             <?php if ($statusKey === 'REJECTED'): ?>
                                                 <?php if ($rejectionReason !== ''): ?>
-                                                    <?php echo nl2br(htmlspecialchars($rejectionReason)); ?>
+                                                    <button
+                                                        type="button"
+                                                        class="icon-button motivation-icon"
+                                                        title="<?php echo htmlspecialchars($rejectionReason, ENT_QUOTES); ?>"
+                                                        aria-label="Visualizza motivazione"
+                                                    >
+                                                        <i class="fas fa-info-circle" aria-hidden="true"></i>
+                                                    </button>
                                                 <?php else: ?>
-                                                    <span class="text-warning">Motivazione mancante</span>
+                                                    <button
+                                                        type="button"
+                                                        class="icon-button motivation-icon motivation-missing"
+                                                        title="Motivazione mancante"
+                                                        aria-label="Motivazione mancante"
+                                                    >
+                                                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                                                    </button>
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="text-muted">-</span>
