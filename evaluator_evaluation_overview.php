@@ -175,9 +175,8 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                 </div>
                 <form class="filters-form" method="get" action="">
                     <div class="form-group">
-                        <label class="form-label" for="evaluator_id">Valutatore</label>
                         <select id="evaluator_id" name="evaluator_id" class="form-input">
-                            <option value="">Tutti</option>
+                            <option value="">Tutti i valutatori</option>
                             <?php foreach ($evaluators as $evaluator): ?>
                                 <option value="<?php echo htmlspecialchars($evaluator['id']); ?>" <?php echo ($evaluatorId === (int) $evaluator['id']) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($evaluator['full_name']); ?>
@@ -186,9 +185,8 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="organization_id">Ente</label>
                         <select id="organization_id" name="organization_id" class="form-input">
-                            <option value="">Tutti</option>
+                            <option value="">Tutti gli enti</option>
                             <?php foreach ($organizations as $organization): ?>
                                 <option value="<?php echo htmlspecialchars($organization['id']); ?>" <?php echo ($organizationId === (int) $organization['id']) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($organization['name']); ?>
@@ -197,9 +195,8 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="call_id">Bando</label>
                         <select id="call_id" name="call_id" class="form-input">
-                            <option value="">Tutti</option>
+                            <option value="">Tutti i bandi</option>
                             <?php foreach ($calls as $call): ?>
                                 <option value="<?php echo htmlspecialchars($call['id']); ?>" <?php echo ($callId === (int) $call['id']) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($call['title']); ?>
@@ -208,9 +205,8 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="supervisor_id">Convalidatore</label>
                         <select id="supervisor_id" name="supervisor_id" class="form-input">
-                            <option value="">Tutti</option>
+                            <option value="">Tutti i convalidatori</option>
                             <?php foreach ($supervisors as $supervisor): ?>
                                 <option value="<?php echo htmlspecialchars($supervisor['id']); ?>" <?php echo ($supervisorId === (int) $supervisor['id']) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($supervisor['full_name']); ?>

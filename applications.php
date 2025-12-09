@@ -189,7 +189,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                     </div>
                     <form method="get" class="filters-form">
                         <div class="form-group">
-                            <label class="form-label" for="call_id">Bando</label>
                             <select id="call_id" name="call_id" class="form-input">
                                 <option value="">Tutti i bandi</option>
                                 <?php foreach ($callOptions as $callOption): ?>
@@ -200,7 +199,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="organization_id">Ente</label>
                             <select id="organization_id" name="organization_id" class="form-input">
                                 <option value="">Tutti gli enti</option>
                                 <?php foreach ($organizationOptions as $organizationOption): ?>
@@ -211,7 +209,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="supervisor_id">Convalidatore</label>
                             <select id="supervisor_id" name="supervisor_id" class="form-input">
                                 <option value="">Tutti i convalidatori</option>
                                 <?php foreach ($supervisorOptions as $supervisorOption): ?>
@@ -222,7 +219,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="status">Stato</label>
                             <select id="status" name="status" class="form-input">
                                 <option value="">Tutti gli stati</option>
                                 <?php foreach ($statusLabels as $statusKey => $statusLabel): ?>

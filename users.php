@@ -36,27 +36,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                     <div class="users-filters" aria-label="Filtri utenti">
                         <div class="filter-group">
-                            <label for="filter-email">Email</label>
                             <input type="text" id="filter-email" data-filter-key="email" placeholder="Cerca email" />
                         </div>
                         <div class="filter-group">
-                            <label for="filter-first-name">Nome</label>
                             <input type="text" id="filter-first-name" data-filter-key="firstName" placeholder="Cerca nome" />
                         </div>
                         <div class="filter-group">
-                            <label for="filter-last-name">Cognome</label>
                             <input type="text" id="filter-last-name" data-filter-key="lastName" placeholder="Cerca cognome" />
                         </div>
                         <div class="filter-group">
-                            <label for="filter-phone">Telefono</label>
                             <input type="text" id="filter-phone" data-filter-key="phone" placeholder="Cerca telefono" />
                         </div>
                         <div class="filter-group">
-                            <label for="filter-organization">Organizzazione</label>
                             <input type="text" id="filter-organization" data-filter-key="organization" placeholder="Cerca organizzazione" />
                         </div>
                         <div class="filter-group">
-                            <label for="filter-email-verified">Email verificata</label>
                             <select id="filter-email-verified" data-filter-key="emailVerified">
                                 <option value="">Tutte</option>
                                 <option value="1">Verificata</option>
