@@ -957,8 +957,8 @@ body.management-page main {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  height: calc(100vh - var(--header-height, 70px));
-  max-height: calc(100vh - var(--header-height, 70px));
+  height: calc(100vh - 6vh - var(--header-height, 70px));
+  max-height: calc(100vh - 6vh - var(--header-height, 70px));
   overflow: hidden;
 }
 
