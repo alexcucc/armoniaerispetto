@@ -216,20 +216,23 @@
     <title>Invia la Valutazione</title>
     <style>
       .total-score-overlay {
-        position: fixed;
-        top: 6rem;
-        right: 1.5rem;
         background-color: #ffffff;
         border: 1px solid #d1d5db;
         border-radius: 0.65rem;
-        padding: 0.6rem 0.75rem;
+        padding: 0.7rem 0.85rem;
         box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
         font-weight: 600;
         font-size: 0.95rem;
         color: #1f2937;
-        min-width: 8.5rem;
+        min-width: 100%;
         text-align: center;
-        z-index: 1000;
+      }
+
+      .total-score-overlay__group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        padding: 0.15rem 0;
       }
 
       .total-score-overlay__label {
@@ -248,13 +251,8 @@
 
       @media (max-width: 768px) {
         .total-score-overlay {
-          top: auto;
-          right: auto;
-          bottom: 1.5rem;
-          left: 50%;
-          transform: translateX(-50%);
-          width: calc(100% - 3rem);
-          max-width: 22rem;
+          width: 100%;
+          max-width: none;
         }
       }
 
@@ -267,8 +265,26 @@
         margin-bottom: 1.5rem;
       }
 
-      .contact-form-container {
-        max-width: 1220px;
+      .evaluation-layout {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 1.5rem;
+        align-items: start;
+      }
+
+      .evaluation-content {
+        min-width: 0;
+      }
+
+      .evaluation-sidebar {
+        position: sticky;
+        top: 6.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: stretch;
+        min-width: 240px;
+        z-index: 1100;
       }
 
       .contact-form {
@@ -284,30 +300,27 @@
       }
 
       .evaluation-actions {
-        position: fixed;
-        bottom: 1.25rem;
-        right: 1.25rem;
-        left: auto;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
         border: 1px solid #e5e7eb;
         box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
-        padding: 0.65rem 0.9rem;
+        padding: 0.85rem 0.95rem;
         display: flex;
         flex-direction: column;
         flex-wrap: nowrap;
-        gap: 0.5rem;
+        gap: 0.65rem;
         justify-content: flex-start;
-        align-items: flex-end;
+        align-items: stretch;
         border-radius: 0.75rem;
-        z-index: 1100;
+        width: 100%;
       }
 
       .evaluation-actions__nav,
       .evaluation-actions__main {
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: nowrap;
+        align-items: stretch;
+        gap: 0.55rem;
+        flex-direction: column;
+        justify-content: flex-start;
       }
 
       .evaluation-actions__nav .page-button {
@@ -333,12 +346,20 @@
       }
 
       .evaluation-actions .submit-btn,
-      .evaluation-actions .page-button,
-      .evaluation-actions .back-button {
-        width: auto;
+      .evaluation-actions .page-button {
+        width: 100%;
         min-width: 8rem;
         padding: 0.55rem 0.9rem;
         font-size: 0.95rem;
+      }
+
+      .evaluation-actions .back-button {
+        width: auto;
+        min-width: 7rem;
+        padding: 0.55rem 0.9rem;
+        font-size: 0.95rem;
+        align-self: flex-start;
+        width: -webkit-fill-available;
       }
 
       .evaluation-actions .submit-btn {
@@ -346,17 +367,13 @@
       }
 
       @media (max-width: 640px) {
-
-        .evaluation-actions {
-          width: calc(100% - 2.5rem);
-          left: 1.25rem;
-          right: 1.25rem;
-          align-items: flex-start;
+        .evaluation-layout {
+          grid-template-columns: 1fr;
         }
 
-        .evaluation-actions__nav,
-        .evaluation-actions__main {
-          flex-wrap: wrap;
+        .evaluation-sidebar {
+          position: relative;
+          top: auto;
         }
       }
 
@@ -404,10 +421,6 @@
   </head>
   <body>
     <?php include 'header.php'; ?>
-    <div class="total-score-overlay" role="status" aria-live="polite">
-      <span class="total-score-overlay__label">Totale punteggio</span>
-      <span class="total-score-overlay__value" id="total-score-value">0</span>
-    </div>
     <main>
       <div class="contact-form-container" style="margin-top:2em;">
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
@@ -427,6 +440,8 @@
             </div>
           </div>
 
+          <div class="evaluation-layout">
+            <div class="evaluation-content">
           <div class="evaluation-step active" data-step-index="0">
             <h3>Soggetto Proponente</h3>
           <div class="form-group">
@@ -1008,7 +1023,19 @@
               </small>
             </div>
           </div>
-<div class="evaluation-actions" aria-label="Navigazione e azioni di salvataggio">
+        </div>
+        <div class="evaluation-sidebar" aria-label="Punteggi e azioni di navigazione">
+          <div class="total-score-overlay" role="status" aria-live="polite">
+            <div class="total-score-overlay__group">
+              <span class="total-score-overlay__label">Totale punteggio</span>
+              <span class="total-score-overlay__value" id="total-score-value">0</span>
+            </div>
+            <div class="total-score-overlay__group">
+              <span class="total-score-overlay__label">Totale sezione corrente</span>
+              <span class="total-score-overlay__value" id="section-score-value">0</span>
+            </div>
+          </div>
+          <div class="evaluation-actions" aria-label="Navigazione e azioni di salvataggio">
             <div class="evaluation-actions__nav">
               <button type="button" class="page-button" id="previous-step-button">Sezione precedente</button>
               <button type="button" class="page-button" id="next-step-button">Sezione successiva</button>
@@ -1019,6 +1046,8 @@
               <button class="submit-btn" type="submit" name="action" value="submit">Invia Valutazione</button>
             </div>
           </div>
+        </div>
+      </div>
         </form>
       </div>
     </main>
@@ -1039,6 +1068,7 @@
         const modal = document.getElementById('evaluation-success-modal');
         const closeButton = document.getElementById('close-evaluation-modal');
         const totalScoreElement = document.getElementById('total-score-value');
+        const sectionScoreElement = document.getElementById('section-score-value');
         const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
         const nextStepButton = document.getElementById('next-step-button');
         const previousStepButton = document.getElementById('previous-step-button');
@@ -1128,6 +1158,8 @@
 
           updateNavigationState();
 
+          calculateSectionScore();
+
           if (forceScroll) {
             scrollToStep(stepElements[activeStepIndex]);
           }
@@ -1162,7 +1194,7 @@
           setActiveStep(0, { forceScroll: false });
         }
 
-        const calculateTotalScore = () => {
+        function calculateTotalScore() {
           if (!form || !totalScoreElement) {
             return;
           }
@@ -1177,15 +1209,43 @@
           });
 
           totalScoreElement.textContent = total.toString();
-        };
+        }
+
+        function calculateSectionScore() {
+          if (!form || !sectionScoreElement || stepElements.length === 0) {
+            return;
+          }
+
+          const currentStep = stepElements[activeStepIndex];
+          if (!currentStep) {
+            sectionScoreElement.textContent = '0';
+            return;
+          }
+
+          const sectionInputs = currentStep.querySelectorAll('input.score-input');
+          let sectionTotal = 0;
+
+          sectionInputs.forEach((input) => {
+            const value = Number.parseInt(input.value, 10);
+            if (!Number.isNaN(value)) {
+              sectionTotal += Math.min(Math.max(value, 0), 10);
+            }
+          });
+
+          sectionScoreElement.textContent = sectionTotal.toString();
+        }
 
         if (form && totalScoreElement) {
           const scoreInputs = form.querySelectorAll('input.score-input');
           scoreInputs.forEach((input) => {
-            input.addEventListener('input', calculateTotalScore);
+            input.addEventListener('input', () => {
+              calculateTotalScore();
+              calculateSectionScore();
+            });
           });
 
           calculateTotalScore();
+          calculateSectionScore();
         }
 
         form.addEventListener('submit', async function (event) {
