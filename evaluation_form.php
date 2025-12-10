@@ -152,6 +152,56 @@
       ],
   ];
 
+  // Pesature allineate al calcolo complessivo in call_for_proposal_results.php
+  $criterionWeights = [
+      'proposing_entity' => [
+          'general_information_score'                    => 2,
+          'experience_score'                            => 4,
+          'organizational_capacity_score'               => 4,
+          'policy_score'                                => 4,
+          'budget_score'                                => 3,
+          'purpose_and_local_involvement_score'         => 4,
+          'partnership_and_visibility_score'            => 4,
+      ],
+      'project' => [
+          'needs_identification_and_problem_analysis_score'       => 3,
+          'adherence_to_statuary_purposes_score'                  => 3,
+          'social_weight_score'                                   => 2,
+          'objectives_score'                                      => 2,
+          'expected_results_score'                                => 2,
+          'activity_score'                                        => 3,
+          'local_purpose_score'                                   => 2,
+          'partnership_and_relations_with_local_authorities_score'=> 2,
+          'synergies_and_design_inefficiencies_score'             => 3,
+          'communication_and_visibility_score'                    => 3,
+      ],
+      'financial_plan' => [
+          'completeness_and_clarity_of_budget_score' => 3,
+          'consistency_with_objectives_score'        => 3,
+          'cofinancing_score'                        => 2,
+          'flexibility_score'                        => 2,
+      ],
+      'qualitative_elements' => [
+          'impact_score'                           => 5,
+          'relevance_score'                        => 6,
+          'congruity_score'                        => 4,
+          'innovation_score'                       => 3,
+          'rigor_and_scientific_validity_score'    => 6,
+          'replicability_and_scalability_score'    => 4,
+          'cohabitation_evidence_score'            => 6,
+          'research_and_university_partnership_score' => 6,
+      ],
+  ];
+
+  // Pesi applicati al punteggio totale delle sezioni tematiche
+  $sectionWeightMultipliers = [
+      'thematic_repopulation'      => 35,
+      'thematic_safeguard'         => 35,
+      'thematic_cohabitation'      => 20,
+      'thematic_community_support' => 9,
+      'thematic_culture_education' => 10,
+  ];
+
   $evaluationData = [];
   foreach ($sectionDefinitions as $sectionKey => $definition) {
       $evaluationData[$sectionKey] = array_fill_keys($definition['fields'], null);
@@ -208,6 +258,31 @@
 
       echo '<input type="number" class="score-input" id="' . $inputIdAttr . '" name="' . $sanitizedName . '" aria-label="' . $ariaLabelAttr . '" min="1" max="10" step="1" required' . $valueAttr . '>';
   }
+
+  function renderWeightBadge(?int $weight): void
+  {
+      if ($weight === null) {
+          return;
+      }
+
+      echo '<span class="criteria-weight-badge" aria-label="Peso ' . htmlspecialchars((string) $weight, ENT_QUOTES, 'UTF-8') . '">Peso: ' . (int) $weight . '</span>';
+  }
+
+  function renderCriterionWeightBadge(array $weights, string $sectionKey, string $fieldName): void
+  {
+      $weight = $weights[$sectionKey][$fieldName] ?? null;
+      renderWeightBadge($weight);
+  }
+
+  function renderSectionWeightBadge(array $sectionWeights, string $sectionKey): void
+  {
+      $weight = $sectionWeights[$sectionKey] ?? null;
+      if ($weight === null) {
+          return;
+      }
+
+      echo '<span class="section-weight-badge">Peso sezione: ' . (int) $weight . '</span>';
+  }
   ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -224,7 +299,6 @@
         font-weight: 600;
         font-size: 0.95rem;
         color: #1f2937;
-        min-width: 100%;
         text-align: center;
       }
 
@@ -311,7 +385,6 @@
         justify-content: flex-start;
         align-items: stretch;
         border-radius: 0.75rem;
-        width: 100%;
       }
 
       .evaluation-actions__nav,
@@ -417,6 +490,24 @@
       .criteria-inline-info ul {
         margin: 0.3rem 0 0.2rem 1.2rem;
       }
+
+      .criteria-weight-badge,
+      .section-weight-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.5rem;
+        margin-left: 0.4rem;
+        border-radius: 9999px;
+        background: #ecfeff;
+        color: #0ea5e9;
+        font-weight: 700;
+        font-size: 0.78rem;
+        border: 1px solid #bae6fd;
+      }
+
+      .section-weight-badge {
+        margin-left: 0.6rem;
+      }
     </style>
   </head>
   <body>
@@ -445,7 +536,7 @@
           <div class="evaluation-step active" data-step-index="0">
             <h3>Soggetto Proponente</h3>
           <div class="form-group">
-            <label class="form-label required">Informazioni Generali</label>
+            <label class="form-label required">Informazioni Generali <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'general_information_score'); ?></label>
             <?php renderScoreInput('proposing_entity[general_information_score]', 'Informazioni Generali', $evaluationData['proposing_entity']['general_information_score']); ?>
             <small class="form-text">
               <ul>
@@ -457,7 +548,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Esperienza</label>
+            <label class="form-label required">Esperienza <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'experience_score'); ?></label>
             <?php renderScoreInput('proposing_entity[experience_score]', 'Esperienza', $evaluationData['proposing_entity']['experience_score']); ?>
             <small class="form-text">
               <p class="form-note">Utilizza la scala 1-10 considerando questi riferimenti:</p>
@@ -470,7 +561,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Modalità organizzative, gestionali e di assunzione delle decisioni</label>
+            <label class="form-label required">Modalità organizzative, gestionali e di assunzione delle decisioni <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'organizational_capacity_score'); ?></label>
             <?php renderScoreInput('proposing_entity[organizational_capacity_score]', 'Modalità organizzative, gestionali e di assunzione delle decisioni', $evaluationData['proposing_entity']['organizational_capacity_score']); ?>
             <small>
               <ul>
@@ -482,7 +573,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Policy (welfare aziendale, gender equality, child safeguarding, politiche ambientali ecc.)</label>
+            <label class="form-label required">Policy (welfare aziendale, gender equality, child safeguarding, politiche ambientali ecc.) <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'policy_score'); ?></label>
             <?php renderScoreInput('proposing_entity[policy_score]', 'Policy (welfare aziendale, gender equality, child safeguarding, politiche ambientali ecc.)', $evaluationData['proposing_entity']['policy_score']); ?>
             <small>
               <ul>
@@ -497,7 +588,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Bilancio</label>
+            <label class="form-label required">Bilancio <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'budget_score'); ?></label>
             <?php renderScoreInput('proposing_entity[budget_score]', 'Bilancio', $evaluationData['proposing_entity']['budget_score']); ?>
             <small>
               <ul>
@@ -509,7 +600,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Finalità e coinvolgimento locale</label>
+            <label class="form-label required">Finalità e coinvolgimento locale <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'purpose_and_local_involvement_score'); ?></label>
             <?php renderScoreInput('proposing_entity[purpose_and_local_involvement_score]', 'Finalità e coinvolgimento locale', $evaluationData['proposing_entity']['purpose_and_local_involvement_score']); ?>
             <small>
               <ul>
@@ -520,7 +611,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Partnership e visibilità</label>
+            <label class="form-label required">Partnership e visibilità <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'partnership_and_visibility_score'); ?></label>
             <?php renderScoreInput('proposing_entity[partnership_and_visibility_score]', 'Partnership e visibilità', $evaluationData['proposing_entity']['partnership_and_visibility_score']); ?>
             <small>
               <ul>
@@ -536,7 +627,7 @@
           <div class="evaluation-step" data-step-index="1">
             <h3>Progetto</h3>
           <div class="form-group">
-            <label class="form-label required">Identificazione dei bisogni e analisi dei problemi</label>
+            <label class="form-label required">Identificazione dei bisogni e analisi dei problemi <?php renderCriterionWeightBadge($criterionWeights, 'project', 'needs_identification_and_problem_analysis_score'); ?></label>
             <?php renderScoreInput('project[needs_identification_and_problem_analysis_score]', 'Identificazione dei bisogni e analisi dei problemi', $evaluationData['project']['needs_identification_and_problem_analysis_score']); ?>
             <small>
               <ul>
@@ -547,7 +638,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Aderenza alle finalità statutarie</label>
+            <label class="form-label required">Aderenza alle finalità statutarie <?php renderCriterionWeightBadge($criterionWeights, 'project', 'adherence_to_statuary_purposes_score'); ?></label>
             <?php renderScoreInput('project[adherence_to_statuary_purposes_score]', 'Aderenza alle finalità statutarie', $evaluationData['project']['adherence_to_statuary_purposes_score']); ?>
             <small>
               <ul>
@@ -556,7 +647,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Peso sociale (es. aiuto a fragili per cura animali)</label>
+            <label class="form-label required">Peso sociale (es. aiuto a fragili per cura animali) <?php renderCriterionWeightBadge($criterionWeights, 'project', 'social_weight_score'); ?></label>
             <?php renderScoreInput('project[social_weight_score]', 'Peso sociale (es. aiuto a fragili per cura animali)', $evaluationData['project']['social_weight_score']); ?>
             <small>
               <ul>
@@ -565,7 +656,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Obiettivi</label>
+            <label class="form-label required">Obiettivi <?php renderCriterionWeightBadge($criterionWeights, 'project', 'objectives_score'); ?></label>
             <?php renderScoreInput('project[objectives_score]', 'Obiettivi', $evaluationData['project']['objectives_score']); ?>
             <small>
               <ul>
@@ -575,7 +666,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Risultati attesi</label>
+            <label class="form-label required">Risultati attesi <?php renderCriterionWeightBadge($criterionWeights, 'project', 'expected_results_score'); ?></label>
             <?php renderScoreInput('project[expected_results_score]', 'Risultati attesi', $evaluationData['project']['expected_results_score']); ?>
             <small>
               <ul>
@@ -586,7 +677,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Attività</label>
+            <label class="form-label required">Attività <?php renderCriterionWeightBadge($criterionWeights, 'project', 'activity_score'); ?></label>
             <?php renderScoreInput('project[activity_score]', 'Attività', $evaluationData['project']['activity_score']); ?>
             <small>
               <ul>
@@ -599,7 +690,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Finalità locale</label>
+            <label class="form-label required">Finalità locale <?php renderCriterionWeightBadge($criterionWeights, 'project', 'local_purpose_score'); ?></label>
             <?php renderScoreInput('project[local_purpose_score]', 'Finalità locale', $evaluationData['project']['local_purpose_score']); ?>
             <small>
               <ul>
@@ -608,7 +699,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Partenariato e rapporti con autorità locali/nazionali</label>
+            <label class="form-label required">Partenariato e rapporti con autorità locali/nazionali <?php renderCriterionWeightBadge($criterionWeights, 'project', 'partnership_and_relations_with_local_authorities_score'); ?></label>
             <?php renderScoreInput('project[partnership_and_relations_with_local_authorities_score]', 'Partenariato e rapporti con autorità locali/nazionali', $evaluationData['project']['partnership_and_relations_with_local_authorities_score']); ?>
             <small>
               <ul>
@@ -620,7 +711,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Sinergie e inefficienze progettuali</label>
+            <label class="form-label required">Sinergie e inefficienze progettuali <?php renderCriterionWeightBadge($criterionWeights, 'project', 'synergies_and_design_inefficiencies_score'); ?></label>
             <?php renderScoreInput('project[synergies_and_design_inefficiencies_score]', 'Sinergie e inefficienze progettuali', $evaluationData['project']['synergies_and_design_inefficiencies_score']); ?>
             <small>
               <ul>
@@ -632,7 +723,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Comunicazione e visibilità</label>
+            <label class="form-label required">Comunicazione e visibilità <?php renderCriterionWeightBadge($criterionWeights, 'project', 'communication_and_visibility_score'); ?></label>
             <?php renderScoreInput('project[communication_and_visibility_score]', 'Comunicazione e visibilità', $evaluationData['project']['communication_and_visibility_score']); ?>
             <small>
               <ul>
@@ -648,7 +739,7 @@
           <div class="evaluation-step" data-step-index="2">
             <h3>Piano Finanziario</h3>
           <div class="form-group">
-            <label class="form-label required">Completezza e chiarezza del budget</label>
+            <label class="form-label required">Completezza e chiarezza del budget <?php renderCriterionWeightBadge($criterionWeights, 'financial_plan', 'completeness_and_clarity_of_budget_score'); ?></label>
             <?php renderScoreInput('financial_plan[completeness_and_clarity_of_budget_score]', 'Completezza e chiarezza del budget', $evaluationData['financial_plan']['completeness_and_clarity_of_budget_score']); ?>
             <small>
               <ul>
@@ -657,7 +748,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Coerenza con obiettivi, risultati, impatto e cronogramma</label>
+            <label class="form-label required">Coerenza con obiettivi, risultati, impatto e cronogramma <?php renderCriterionWeightBadge($criterionWeights, 'financial_plan', 'consistency_with_objectives_score'); ?></label>
             <?php renderScoreInput('financial_plan[consistency_with_objectives_score]', 'Coerenza con obiettivi, risultati, impatto e cronogramma', $evaluationData['financial_plan']['consistency_with_objectives_score']); ?>
             <small>
               <ul>
@@ -667,7 +758,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Cofinanziamento</label>
+            <label class="form-label required">Cofinanziamento <?php renderCriterionWeightBadge($criterionWeights, 'financial_plan', 'cofinancing_score'); ?></label>
             <?php renderScoreInput('financial_plan[cofinancing_score]', 'Cofinanziamento', $evaluationData['financial_plan']['cofinancing_score']); ?>
             <small>
               <ul>
@@ -677,7 +768,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Flessibilità</label>
+            <label class="form-label required">Flessibilità <?php renderCriterionWeightBadge($criterionWeights, 'financial_plan', 'flexibility_score'); ?></label>
             <?php renderScoreInput('financial_plan[flexibility_score]', 'Flessibilità', $evaluationData['financial_plan']['flexibility_score']); ?>
             <small>
               <ul>
@@ -691,7 +782,7 @@
           <div class="evaluation-step" data-step-index="3">
             <h3>Elementi Qualitativi</h3>
           <div class="form-group">
-            <label class="form-label required">L'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento</label>
+            <label class="form-label required">L'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'impact_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[impact_score]', 'L\'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento', $evaluationData['qualitative_elements']['impact_score']); ?>
             <small>
               <ul>
@@ -701,7 +792,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Pertinenza del progetto rispetto ai bisogni e criticità specifiche del Paese, della Regione, del settore d’intervento, della sinergia con altri programmi</label>
+            <label class="form-label required">Pertinenza del progetto rispetto ai bisogni e criticità specifiche del Paese, della Regione, del settore d’intervento, della sinergia con altri programmi <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'relevance_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[relevance_score]', 'Pertinenza del progetto rispetto ai bisogni e criticità specifiche del Paese, della Regione, del settore d’intervento, della sinergia con altri programmi', $evaluationData['qualitative_elements']['relevance_score']); ?>
             <small>
               <ul>
@@ -712,7 +803,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Congruità del Progetto e della capacità operativa di realizzarla da parte del Soggetto Proponente</label>
+            <label class="form-label required">Congruità del Progetto e della capacità operativa di realizzarla da parte del Soggetto Proponente <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'congruity_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[congruity_score]', 'Congruità del Progetto e della capacità operativa di realizzarla da parte del Soggetto Proponente', $evaluationData['qualitative_elements']['congruity_score']); ?>
             <small>
               <ul>
@@ -721,7 +812,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Innovatività del Progetto</label>
+            <label class="form-label required">Innovatività del Progetto <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'innovation_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[innovation_score]', 'Innovatività del Progetto', $evaluationData['qualitative_elements']['innovation_score']); ?>
             <small>
               <ul>
@@ -730,7 +821,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Rigore e validità scientifica</label>
+            <label class="form-label required">Rigore e validità scientifica <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'rigor_and_scientific_validity_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[rigor_and_scientific_validity_score]', 'Rigore e validità scientifica', $evaluationData['qualitative_elements']['rigor_and_scientific_validity_score']); ?>
             <small>
               <ul>
@@ -739,7 +830,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Replicabilità e scalabilità</label>
+            <label class="form-label required">Replicabilità e scalabilità <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'replicability_and_scalability_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[replicability_and_scalability_score]', 'Replicabilità e scalabilità', $evaluationData['qualitative_elements']['replicability_and_scalability_score']); ?>
             <small>
               <ul>
@@ -748,7 +839,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Evidenza dello sviluppo progettuale in linea con un'equilibrata coabitazione uomo-animale che preveda adeguate misure di mitigazione ove necessario</label>
+            <label class="form-label required">Evidenza dello sviluppo progettuale in linea con un'equilibrata coabitazione uomo-animale che preveda adeguate misure di mitigazione ove necessario <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'cohabitation_evidence_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[cohabitation_evidence_score]', 'Evidenza dello sviluppo progettuale in linea con un\'equilibrata coabitazione uomo-animale che preveda adeguate misure di mitigazione ove necessario', $evaluationData['qualitative_elements']['cohabitation_evidence_score']); ?>
             <small>
               <ul>
@@ -758,7 +849,7 @@
             </small>
           </div>
           <div class="form-group">
-            <label class="form-label required">Partecipazione enti di ricerca e università</label>
+            <label class="form-label required">Partecipazione enti di ricerca e università <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'research_and_university_partnership_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[research_and_university_partnership_score]', 'Partecipazione enti di ricerca e università', $evaluationData['qualitative_elements']['research_and_university_partnership_score']); ?>
             <small>
               <ul>
@@ -772,7 +863,7 @@
           </div>
 
           <div class="evaluation-step" data-step-index="4">
-            <h3>Criteri Tematici - Ripopolamento</h3>
+            <h3>Criteri Tematici - Ripopolamento <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_repopulation'); ?></h3>
           <div class="form-group">
             <label class="form-label required">Habitat dell'intervento</label>
             <?php renderScoreInput('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
@@ -813,7 +904,7 @@
           </div>
 
           <div class="evaluation-step" data-step-index="5">
-            <h3>Criteri Tematici - Salvaguardia</h3>
+            <h3>Criteri Tematici - Salvaguardia <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_safeguard'); ?></h3>
             <div class="form-group">
               <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
               <?php renderScoreInput('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
@@ -880,7 +971,7 @@
           </div>
 
           <div class="evaluation-step" data-step-index="6">
-            <h3>Criteri Tematici - Coabitazione</h3>
+            <h3>Criteri Tematici - Coabitazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_cohabitation'); ?></h3>
             <div class="form-group">
               <label class="form-label required">Strategia di riduzione dei rischi</label>
               <?php renderScoreInput('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
@@ -928,7 +1019,7 @@
             </div>
           </div>
           <div class="evaluation-step" data-step-index="7">
-            <h3>Criteri Tematici - Supporto di comunità</h3>
+            <h3>Criteri Tematici - Supporto di comunità <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_community_support'); ?></h3>
             <div class="form-group">
               <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
               <?php renderScoreInput('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
@@ -976,7 +1067,7 @@
             </div>
           </div>
           <div class="evaluation-step" data-step-index="8">
-            <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione</h3>
+            <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_culture_education'); ?></h3>
             <div class="form-group">
               <label class="form-label required">Strumenti di disseminazione</label>
               <?php renderScoreInput('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
@@ -1072,7 +1163,107 @@
         const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
         const nextStepButton = document.getElementById('next-step-button');
         const previousStepButton = document.getElementById('previous-step-button');
+        const criterionWeights = <?php echo json_encode($criterionWeights, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const sectionWeightMultipliers = <?php echo json_encode($sectionWeightMultipliers, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const sectionKeys = [
+          'proposing_entity',
+          'project',
+          'financial_plan',
+          'qualitative_elements',
+          'thematic_repopulation',
+          'thematic_safeguard',
+          'thematic_cohabitation',
+          'thematic_community_support',
+          'thematic_culture_education',
+        ];
         let activeStepIndex = 0;
+
+        const clampScore = (value) => {
+          if (Number.isNaN(value)) {
+            return null;
+          }
+
+          return Math.min(Math.max(value, 0), 10);
+        };
+
+        const formatScore = (score) => {
+          if (!Number.isFinite(score)) {
+            return '0';
+          }
+
+          return Number.isInteger(score) ? score.toString() : score.toFixed(2);
+        };
+
+        const getSectionKey = (index) => sectionKeys[index] || null;
+
+        const extractFieldName = (inputName) => {
+          if (typeof inputName !== 'string') {
+            return null;
+          }
+
+          const match = inputName.match(/\[([^\]]+)\]$/);
+          return match ? match[1] : null;
+        };
+
+        const calculateWeightedSectionScore = (sectionIndex) => {
+          const sectionElement = stepElements[sectionIndex];
+
+          if (!sectionElement) {
+            return 0;
+          }
+
+          const inputs = Array.from(sectionElement.querySelectorAll('input.score-input'));
+          const sectionKey = getSectionKey(sectionIndex);
+          const multiplier = sectionWeightMultipliers[sectionKey] ?? 1;
+          const scoreScale = 10;
+
+          let sectionTotal = 0;
+
+          inputs.forEach((input) => {
+            const value = clampScore(Number.parseInt(input.value, 10));
+            if (value === null) {
+              return;
+            }
+
+            const fieldName = extractFieldName(input.name);
+            const weight = sectionKey && fieldName && criterionWeights[sectionKey]
+              ? (criterionWeights[sectionKey][fieldName] ?? 1)
+              : 1;
+
+            sectionTotal += (value * weight) / scoreScale;
+          });
+
+          return sectionTotal * multiplier;
+        };
+
+        function calculateTotalScore() {
+          if (!form || !totalScoreElement) {
+            return;
+          }
+
+          let total = 0;
+          stepElements.forEach((_, index) => {
+            total += calculateWeightedSectionScore(index);
+          });
+
+          totalScoreElement.textContent = formatScore(total);
+        }
+
+        function calculateSectionScore() {
+          if (!form || !sectionScoreElement || stepElements.length === 0) {
+            return;
+          }
+
+          const currentStep = stepElements[activeStepIndex];
+          if (!currentStep) {
+            sectionScoreElement.textContent = '0';
+            return;
+          }
+
+          const weightedSectionScore = calculateWeightedSectionScore(activeStepIndex);
+
+          sectionScoreElement.textContent = formatScore(weightedSectionScore);
+        }
 
         const arrangeCriteriaInfo = () => {
           const groups = Array.from(document.querySelectorAll('.form-group'));
@@ -1192,47 +1383,6 @@
 
         if (stepElements.length > 0) {
           setActiveStep(0, { forceScroll: false });
-        }
-
-        function calculateTotalScore() {
-          if (!form || !totalScoreElement) {
-            return;
-          }
-
-          const scoreInputs = form.querySelectorAll('input.score-input');
-          let total = 0;
-          scoreInputs.forEach((input) => {
-            const value = Number.parseInt(input.value, 10);
-            if (!Number.isNaN(value)) {
-              total += Math.min(Math.max(value, 0), 10);
-            }
-          });
-
-          totalScoreElement.textContent = total.toString();
-        }
-
-        function calculateSectionScore() {
-          if (!form || !sectionScoreElement || stepElements.length === 0) {
-            return;
-          }
-
-          const currentStep = stepElements[activeStepIndex];
-          if (!currentStep) {
-            sectionScoreElement.textContent = '0';
-            return;
-          }
-
-          const sectionInputs = currentStep.querySelectorAll('input.score-input');
-          let sectionTotal = 0;
-
-          sectionInputs.forEach((input) => {
-            const value = Number.parseInt(input.value, 10);
-            if (!Number.isNaN(value)) {
-              sectionTotal += Math.min(Math.max(value, 0), 10);
-            }
-          });
-
-          sectionScoreElement.textContent = sectionTotal.toString();
         }
 
         if (form && totalScoreElement) {
