@@ -779,30 +779,50 @@ ul.nav-links {
   flex-wrap: nowrap;
 }
 
-.impersonation-banner {
-  background-color: #fff3cd;
-  border: 1px solid #ffeeba;
-  color: #856404;
-  border-radius: 0.5em;
-  padding: 0.35em 0.75em;
+.impersonation-bar {
+  background-color: #fffaf0;
+  border-bottom: 1px solid #ffe3a3;
+  color: #644800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
   font-weight: 600;
-  gap: 0.5em;
+  text-align: center;
   flex-wrap: wrap;
+  font-size: 0.9rem;
+  line-height: 1.1;
 }
 
-.impersonation-banner span {
+.impersonation-bar__label {
   display: inline-flex;
   align-items: center;
+  gap: 0.3rem;
 }
 
-.impersonation-stop-link {
-  color: #856404;
-  text-decoration: underline;
-  font-weight: 500;
+.impersonation-bar__indicator {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background-color: #f0a500;
+  box-shadow: 0 0 0 1px #ffe8b8;
 }
 
-.impersonation-stop-link:hover {
+.impersonation-bar__action {
+  color: #644800;
   text-decoration: none;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid #e9c872;
+  border-radius: 999px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.impersonation-bar__action:hover,
+.impersonation-bar__action:focus-visible {
+  background-color: #ffefc8;
+  border-color: #d8ad3d;
 }
 
 .filter-info {

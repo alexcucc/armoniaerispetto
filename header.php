@@ -1,4 +1,29 @@
 <header>
+    <?php
+    session_start();
+    include_once 'db/common-db.php';
+    require_once 'RolePermissionManager.php';
+
+    $impersonationActive = !empty($_SESSION['is_impersonating']) && !empty($_SESSION['impersonated_user']);
+    $impersonatedUser = $_SESSION['impersonated_user'] ?? null;
+    $impersonationReturnUrl = isset($_SERVER['REQUEST_URI']) ? urlencode($_SERVER['REQUEST_URI']) : urlencode('index.php');
+
+    $rolePermissionManager = new RolePermissionManager($pdo);
+    ?>
+
+    <?php if ($impersonationActive && $impersonatedUser): ?>
+        <div class="impersonation-bar" role="status" aria-live="polite">
+            <span class="impersonation-bar__label">
+                <span class="impersonation-bar__indicator" aria-hidden="true"></span>
+                Stai agendo come
+                <strong><?php echo htmlspecialchars($impersonatedUser['first_name'] . ' ' . $impersonatedUser['last_name']); ?></strong>
+            </span>
+            <a class="impersonation-bar__action" href="stop_impersonation.php?redirect=<?php echo $impersonationReturnUrl; ?>">
+                Torna al tuo account
+            </a>
+        </div>
+    <?php endif; ?>
+
     <div class="header-content">
         <div class="title">
             <div class="logo-container">
@@ -31,10 +56,6 @@
                         <li class="nav-item"><a class="nav-link" href="faq.php">FAQ</a></li>
                         <li class="nav-item"><a class="nav-link" href="dona_ora.php">Dona Ora</a></li>
                         <?php
-                        session_start();
-                        include_once 'db/common-db.php';
-                        require_once 'RolePermissionManager.php';
-                        $rolePermissionManager = new RolePermissionManager($pdo);
                         if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true): ?>
                             <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
                             <li class="nav-item"><a class="nav-link" href="signup.php">Registrati</a></li>
@@ -56,9 +77,6 @@
                             </form>
                         </li>
                         <?php
-                        $impersonationActive = !empty($_SESSION['is_impersonating']) && !empty($_SESSION['impersonated_user']);
-                        $impersonatedUser = $_SESSION['impersonated_user'] ?? null;
-                        $impersonationReturnUrl = isset($_SERVER['REQUEST_URI']) ? urlencode($_SERVER['REQUEST_URI']) : urlencode('index.php');
                         $canEvaluationView = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']
@@ -150,14 +168,6 @@
                                         <li class="nav-item"><a class="nav-link" href="evaluator_evaluation_overview.php">Monitoraggio valutatori</a></li>
                                     <?php endif; ?>
                                 </ul>
-                            </li>
-                        <?php endif; ?>
-                        <?php if ($impersonationActive && $impersonatedUser): ?>
-                            <li class="nav-item impersonation-banner">
-                                <span>
-                                    Stai agendo come <?php echo htmlspecialchars($impersonatedUser['first_name'] . ' ' . $impersonatedUser['last_name']); ?>
-                                </span>
-                                <a class="impersonation-stop-link" href="stop_impersonation.php?redirect=<?php echo $impersonationReturnUrl; ?>">Torna al tuo account</a>
                             </li>
                         <?php endif; ?>
                     </ul>
