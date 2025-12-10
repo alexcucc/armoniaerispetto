@@ -245,7 +245,6 @@ usort($evaluations, function (array $a, array $b) {
 
             <form method="get" class="filters-form">
               <div class="form-group">
-                <label class="form-label" for="filter_call">Bando</label>
                 <select name="filter_call" id="filter_call" class="form-input">
                   <option value="">Tutti i bandi</option>
                   <?php foreach ($callOptions as $callId => $callTitle): ?>
@@ -256,7 +255,6 @@ usort($evaluations, function (array $a, array $b) {
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label" for="filter_ente">Ente</label>
                 <select name="filter_ente" id="filter_ente" class="form-input">
                   <option value="">Tutti gli enti</option>
                   <?php foreach ($enteOptions as $enteOption): ?>
@@ -267,7 +265,6 @@ usort($evaluations, function (array $a, array $b) {
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label" for="filter_status">Stato</label>
                 <select name="filter_status" id="filter_status" class="form-input">
                   <option value="">Tutti gli stati</option>
                   <?php foreach ($statusLabels as $value => $label): ?>
