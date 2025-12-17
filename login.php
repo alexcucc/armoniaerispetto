@@ -6,33 +6,35 @@
   </head>
   <body>
     <?php include 'header.php';?>
-    <main>
-      <div class="hero">
+    <main class="login-page">
+      <div class="hero login-hero">
         <div class="title">
           <h1>Login</h1>
         </div>
         <div class="content-container">
-          <!-- Error message container -->
-          <form id="login-form" action="login_handler.php" method="post">
-            <div id="error-message" style="color: red;"></div>
-            <div class="form-group">
-              <label class="form-label required" for="login">Email</label>
-              <input type="text" class="form-input" id="login" name="login" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label required" for="password">Password</label>
-              <div class="password-container">
-                <input type="password" class="form-input" id="password" name="password" required>
-                <button type="button" class="toggle-password" aria-label="Mostra/Nascondi password">
-                  <i class="fas fa-eye"></i>
-                </button>
+          <div class="login-card">
+            <p class="login-subtitle">Accedi per gestire le tue domande e monitorare i progressi.</p>
+            <form id="login-form" action="login_handler.php" method="post">
+              <div id="error-message" role="alert"></div>
+              <div class="form-group">
+                <label class="form-label required" for="login">Email</label>
+                <input type="text" class="form-input" id="login" name="login" required>
               </div>
-            </div>
-            <button type="submit" class="submit-btn">Login</button>
-            <div class="forgot-password">
-                <a href="reset-password.php">Password dimenticata?</a>
-            </div>
-          </form>
+              <div class="form-group">
+                <label class="form-label required" for="password">Password</label>
+                <div class="password-container">
+                  <input type="password" class="form-input" id="password" name="password" required>
+                  <button type="button" class="toggle-password" aria-label="Mostra/Nascondi password">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <button type="submit" class="submit-btn">Login</button>
+              <div class="forgot-password">
+                  <a href="reset-password.php">Password dimenticata?</a>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </main>
