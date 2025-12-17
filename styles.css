@@ -644,14 +644,13 @@ th {
   top: var(--header-height, 70px); /* Start below the header */
   right: -100%; /* Initially hidden off-screen to the right */
   bottom: 0;
-  width: 300px; /* Restore original width */
   background-color: #1a5132;
   z-index: 2000;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
-  padding: 1.25rem 1rem;
+  padding: 0rem 0.5rem;
   gap: 0.6rem;
   transition: right 0.3s ease-in-out; /* Smooth transition */
   overflow-y: auto;
@@ -690,14 +689,16 @@ th {
 
 .menu-separator {
     width: 90%;
-    height: 2px;
+    height: 1px;
     background: linear-gradient(
         to right,
         transparent,
         rgba(255, 255, 255, 0.4),
         transparent
     );
-    margin: 0.6rem auto;
+    margin-top: 0.6rem;
+    margin-left: auto;
+    margin-right: auto;
     position: relative;
 }
 
