@@ -34,6 +34,15 @@ $projectNameValue = $formData['project_name'] ?? '';
 $orgStmt = $pdo->prepare('SELECT id, name FROM organization ORDER BY name');
 $orgStmt->execute();
 $organizations = $orgStmt->fetchAll(PDO::FETCH_ASSOC);
+$selectedOrganizationName = '';
+if ($selectedOrganizationId !== null) {
+    foreach ($organizations as $org) {
+        if ((int) $org['id'] === (int) $selectedOrganizationId) {
+            $selectedOrganizationName = $org['name'];
+            break;
+        }
+    }
+}
 
 // Load supervisors
 $supStmt = $pdo->prepare('SELECT s.id, u.first_name, u.last_name FROM supervisor s JOIN user u ON s.user_id = u.id ORDER BY u.first_name, u.last_name');
@@ -66,14 +75,27 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
               <?php endforeach; ?>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label required" for="organization_id">Ente</label>
-            <select id="organization_id" name="organization_id" class="form-input" required>
-              <option value="" disabled <?php echo $selectedOrganizationId ? '' : 'selected'; ?>></option>
+          <div class="form-group" style="position: relative;">
+            <label class="form-label required" for="organization-search">Ente</label>
+            <input
+              type="text"
+              id="organization-search"
+              class="form-input"
+              name="organization-search"
+              placeholder="Filtra per nome ente"
+              aria-label="Filtra e seleziona l'ente per nome"
+              autocomplete="off"
+              required
+              value="<?php echo htmlspecialchars($selectedOrganizationName); ?>"
+            >
+            <button type="button" id="organization-dropdown-toggle" class="autocomplete-toggle" aria-label="Mostra tutti gli enti disponibili">▼</button>
+            <input type="hidden" id="organization_id" name="organization_id" value="<?php echo htmlspecialchars((string) $selectedOrganizationId); ?>">
+            <div id="organization-suggestions" class="autocomplete-list" role="listbox"></div>
+            <datalist id="available-organizations">
               <?php foreach ($organizations as $org): ?>
-              <option value="<?php echo $org['id']; ?>" <?php if ($selectedOrganizationId == $org['id']) echo 'selected'; ?>><?php echo htmlspecialchars($org['name']); ?></option>
+              <option data-organization-id="<?php echo $org['id']; ?>" value="<?php echo htmlspecialchars($org['name']); ?>"></option>
               <?php endforeach; ?>
-            </select>
+            </datalist>
           </div>
           <div class="form-group">
             <label class="form-label required" for="supervisor_id">Convalidatore</label>
@@ -100,5 +122,141 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
       </div>
     </main>
     <?php include 'footer.php'; ?>
+    <script>
+      (function() {
+        const organizationInput = document.getElementById('organization-search');
+        const organizationIdInput = document.getElementById('organization_id');
+        const options = Array.from(document.querySelectorAll('#available-organizations option'));
+        const form = document.querySelector('form.contact-form');
+        const suggestionBox = document.getElementById('organization-suggestions');
+        const toggleButton = document.getElementById('organization-dropdown-toggle');
+        const organizations = options.map((option) => ({
+          id: option.dataset.organizationId,
+          label: option.value,
+        }));
+
+        const ensureStyles = () => {
+          if (document.getElementById('autocomplete-styles')) return;
+          const style = document.createElement('style');
+          style.id = 'autocomplete-styles';
+          style.textContent = `
+                .autocomplete-list {
+                    border: 1px solid #ccc;
+                    border-top: none;
+                    max-height: 200px;
+                    overflow-y: auto;
+                    background: #fff;
+                    position: absolute;
+                    width: 100%;
+                    z-index: 2;
+                    display: none;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                    left: 0;
+                    top: calc(100% - 1px);
+                }
+                .autocomplete-item {
+                    padding: 2px 3px;
+                    cursor: pointer;
+                }
+                .autocomplete-item:hover,
+                .autocomplete-item:focus {
+                    background-color: #f0f0f0;
+                }
+                .autocomplete-toggle {
+                    position: absolute;
+                    right: 8px;
+                    top: 34px;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    padding: 4px;
+                    color: #555;
+                }
+                .form-group .form-input {
+                    padding-right: 32px;
+                }
+            `;
+          document.head.appendChild(style);
+        };
+
+        let showAllOnEmpty = organizationInput.value.trim() === '';
+
+        const selectOrganization = (organization) => {
+          organizationInput.value = organization.label;
+          organizationIdInput.value = organization.id;
+          organizationInput.setCustomValidity('');
+          suggestionBox.style.display = 'none';
+          showAllOnEmpty = false;
+        };
+
+        const renderSuggestions = (forceShowAll = false) => {
+          const query = organizationInput.value.trim().toLowerCase();
+          const shouldShowAll = forceShowAll || showAllOnEmpty;
+          const filtered = query === ''
+            ? (shouldShowAll ? organizations : [])
+            : organizations.filter((organization) => organization.label.toLowerCase().includes(query));
+
+          suggestionBox.innerHTML = '';
+
+          filtered.forEach((organization) => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.textContent = organization.label;
+            item.tabIndex = 0;
+            item.setAttribute('role', 'option');
+            item.addEventListener('mousedown', (event) => {
+              event.preventDefault();
+              selectOrganization(organization);
+            });
+            suggestionBox.appendChild(item);
+          });
+
+          suggestionBox.style.display = filtered.length ? 'block' : 'none';
+        };
+
+        form.addEventListener('submit', (event) => {
+          if (!organizationIdInput.value) {
+            event.preventDefault();
+            organizationInput.reportValidity();
+          }
+        });
+
+        organizationInput.addEventListener('input', () => {
+          organizationIdInput.value = '';
+          organizationInput.setCustomValidity("Seleziona un ente dalla lista.");
+          showAllOnEmpty = false;
+          renderSuggestions();
+        });
+
+        organizationInput.addEventListener('focus', () => renderSuggestions());
+
+        organizationInput.addEventListener('blur', () => {
+          setTimeout(() => {
+            suggestionBox.style.display = 'none';
+            showAllOnEmpty = false;
+          }, 150);
+        });
+
+        toggleButton.addEventListener('click', () => {
+          const isOpen = suggestionBox.style.display === 'block';
+          if (isOpen) {
+            suggestionBox.style.display = 'none';
+            showAllOnEmpty = false;
+            return;
+          }
+
+          showAllOnEmpty = true;
+          renderSuggestions(true);
+          organizationInput.focus();
+        });
+
+        if (organizationInput.value && organizationIdInput.value) {
+          organizationInput.setCustomValidity('');
+        }
+
+        ensureStyles();
+      })();
+    </script>
   </body>
 </html>
