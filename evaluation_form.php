@@ -336,7 +336,11 @@
         justify-content: space-between;
         gap: 1rem;
         flex-wrap: wrap;
-        margin-bottom: 1.5rem;
+      }
+
+      .evaluation-shell {
+        display: flex;
+        flex-direction: column;
       }
 
       .evaluation-layout {
@@ -344,10 +348,15 @@
         grid-template-columns: 1fr auto;
         gap: 1.5rem;
         align-items: start;
+        flex: 1 1 auto;
+        overflow: hidden;
       }
 
       .evaluation-content {
         min-width: 0;
+        max-height: calc(100vh - 14rem);
+        overflow-y: auto;
+        padding-right: 0.35rem;
       }
 
       .evaluation-sidebar {
@@ -362,7 +371,7 @@
       }
 
       .contact-form {
-        padding-bottom: 3.5rem;
+        padding-bottom: 1.5rem;
       }
 
       .evaluation-step {
@@ -442,25 +451,18 @@
       @media (max-width: 640px) {
         .evaluation-layout {
           grid-template-columns: 1fr;
+          overflow: visible;
         }
 
         .evaluation-sidebar {
           position: relative;
           top: auto;
         }
-      }
 
-      .score-input-row {
-        display: grid;
-        grid-template-columns: minmax(110px, 150px) 1fr;
-        align-items: start;
-        gap: 1rem;
-        margin-top: 0.25rem;
-      }
-
-      .score-input-col {
-        display: flex;
-        align-items: center;
+        .evaluation-content {
+          max-height: none;
+          overflow: visible;
+        }
       }
 
       .score-input {
@@ -476,19 +478,6 @@
         outline: 2px solid #0ea5e9;
         outline-offset: 1px;
         border-color: #0ea5e9;
-      }
-
-      .criteria-inline-info {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        padding: 0.65rem 0.8rem;
-        font-size: 0.92rem;
-        color: #0f172a;
-      }
-
-      .criteria-inline-info ul {
-        margin: 0.3rem 0 0.2rem 1.2rem;
       }
 
       .criteria-weight-badge,
@@ -508,12 +497,71 @@
       .section-weight-badge {
         margin-left: 0.6rem;
       }
+
+      .criteria-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .criteria-row__label {
+        flex: 1 1 320px;
+      }
+
+      .criteria-row__input {
+        flex: 0 0 150px;
+        display: flex;
+        align-items: center;
+      }
+
+      .criteria-row__weight {
+        flex: 0 0 110px;
+        display: flex;
+        align-items: center;
+      }
+
+      .criteria-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin: 0;
+      }
+
+      .criteria-info-toggle {
+        background: #e0f2fe;
+        color: #0369a1;
+        border: 1px solid #bae6fd;
+        border-radius: 0.4rem;
+        padding: 0.35rem 0.65rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .criteria-info-toggle:hover {
+        background: #bae6fd;
+      }
+
+      .criteria-info-content {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.8rem;
+        font-size: 0.92rem;
+        color: #0f172a;
+        margin-top: 0.45rem;
+      }
+
+      .criteria-info-text ul {
+        margin: 0.3rem 0 0.2rem 1.2rem;
+      }
     </style>
   </head>
   <body>
     <?php include 'header.php'; ?>
     <main>
       <div class="contact-form-container" style="margin-top:2em;">
+        <div class="evaluation-shell">
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
           <input type="hidden" name="application_id" value="<?php echo $application_id; ?>">
@@ -1115,7 +1163,7 @@
             </div>
           </div>
         </div>
-        <div class="evaluation-sidebar" aria-label="Punteggi e azioni di navigazione">
+          <div class="evaluation-sidebar" aria-label="Punteggi e azioni di navigazione">
           <div class="total-score-overlay" role="status" aria-live="polite">
             <div class="total-score-overlay__group">
               <span class="total-score-overlay__label">Totale punteggio</span>
@@ -1137,9 +1185,10 @@
               <button class="submit-btn" type="submit" name="action" value="submit">Invia Valutazione</button>
             </div>
           </div>
-        </div>
-      </div>
+            </div>
+          </div>
         </form>
+        </div>
       </div>
     </main>
     <?php include 'footer.php'; ?>
@@ -1183,7 +1232,31 @@
             return null;
           }
 
-          return Math.min(Math.max(value, 0), 10);
+          return Math.min(Math.max(value, 1), 10);
+        };
+
+        const enforceInputBounds = (input) => {
+          if (!input) {
+            return;
+          }
+
+          const rawValue = Number.parseInt(input.value, 10);
+
+          if (Number.isNaN(rawValue)) {
+            input.value = '';
+            return;
+          }
+
+          const clampedValue = clampScore(rawValue);
+
+          if (clampedValue === null) {
+            input.value = '';
+            return;
+          }
+
+          if (clampedValue !== rawValue) {
+            input.value = clampedValue;
+          }
         };
 
         const formatScore = (score) => {
@@ -1265,34 +1338,78 @@
           sectionScoreElement.textContent = formatScore(weightedSectionScore);
         }
 
-        const arrangeCriteriaInfo = () => {
+        const transformCriteriaLayout = () => {
           const groups = Array.from(document.querySelectorAll('.form-group'));
 
           groups.forEach((group) => {
-            const info = group.querySelector(':scope > small');
+            const label = group.querySelector(':scope > label');
             const input = group.querySelector(':scope > input.score-input');
+            const description = group.querySelector(':scope > small');
+            const weightBadge = label ? label.querySelector('.criteria-weight-badge') : null;
 
-            if (!info || !input || input.closest('.score-input-row')) {
+            if (!label || !input) {
               return;
             }
 
             const row = document.createElement('div');
-            row.className = 'score-input-row';
+            row.className = 'criteria-row';
+
+            const labelWrapper = document.createElement('div');
+            labelWrapper.className = 'criteria-row__label';
+            label.classList.add('criteria-label');
+            if (weightBadge) {
+              weightBadge.remove();
+            }
+            labelWrapper.appendChild(label);
 
             const inputWrapper = document.createElement('div');
-            inputWrapper.className = 'score-input-col';
+            inputWrapper.className = 'criteria-row__input';
             inputWrapper.appendChild(input);
 
-            info.classList.add('criteria-inline-info');
+            const weightWrapper = document.createElement('div');
+            weightWrapper.className = 'criteria-row__weight';
+            if (weightBadge) {
+              weightWrapper.appendChild(weightBadge);
+            }
 
+            row.appendChild(labelWrapper);
             row.appendChild(inputWrapper);
-            row.appendChild(info);
+            row.appendChild(weightWrapper);
 
-            const label = group.querySelector(':scope > label');
-            if (label && label.nextSibling) {
-              group.insertBefore(row, label.nextSibling);
-            } else {
-              group.appendChild(row);
+            const hasDescription = Boolean(description);
+            let infoContent = null;
+            if (hasDescription && description) {
+              description.classList.remove('criteria-inline-info');
+              description.classList.add('criteria-info-text');
+
+              const infoButton = document.createElement('button');
+              infoButton.type = 'button';
+              infoButton.className = 'criteria-info-toggle';
+              infoButton.textContent = 'Info';
+              infoButton.setAttribute('aria-expanded', 'false');
+
+              infoContent = document.createElement('div');
+              infoContent.className = 'criteria-info-content';
+              infoContent.hidden = true;
+              infoContent.appendChild(description);
+
+              infoButton.addEventListener('click', () => {
+                const isHidden = infoContent?.hidden ?? true;
+                if (infoContent) {
+                  infoContent.hidden = !isHidden;
+                }
+
+                infoButton.setAttribute('aria-expanded', String(!isHidden));
+              });
+
+              row.appendChild(infoButton);
+            }
+
+            group.innerHTML = '';
+            group.appendChild(row);
+
+            if (infoContent) {
+              group.appendChild(infoContent);
             }
           });
         };
@@ -1379,7 +1496,7 @@
           previousStepButton.addEventListener('click', () => attemptStepChange(activeStepIndex - 1));
         }
 
-        arrangeCriteriaInfo();
+        transformCriteriaLayout();
 
         if (stepElements.length > 0) {
           setActiveStep(0, { forceScroll: false });
@@ -1389,9 +1506,12 @@
           const scoreInputs = form.querySelectorAll('input.score-input');
           scoreInputs.forEach((input) => {
             input.addEventListener('input', () => {
+              enforceInputBounds(input);
               calculateTotalScore();
               calculateSectionScore();
             });
+
+            enforceInputBounds(input);
           });
 
           calculateTotalScore();
