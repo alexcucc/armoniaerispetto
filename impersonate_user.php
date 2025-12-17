@@ -92,7 +92,7 @@ try {
     echo json_encode([
         'success' => true,
         'message' => 'Stai ora agendo come ' . $targetUser['first_name'] . ' ' . $targetUser['last_name'],
-        'redirect' => 'index.php'
+        'redirect' => 'index.php?open_gestione=1'
     ]);
     exit();
 } catch (PDOException $exception) {
