@@ -103,9 +103,9 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($cfp['description']); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['start_date']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['end_date']))); ?></td>
-                                    <td class="status-tag <?php echo $cfp['status'] === 'CLOSED' ? 'status-closed' : 'status-open'; ?>">
-                                        <?php echo $cfp['status'] === 'CLOSED' ? 'Chiuso' : 'Aperto'; ?>
-                                    </td>
+            <td class="status-tag <?php echo $cfp['status'] === 'CLOSED' ? 'status-closed' : 'status-open'; ?>">
+                <?php echo $cfp['status'] === 'CLOSED' ? 'Chiuso' : 'Aperto'; ?>
+            </td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                     <td>
@@ -119,6 +119,10 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <?php if ($cfp['status'] === 'OPEN'): ?>
                                                     <button class="close-btn" data-id="<?php echo $cfp['id']; ?>">
                                                         <i class="fas fa-ban"></i> Chiudi
+                                                    </button>
+                                                <?php else: ?>
+                                                    <button class="page-button reopen-btn" data-id="<?php echo $cfp['id']; ?>">
+                                                        <i class="fas fa-undo"></i> Riapri
                                                     </button>
                                                 <?php endif; ?>
                                             <?php endif; ?>
@@ -141,7 +145,94 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
     document.addEventListener('DOMContentLoaded', function() {
         const deleteButtons = document.querySelectorAll('.delete-btn');
         const closeButtons = document.querySelectorAll('.close-btn');
+        const reopenButtons = document.querySelectorAll('.reopen-btn');
         const messageDiv = document.getElementById('message');
+
+        const showMessage = (data) => {
+            messageDiv.textContent = data.message;
+            messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
+            messageDiv.style.display = 'block';
+        };
+
+        const attachReopenHandler = (button) => {
+            button.addEventListener('click', async function() {
+                if (confirm('Vuoi riaprire questo bando?')) {
+                    const id = this.dataset.id;
+                    try {
+                        const response = await fetch('call_for_proposal_reopen.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ id })
+                        });
+
+                        const data = await response.json();
+                        showMessage(data);
+
+                        if (data.success) {
+                            const row = this.closest('tr');
+                            const statusCell = row.querySelector('.status-tag');
+                            statusCell.textContent = 'Aperto';
+                            statusCell.classList.remove('status-closed');
+                            statusCell.classList.add('status-open');
+
+                            const actionsCell = this.closest('.actions-cell');
+                            this.remove();
+
+                            const closeButton = document.createElement('button');
+                            closeButton.className = 'close-btn';
+                            closeButton.dataset.id = id;
+                            closeButton.innerHTML = '<i class="fas fa-ban"></i> Chiudi';
+                            actionsCell.appendChild(closeButton);
+                            attachCloseHandler(closeButton);
+                        }
+                    } catch (error) {
+                        showMessage({ success: false, message: "Si è verificato un errore durante la riapertura." });
+                    }
+                }
+            });
+        };
+
+        const attachCloseHandler = (button) => {
+            button.addEventListener('click', async function() {
+                if (confirm('Sei sicuro di voler chiudere questo bando? Potrai riaprirlo in seguito.')) {
+                    const id = this.dataset.id;
+                    try {
+                        const response = await fetch('call_for_proposal_close.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ id })
+                        });
+
+                        const data = await response.json();
+                        showMessage(data);
+
+                        if (data.success) {
+                            const row = this.closest('tr');
+                            const statusCell = row.querySelector('.status-tag');
+                            statusCell.textContent = 'Chiuso';
+                            statusCell.classList.remove('status-open');
+                            statusCell.classList.add('status-closed');
+
+                            const actionsCell = this.closest('.actions-cell');
+                            this.remove();
+
+                            const reopenButton = document.createElement('button');
+                            reopenButton.className = 'page-button reopen-btn';
+                            reopenButton.dataset.id = id;
+                            reopenButton.innerHTML = '<i class="fas fa-undo"></i> Riapri';
+                            actionsCell.appendChild(reopenButton);
+                            attachReopenHandler(reopenButton);
+                        }
+                    } catch (error) {
+                        showMessage({ success: false, message: "Si è verificato un errore durante la chiusura." });
+                    }
+                }
+            });
+        };
 
         deleteButtons.forEach(button => {
             button.addEventListener('click', async function() {
@@ -158,57 +249,20 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         const data = await response.json();
 
-                        messageDiv.textContent = data.message;
-                        messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
-                        messageDiv.style.display = 'block';
+                        showMessage(data);
 
                         if (data.success) {
                             this.closest('tr').remove();
                         }
                     } catch (error) {
-                        messageDiv.textContent = "Si è verificato un errore durante l'eliminazione.";
-                        messageDiv.className = 'message error';
-                        messageDiv.style.display = 'block';
+                        showMessage({ success: false, message: "Si è verificato un errore durante l'eliminazione." });
                     }
                 }
             });
         });
 
-        closeButtons.forEach(button => {
-            button.addEventListener('click', async function() {
-                if (confirm('Sei sicuro di voler chiudere questo bando? L\'operazione è irreversibile.')) {
-                    const id = this.dataset.id;
-                    try {
-                        const response = await fetch('call_for_proposal_close.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ id })
-                        });
-
-                        const data = await response.json();
-
-                        messageDiv.textContent = data.message;
-                        messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
-                        messageDiv.style.display = 'block';
-
-                        if (data.success) {
-                            const row = this.closest('tr');
-                            const statusCell = row.querySelector('.status-tag');
-                            statusCell.textContent = 'Chiuso';
-                            statusCell.classList.remove('status-open');
-                            statusCell.classList.add('status-closed');
-                            this.remove();
-                        }
-                    } catch (error) {
-                        messageDiv.textContent = "Si è verificato un errore durante la chiusura.";
-                        messageDiv.className = 'message error';
-                        messageDiv.style.display = 'block';
-                    }
-                }
-            });
-        });
+        closeButtons.forEach(button => attachCloseHandler(button));
+        reopenButtons.forEach(button => attachReopenHandler(button));
     });
 </script>
 </body>
