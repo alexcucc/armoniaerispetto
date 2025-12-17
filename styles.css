@@ -863,6 +863,10 @@ ul.nav-links {
   justify-content: center;
 }
 
+.organization-actions {
+  flex-wrap: nowrap;
+}
+
 .application-actions {
   flex-wrap: nowrap;
 }

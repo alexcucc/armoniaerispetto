@@ -16,7 +16,7 @@ $canDelete = $rolePermissionManager->userHasPermission($_SESSION['user_id'], Rol
 $canSeeApplications = $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_LIST']);
 
 // Determine sorting parameters
-$allowedSortFields = ['name', 'type', 'incorporation_year', 'location', 'created_at', 'updated_at'];
+$allowedSortFields = ['name', 'type', 'incorporation_year', 'location'];
 $allowedSortOrders = ['asc', 'desc'];
 
 $sortField = isset($_GET['sort']) && in_array($_GET['sort'], $allowedSortFields)
@@ -34,8 +34,6 @@ $stmt = $pdo->prepare(
         type,
         incorporation_year, 
         location AS location, 
-        created_at, 
-        updated_at,
         (SELECT COUNT(*) FROM application WHERE organization_id = organization.id) AS application_count
     FROM organization ORDER BY $sortField $sortOrder"
 );
@@ -84,8 +82,6 @@ function buildOrganizationsSortLink(string $field, string $sortField, string $so
                                 'type' => 'Tipo',
                                 'incorporation_year' => 'Anno di costituzione',
                                 'location' => 'Località',
-                                'created_at' => 'Creato il',
-                                'updated_at' => 'Aggiornato il'
                             ];
                             foreach ($columns as $field => $label) {
                                 $link = buildOrganizationsSortLink($field, $sortField, $sortOrder);
@@ -118,10 +114,8 @@ function buildOrganizationsSortLink(string $field, string $sortField, string $so
                                 <td><?php echo htmlspecialchars($org['type']); ?></td>
                                 <td><?php echo htmlspecialchars($org['incorporation_year']); ?></td>
                                 <td><?php echo htmlspecialchars($org['location']); ?></td>
-                                <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['created_at']))); ?></td>
-                                <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($org['updated_at']))); ?></td>
                                 <td>
-                                    <div class="actions-cell">
+                                    <div class="actions-cell organization-actions">
                                         <?php if ($canSeeApplications): ?>
                                             <button class="view-btn" onclick="window.location.href='applications.php?organization_id=<?php echo $org['id']; ?>'">
                                                 <i class="fas fa-eye"></i> Risposte ai bandi
