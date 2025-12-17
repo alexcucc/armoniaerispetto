@@ -24,6 +24,21 @@ if (!$org) {
     header('Location: organizations.php');
     exit();
 }
+
+$errorMessage = $_SESSION['error_message'] ?? null;
+$formData = $_SESSION['form_data'] ?? [];
+
+unset($_SESSION['error_message'], $_SESSION['form_data']);
+
+$typeValue = $formData['type'] ?? $org['type'];
+$locationValue = $formData['location'] ?? $org['location'];
+
+$incorporationFormValue = $formData['incorporation_year'] ?? null;
+if ($incorporationFormValue !== null && $incorporationFormValue !== '') {
+    $incorporationYearValue = $incorporationFormValue;
+} else {
+    $incorporationYearValue = $org['incorporation_year'] ?? '';
+}
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -36,6 +51,11 @@ if (!$org) {
 <main>
     <div class="contact-form-container">
         <h2>Modifica Ente</h2>
+        <?php if (!empty($errorMessage)): ?>
+            <div class="message error">
+                <?php echo htmlspecialchars($errorMessage); ?>
+            </div>
+        <?php endif; ?>
         <form class="contact-form" action="organization_edit_handler.php" method="POST">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($org['id']); ?>">
             <div class="form-group">
@@ -44,15 +64,15 @@ if (!$org) {
             </div>
             <div class="form-group">
                 <label class="form-label required" for="type">Tipo</label>
-                <input type="text" id="type" name="type" class="form-input" required value="<?php echo htmlspecialchars($org['type']); ?>">
+                <input type="text" id="type" name="type" class="form-input" required value="<?php echo htmlspecialchars($typeValue); ?>">
             </div>
             <div class="form-group">
-                <label class="form-label" for="incorporation_year">Anno di costituzione</label>
-                <input type="number" id="incorporation_year" name="incorporation_year" class="form-input" value="<?php echo htmlspecialchars($org['incorporation_year']); ?>">
+                <label class="form-label required" for="incorporation_year">Anno di costituzione</label>
+                <input type="number" id="incorporation_year" name="incorporation_year" class="form-input" value="<?php echo htmlspecialchars($incorporationYearValue); ?>" min="1901" max="<?php echo date('Y'); ?>" step="1" required>
             </div>
             <div class="form-group">
-                <label class="form-label" for="location">Località</label>
-                <input type="text" id="location" name="location" class="form-input" value="<?php echo htmlspecialchars($org['location']); ?>">
+                <label class="form-label required" for="location">Località</label>
+                <input type="text" id="location" name="location" class="form-input" value="<?php echo htmlspecialchars($locationValue); ?>" required>
             </div>
             <div class="button-container">
                 <a href="organizations.php" class="page-button" style="background-color: #007bff;">Indietro</a>

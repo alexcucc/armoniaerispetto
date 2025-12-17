@@ -27,19 +27,28 @@ $formData = [
     'location' => $location,
 ];
 
-if ($name === '' || $type === '') {
+if ($name === '' || $type === '' || $incorporation_year === '' || $location === '') {
     $_SESSION['error_message'] = 'Compila i campi obbligatori.';
     $_SESSION['form_data'] = $formData;
     header('Location: organization_add.php');
     exit();
 }
 
-if ($incorporation_year === '') {
-    $incorporation_year = null;
+if (!preg_match('/^\d{4}$/', $incorporation_year)) {
+    $_SESSION['error_message'] = 'Inserisci un anno di costituzione valido (formato: YYYY).';
+    $_SESSION['form_data'] = $formData;
+    header('Location: organization_add.php');
+    exit();
 }
 
-if ($location === '') {
-    $location = null;
+$currentYear = (int) date('Y');
+$incorporationYearNumber = (int) $incorporation_year;
+
+if ($incorporationYearNumber < 1901 || $incorporationYearNumber > $currentYear) {
+    $_SESSION['error_message'] = 'L\'anno di costituzione deve essere compreso tra 1901 e l\'anno corrente.';
+    $_SESSION['form_data'] = $formData;
+    header('Location: organization_add.php');
+    exit();
 }
 
 $stmt = $pdo->prepare('SELECT COUNT(*) FROM organization WHERE LOWER(name) = LOWER(:name)');

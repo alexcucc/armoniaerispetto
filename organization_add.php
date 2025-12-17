@@ -46,12 +46,12 @@ $locationValue = $formData['location'] ?? '';
                 <input type="text" id="type" name="type" class="form-input" value="<?php echo htmlspecialchars($typeValue); ?>" required>
             </div>
             <div class="form-group">
-                <label class="form-label" for="incorporation_year">Anno di costituzione</label>
-                <input type="number" id="incorporation_year" name="incorporation_year" class="form-input" value="<?php echo htmlspecialchars($incorporationYearValue); ?>">
+                <label class="form-label required" for="incorporation_year">Anno di costituzione</label>
+                <input type="number" id="incorporation_year" name="incorporation_year" class="form-input" value="<?php echo htmlspecialchars($incorporationYearValue); ?>" min="1901" max="<?php echo date('Y'); ?>" step="1" required>
             </div>
             <div class="form-group">
-                <label class="form-label" for="location">Località</label>
-                <input type="text" id="location" name="location" class="form-input" value="<?php echo htmlspecialchars($locationValue); ?>">
+                <label class="form-label required" for="location">Località</label>
+                <input type="text" id="location" name="location" class="form-input" value="<?php echo htmlspecialchars($locationValue); ?>" required>
             </div>
             <div class="button-container">
                 <a href="organizations.php" class="page-button" style="background-color: #007bff;">Indietro</a>
