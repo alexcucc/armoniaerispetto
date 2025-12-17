@@ -65,6 +65,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           <?php echo htmlspecialchars($errorMessage); ?>
         </div>
         <?php endif; ?>
+        <div id="duplicate-warning" class="message error" style="display: none;"></div>
         <form class="contact-form" action="application_submit_handler.php" method="POST" enctype="multipart/form-data">
           <div class="form-group">
             <label class="form-label required" for="call_id">Bando</label>
@@ -116,7 +117,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           </div>
           <div class="button-container">
             <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
-            <button type="submit" class="page-button">Carica</button>
+            <button type="submit" id="application-submit" class="page-button">Carica</button>
           </div>
         </form>
       </div>
@@ -130,10 +131,69 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
         const form = document.querySelector('form.contact-form');
         const suggestionBox = document.getElementById('organization-suggestions');
         const toggleButton = document.getElementById('organization-dropdown-toggle');
+        const callSelect = document.getElementById('call_id');
+        const duplicateWarning = document.getElementById('duplicate-warning');
+        const submitButton = document.getElementById('application-submit');
         const organizations = options.map((option) => ({
           id: option.dataset.organizationId,
           label: option.value,
         }));
+
+        let currentDuplicateCheckController = null;
+
+        const clearDuplicateWarning = () => {
+          duplicateWarning.style.display = 'none';
+          duplicateWarning.textContent = '';
+          submitButton.disabled = false;
+        };
+
+        const showDuplicateWarning = (message) => {
+          duplicateWarning.textContent = message;
+          duplicateWarning.style.display = 'block';
+          submitButton.disabled = true;
+        };
+
+        const checkDuplicateApplication = async () => {
+          const callId = callSelect.value;
+          const organizationId = organizationIdInput.value;
+
+          if (!callId || !organizationId) {
+            clearDuplicateWarning();
+            return;
+          }
+
+          if (currentDuplicateCheckController) {
+            currentDuplicateCheckController.abort();
+          }
+
+          currentDuplicateCheckController = new AbortController();
+
+          try {
+            const params = new URLSearchParams({ call_id: callId, organization_id: organizationId });
+            const response = await fetch(`application_duplicate_check.php?${params.toString()}`, {
+              method: 'GET',
+              headers: { 'Accept': 'application/json' },
+              signal: currentDuplicateCheckController.signal,
+            });
+
+            if (!response.ok) {
+              clearDuplicateWarning();
+              return;
+            }
+
+            const data = await response.json();
+
+            if (data.exists) {
+              showDuplicateWarning(data.message || 'Esiste già una risposta al bando per questo ente.');
+            } else {
+              clearDuplicateWarning();
+            }
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              clearDuplicateWarning();
+            }
+          }
+        };
 
         const ensureStyles = () => {
           if (document.getElementById('autocomplete-styles')) return;
@@ -188,6 +248,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           organizationInput.setCustomValidity('');
           suggestionBox.style.display = 'none';
           showAllOnEmpty = false;
+          checkDuplicateApplication();
         };
 
         const renderSuggestions = (forceShowAll = false) => {
@@ -227,6 +288,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           organizationInput.setCustomValidity("Seleziona un ente dalla lista.");
           showAllOnEmpty = false;
           renderSuggestions();
+          clearDuplicateWarning();
         });
 
         organizationInput.addEventListener('focus', () => renderSuggestions());
@@ -253,6 +315,12 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 
         if (organizationInput.value && organizationIdInput.value) {
           organizationInput.setCustomValidity('');
+        }
+
+        callSelect.addEventListener('change', checkDuplicateApplication);
+
+        if (callSelect.value && organizationInput.value && organizationIdInput.value) {
+          checkDuplicateApplication();
         }
 
         ensureStyles();
