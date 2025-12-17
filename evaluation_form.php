@@ -256,7 +256,7 @@
           $valueAttr = ' value="' . (int) $selected . '"';
       }
 
-      echo '<input type="number" class="score-input" id="' . $inputIdAttr . '" name="' . $sanitizedName . '" aria-label="' . $ariaLabelAttr . '" min="1" max="10" step="1" required' . $valueAttr . '>';
+      echo '<input type="number" class="score-input" id="' . $inputIdAttr . '" name="' . $sanitizedName . '" aria-label="' . $ariaLabelAttr . '" min="1" max="10" step="1"' . $valueAttr . '>';
   }
 
   function renderWeightBadge(?int $weight): void

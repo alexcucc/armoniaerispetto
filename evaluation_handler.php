@@ -239,20 +239,20 @@ $sectionDefinitions = [
     ],
 ];
 
+$sumNullable = static function (array $values): ?int {
+    $filtered = array_filter($values, static fn ($value) => $value !== null);
+    if ($filtered === []) {
+        return null;
+    }
+
+    return array_sum($filtered);
+};
+
 $sectionScores = [];
 foreach ($sectionDefinitions as $sectionKey => $definition) {
     $rawSection = $_POST[$sectionKey] ?? null;
     if (!is_array($rawSection)) {
-        sendResponseAndExit(
-            $isAjaxRequest,
-            false,
-            'Compilare tutti i punteggi per la sezione "' . $definition['label'] . '".'
-        );
-    }
-
-    $scores = [];
-    foreach ($definition['fields'] as $fieldName) {
-        if (!array_key_exists($fieldName, $rawSection)) {
+        if ($isSubmitAction) {
             sendResponseAndExit(
                 $isAjaxRequest,
                 false,
@@ -260,30 +260,72 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
             );
         }
 
+        $rawSection = [];
+    }
+
+    $scores = [];
+    foreach ($definition['fields'] as $fieldName) {
+        if (!array_key_exists($fieldName, $rawSection)) {
+            if ($isSubmitAction) {
+                sendResponseAndExit(
+                    $isAjaxRequest,
+                    false,
+                    'Compilare tutti i punteggi per la sezione "' . $definition['label'] . '".'
+                );
+            }
+
+            $scores[$fieldName] = null;
+            continue;
+        }
+
         $rawValue = $rawSection[$fieldName];
+        if ($rawValue === '' || $rawValue === null) {
+            if ($isSubmitAction) {
+                sendResponseAndExit(
+                    $isAjaxRequest,
+                    false,
+                    'Compilare tutti i punteggi per la sezione "' . $definition['label'] . '".'
+                );
+            }
+
+            $scores[$fieldName] = null;
+            continue;
+        }
+
         if (!ctype_digit((string) $rawValue)) {
-            sendResponseAndExit(
-                $isAjaxRequest,
-                false,
-                'Valori non validi presenti nella sezione "' . $definition['label'] . '".'
-            );
+            if ($isSubmitAction) {
+                sendResponseAndExit(
+                    $isAjaxRequest,
+                    false,
+                    'Valori non validi presenti nella sezione "' . $definition['label'] . '".'
+                );
+            }
+
+            $scores[$fieldName] = null;
+            continue;
         }
 
         $score = (int) $rawValue;
         if ($score < 1 || $score > 10) {
-            sendResponseAndExit(
-                $isAjaxRequest,
-                false,
-                'I punteggi devono essere compresi tra 1 e 10 per la sezione "' . $definition['label'] . '".'
-            );
+            if ($isSubmitAction) {
+                sendResponseAndExit(
+                    $isAjaxRequest,
+                    false,
+                    'I punteggi devono essere compresi tra 1 e 10 per la sezione "' . $definition['label'] . '".'
+                );
+            }
+
+            $scores[$fieldName] = null;
+            continue;
         }
 
         $scores[$fieldName] = $score;
     }
 
     $sectionScores[$sectionKey] = [
-        'scores'  => $scores,
-        'overall' => array_sum($scores),
+        'scores'     => $scores,
+        'overall'    => $sumNullable($scores),
+        'has_scores' => array_filter($scores, static fn ($value) => $value !== null) !== [],
     ];
 }
 
@@ -326,6 +368,12 @@ try {
     }
 
     foreach ($sectionDefinitions as $sectionKey => $definition) {
+        $hasSectionScores = $sectionScores[$sectionKey]['has_scores'];
+
+        if (!$isSubmitAction && !$hasSectionScores) {
+            continue;
+        }
+
         $columnList = implode(', ', $definition['fields']);
         $placeholders = ':' . implode(', :', $definition['fields']);
         $sql = sprintf(
@@ -348,35 +396,41 @@ try {
         $stmt->execute($params);
     }
 
-    $thematicOverall = $sectionScores['thematic_repopulation']['overall']
-        + $sectionScores['thematic_safeguard']['overall']
-        + $sectionScores['thematic_cohabitation']['overall']
-        + $sectionScores['thematic_community_support']['overall']
-        + $sectionScores['thematic_culture_education']['overall'];
-
-    $generalOverall  = $sectionScores['proposing_entity']['overall']
-        + $sectionScores['project']['overall']
-        + $sectionScores['financial_plan']['overall']
-        + $sectionScores['qualitative_elements']['overall']
-        + $thematicOverall;
-
-    $stmt = $pdo->prepare(
-        'INSERT INTO evaluation_general '
-        . '(evaluation_id, proposing_entity_score, general_project_score, financial_plan_score, qualitative_elements_score, '
-        . 'thematic_criteria_score, overall_score) '
-        . 'VALUES (:evaluation_id, :proposing_entity_score, :general_project_score, :financial_plan_score, '
-        . ':qualitative_elements_score, :thematic_criteria_score, :overall_score)'
-    );
-
-    $stmt->execute([
-        ':evaluation_id'              => $evaluation_id,
-        ':proposing_entity_score'     => $sectionScores['proposing_entity']['overall'],
-        ':general_project_score'      => $sectionScores['project']['overall'],
-        ':financial_plan_score'       => $sectionScores['financial_plan']['overall'],
-        ':qualitative_elements_score' => $sectionScores['qualitative_elements']['overall'],
-        ':thematic_criteria_score'    => $thematicOverall,
-        ':overall_score'              => $generalOverall,
+    $thematicOverall = $sumNullable([
+        $sectionScores['thematic_repopulation']['overall'],
+        $sectionScores['thematic_safeguard']['overall'],
+        $sectionScores['thematic_cohabitation']['overall'],
+        $sectionScores['thematic_community_support']['overall'],
+        $sectionScores['thematic_culture_education']['overall'],
     ]);
+
+    $generalOverall  = $sumNullable([
+        $sectionScores['proposing_entity']['overall'],
+        $sectionScores['project']['overall'],
+        $sectionScores['financial_plan']['overall'],
+        $sectionScores['qualitative_elements']['overall'],
+        $thematicOverall,
+    ]);
+
+    if ($isSubmitAction || $generalOverall !== null) {
+        $stmt = $pdo->prepare(
+            'INSERT INTO evaluation_general '
+            . '(evaluation_id, proposing_entity_score, general_project_score, financial_plan_score, qualitative_elements_score, '
+            . 'thematic_criteria_score, overall_score) '
+            . 'VALUES (:evaluation_id, :proposing_entity_score, :general_project_score, :financial_plan_score, '
+            . ':qualitative_elements_score, :thematic_criteria_score, :overall_score)'
+        );
+
+        $stmt->execute([
+            ':evaluation_id'              => $evaluation_id,
+            ':proposing_entity_score'     => $sectionScores['proposing_entity']['overall'],
+            ':general_project_score'      => $sectionScores['project']['overall'],
+            ':financial_plan_score'       => $sectionScores['financial_plan']['overall'],
+            ':qualitative_elements_score' => $sectionScores['qualitative_elements']['overall'],
+            ':thematic_criteria_score'    => $thematicOverall,
+            ':overall_score'              => $generalOverall,
+        ]);
+    }
 
     $statusUpdateStmt = $pdo->prepare('UPDATE evaluation SET status = :status WHERE id = :id');
     $statusUpdateStmt->execute([
