@@ -1496,6 +1496,7 @@ p {
 }
 
 .users-table th.sortable {
+  line-height: 1;
   cursor: pointer;
   user-select: none;
 }
