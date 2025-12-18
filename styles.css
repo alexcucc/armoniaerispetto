@@ -423,7 +423,6 @@ img {
   display: flex;
   flex-direction: column;
   animation: fadeIn 0.8s ease-out;
-  width: 100%;
   box-sizing: border-box;
 }
 
