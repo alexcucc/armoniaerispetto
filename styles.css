@@ -94,13 +94,6 @@ html {
   gap: 1rem;
 }
 
-.login-subtitle {
-  margin: 0;
-  text-align: center;
-  color: #4a5568;
-  font-size: 1rem;
-}
-
 .login-card .form-group {
   width: 100%;
 }

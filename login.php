@@ -13,7 +13,6 @@
         </div>
         <div class="content-container">
           <div class="login-card">
-            <p class="login-subtitle">Accedi per gestire le tue domande e monitorare i progressi.</p>
             <form id="login-form" action="login_handler.php" method="post">
               <div id="error-message" role="alert"></div>
               <div class="form-group">
