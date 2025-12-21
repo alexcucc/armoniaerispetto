@@ -34,15 +34,6 @@ $projectNameValue = $formData['project_name'] ?? '';
 $orgStmt = $pdo->prepare('SELECT id, name FROM organization ORDER BY name');
 $orgStmt->execute();
 $organizations = $orgStmt->fetchAll(PDO::FETCH_ASSOC);
-$selectedOrganizationName = '';
-if ($selectedOrganizationId !== null) {
-    foreach ($organizations as $org) {
-        if ((int) $org['id'] === (int) $selectedOrganizationId) {
-            $selectedOrganizationName = $org['name'];
-            break;
-        }
-    }
-}
 
 // Load supervisors
 $supStmt = $pdo->prepare('SELECT s.id, u.first_name, u.last_name FROM supervisor s JOIN user u ON s.user_id = u.id ORDER BY u.first_name, u.last_name');
@@ -77,26 +68,18 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             </select>
           </div>
           <div class="form-group" style="position: relative;">
-            <label class="form-label required" for="organization-search">Ente</label>
-            <input
-              type="text"
-              id="organization-search"
+            <label class="form-label required" for="organization_id">Ente</label>
+            <select
+              id="organization_id"
+              name="organization_id"
               class="form-input"
-              name="organization-search"
-              placeholder="Filtra per nome ente"
-              aria-label="Filtra e seleziona l'ente per nome"
-              autocomplete="off"
               required
-              value="<?php echo htmlspecialchars($selectedOrganizationName); ?>"
             >
-            <button type="button" id="organization-dropdown-toggle" class="autocomplete-toggle" aria-label="Mostra tutti gli enti disponibili">▼</button>
-            <input type="hidden" id="organization_id" name="organization_id" value="<?php echo htmlspecialchars((string) $selectedOrganizationId); ?>">
-            <div id="organization-suggestions" class="autocomplete-list" role="listbox"></div>
-            <datalist id="available-organizations">
+              <option value="" disabled <?php echo $selectedOrganizationId ? '' : 'selected'; ?>></option>
               <?php foreach ($organizations as $org): ?>
-              <option data-organization-id="<?php echo $org['id']; ?>" value="<?php echo htmlspecialchars($org['name']); ?>"></option>
+              <option value="<?php echo $org['id']; ?>" <?php echo ((int) $selectedOrganizationId === (int) $org['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($org['name']); ?></option>
               <?php endforeach; ?>
-            </datalist>
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label required" for="supervisor_id">Convalidatore</label>
@@ -126,19 +109,13 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include 'footer.php'; ?>
     <script>
       (function() {
-        const organizationInput = document.getElementById('organization-search');
-        const organizationIdInput = document.getElementById('organization_id');
-        const options = Array.from(document.querySelectorAll('#available-organizations option'));
-        const form = document.querySelector('form.contact-form');
-        const suggestionBox = document.getElementById('organization-suggestions');
-        const toggleButton = document.getElementById('organization-dropdown-toggle');
+        const organizationSelect = document.getElementById('organization_id');
         const callSelect = document.getElementById('call_id');
         const duplicateWarning = document.getElementById('duplicate-warning');
         const submitButton = document.getElementById('application-submit');
-        const organizations = options.map((option) => ({
-          id: option.dataset.organizationId,
-          label: option.value,
-        }));
+        const form = document.querySelector('form.contact-form');
+        let typedSequence = '';
+        let typeaheadTimeout = null;
 
         let currentDuplicateCheckController = null;
 
@@ -156,7 +133,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 
         const checkDuplicateApplication = async () => {
           const callId = callSelect.value;
-          const organizationId = organizationIdInput.value;
+          const organizationId = organizationSelect.value;
 
           if (!callId || !organizationId) {
             clearDuplicateWarning();
@@ -196,135 +173,51 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           }
         };
 
-        const ensureStyles = () => {
-          if (document.getElementById('autocomplete-styles')) return;
-          const style = document.createElement('style');
-          style.id = 'autocomplete-styles';
-          style.textContent = `
-                .autocomplete-list {
-                    border: 1px solid #ccc;
-                    border-top: none;
-                    max-height: 200px;
-                    overflow-y: auto;
-                    background: #fff;
-                    position: absolute;
-                    width: 100%;
-                    z-index: 2;
-                    display: none;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                    left: 0;
-                    top: calc(100% - 1px);
-                }
-                .autocomplete-item {
-                    padding: 2px 3px;
-                    cursor: pointer;
-                }
-                .autocomplete-item:hover,
-                .autocomplete-item:focus {
-                    background-color: #f0f0f0;
-                }
-                .autocomplete-toggle {
-                    position: absolute;
-                    right: 8px;
-                    top: 34px;
-                    background: transparent;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 0.9rem;
-                    padding: 4px;
-                    color: #555;
-                }
-                .form-group .form-input {
-                    padding-right: 32px;
-                }
-            `;
-          document.head.appendChild(style);
-        };
-
-        let showAllOnEmpty = organizationInput.value.trim() === '';
-
-        const selectOrganization = (organization) => {
-          organizationInput.value = organization.label;
-          organizationIdInput.value = organization.id;
-          organizationInput.setCustomValidity('');
-          suggestionBox.style.display = 'none';
-          showAllOnEmpty = false;
-          checkDuplicateApplication();
-        };
-
-        const renderSuggestions = (forceShowAll = false) => {
-          const query = organizationInput.value.trim().toLowerCase();
-          const shouldShowAll = forceShowAll || showAllOnEmpty;
-          const filtered = query === ''
-            ? (shouldShowAll ? organizations : [])
-            : organizations.filter((organization) => organization.label.toLowerCase().includes(query));
-
-          suggestionBox.innerHTML = '';
-
-          filtered.forEach((organization) => {
-            const item = document.createElement('div');
-            item.className = 'autocomplete-item';
-            item.textContent = organization.label;
-            item.tabIndex = 0;
-            item.setAttribute('role', 'option');
-            item.addEventListener('mousedown', (event) => {
-              event.preventDefault();
-              selectOrganization(organization);
-            });
-            suggestionBox.appendChild(item);
-          });
-
-          suggestionBox.style.display = filtered.length ? 'block' : 'none';
-        };
-
         form.addEventListener('submit', (event) => {
-          if (!organizationIdInput.value) {
+          if (!organizationSelect.value) {
             event.preventDefault();
-            organizationInput.reportValidity();
+            organizationSelect.reportValidity();
           }
         });
 
-        organizationInput.addEventListener('input', () => {
-          organizationIdInput.value = '';
-          organizationInput.setCustomValidity("Seleziona un ente dalla lista.");
-          showAllOnEmpty = false;
-          renderSuggestions();
+        organizationSelect.addEventListener('change', () => {
           clearDuplicateWarning();
+          checkDuplicateApplication();
         });
 
-        organizationInput.addEventListener('focus', () => renderSuggestions());
+        organizationSelect.addEventListener('keydown', (event) => {
+          const key = event.key;
 
-        organizationInput.addEventListener('blur', () => {
-          setTimeout(() => {
-            suggestionBox.style.display = 'none';
-            showAllOnEmpty = false;
-          }, 150);
-        });
+          if (key && key.length === 1 && /^[a-zA-Z0-9]$/.test(key)) {
+            typedSequence += key.toLowerCase();
+            if (typeaheadTimeout) {
+              clearTimeout(typeaheadTimeout);
+            }
+            typeaheadTimeout = setTimeout(() => {
+              typedSequence = '';
+            }, 600);
 
-        toggleButton.addEventListener('click', () => {
-          const isOpen = suggestionBox.style.display === 'block';
-          if (isOpen) {
-            suggestionBox.style.display = 'none';
-            showAllOnEmpty = false;
-            return;
+            const availableOptions = Array.from(organizationSelect.options).filter((option) => !option.disabled && option.value !== '');
+            const matchingOption = availableOptions.find((option) =>
+              option.textContent.trim().toLowerCase().startsWith(typedSequence)
+            );
+
+            if (matchingOption) {
+              organizationSelect.value = matchingOption.value;
+              organizationSelect.dispatchEvent(new Event('change', { bubbles: true }));
+              event.preventDefault();
+            }
+          } else {
+            typedSequence = '';
           }
-
-          showAllOnEmpty = true;
-          renderSuggestions(true);
-          organizationInput.focus();
         });
-
-        if (organizationInput.value && organizationIdInput.value) {
-          organizationInput.setCustomValidity('');
-        }
 
         callSelect.addEventListener('change', checkDuplicateApplication);
 
-        if (callSelect.value && organizationInput.value && organizationIdInput.value) {
+        if (callSelect.value && organizationSelect.value) {
           checkDuplicateApplication();
         }
 
-        ensureStyles();
       })();
     </script>
   </body>
