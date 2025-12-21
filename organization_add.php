@@ -16,9 +16,13 @@ $formData = $_SESSION['form_data'] ?? [];
 unset($_SESSION['error_message'], $_SESSION['form_data']);
 
 $nameValue = $formData['name'] ?? '';
-$typeValue = $formData['type'] ?? '';
+$typeValue = $formData['type_id'] ?? '';
 $incorporationYearValue = $formData['incorporation_year'] ?? '';
 $locationValue = $formData['location'] ?? '';
+
+$typesStmt = $pdo->query('SELECT id, name FROM organization_type ORDER BY name');
+$organizationTypes = $typesStmt->fetchAll(PDO::FETCH_ASSOC);
+$hasOrganizationTypes = !empty($organizationTypes);
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -42,8 +46,18 @@ $locationValue = $formData['location'] ?? '';
                 <input type="text" id="name" name="name" class="form-input" value="<?php echo htmlspecialchars($nameValue); ?>" required autofocus>
             </div>
             <div class="form-group">
-                <label class="form-label required" for="type">Tipo</label>
-                <input type="text" id="type" name="type" class="form-input" value="<?php echo htmlspecialchars($typeValue); ?>" required>
+                <label class="form-label required" for="type_id">Tipo</label>
+                <select id="type_id" name="type_id" class="form-input" required <?php echo $hasOrganizationTypes ? '' : 'disabled'; ?>>
+                    <option value="">Seleziona una tipologia</option>
+                    <?php foreach ($organizationTypes as $type): ?>
+                        <option value="<?php echo (int) $type['id']; ?>" <?php echo ((string) $typeValue === (string) $type['id']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($type['name']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (!$hasOrganizationTypes): ?>
+                    <small class="form-help-text">Aggiungi almeno una tipologia di ente prima di creare un nuovo ente.</small>
+                <?php endif; ?>
             </div>
             <div class="form-group">
                 <label class="form-label required" for="incorporation_year">Anno di costituzione</label>
@@ -55,7 +69,7 @@ $locationValue = $formData['location'] ?? '';
             </div>
             <div class="button-container">
                 <a href="organizations.php" class="page-button" style="background-color: #007bff;">Indietro</a>
-                <button type="submit" class="page-button">Aggiungi</button>
+                <button type="submit" class="page-button" <?php echo $hasOrganizationTypes ? '' : 'disabled'; ?>>Aggiungi</button>
             </div>
         </form>
     </div>

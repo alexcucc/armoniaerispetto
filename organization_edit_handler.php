@@ -17,14 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-$type = trim(filter_input(INPUT_POST, 'type', FILTER_UNSAFE_RAW));
+$typeId = filter_input(INPUT_POST, 'type_id', FILTER_VALIDATE_INT);
 $incorporation_year = trim(filter_input(INPUT_POST, 'incorporation_year', FILTER_UNSAFE_RAW));
 $location = trim(filter_input(INPUT_POST, 'location', FILTER_UNSAFE_RAW));
 
-if (!$id || $type === '' || $incorporation_year === '' || $location === '') {
+if (!$id || !$typeId || $incorporation_year === '' || $location === '') {
     $_SESSION['error_message'] = 'Compila i campi obbligatori.';
     $_SESSION['form_data'] = [
-        'type' => $type,
+        'type_id' => $typeId,
         'incorporation_year' => $incorporation_year,
         'location' => $location,
     ];
@@ -35,7 +35,7 @@ if (!$id || $type === '' || $incorporation_year === '' || $location === '') {
 if (!preg_match('/^\d{4}$/', $incorporation_year)) {
     $_SESSION['error_message'] = 'Inserisci un anno di costituzione valido (formato: YYYY).';
     $_SESSION['form_data'] = [
-        'type' => $type,
+        'type_id' => $typeId,
         'incorporation_year' => $incorporation_year,
         'location' => $location,
     ];
@@ -49,7 +49,7 @@ $incorporationYearNumber = (int) $incorporation_year;
 if ($incorporationYearNumber < 1901 || $incorporationYearNumber > $currentYear) {
     $_SESSION['error_message'] = 'L\'anno di costituzione deve essere compreso tra 1901 e l\'anno corrente.';
     $_SESSION['form_data'] = [
-        'type' => $type,
+        'type_id' => $typeId,
         'incorporation_year' => $incorporation_year,
         'location' => $location,
     ];
@@ -57,9 +57,22 @@ if ($incorporationYearNumber < 1901 || $incorporationYearNumber > $currentYear) 
     exit();
 }
 
-$stmt = $pdo->prepare('UPDATE organization SET type = :type, incorporation_year = :incorporation_year, location = :location WHERE id = :id');
+$typeExistsStmt = $pdo->prepare('SELECT COUNT(*) FROM organization_type WHERE id = :id');
+$typeExistsStmt->execute([':id' => $typeId]);
+if ((int) $typeExistsStmt->fetchColumn() === 0) {
+    $_SESSION['error_message'] = 'Seleziona una tipologia di ente valida.';
+    $_SESSION['form_data'] = [
+        'type_id' => $typeId,
+        'incorporation_year' => $incorporation_year,
+        'location' => $location,
+    ];
+    header('Location: organization_edit.php?id=' . urlencode($id));
+    exit();
+}
+
+$stmt = $pdo->prepare('UPDATE organization SET type_id = :type_id, incorporation_year = :incorporation_year, location = :location WHERE id = :id');
 $stmt->execute([
-    ':type' => $type,
+    ':type_id' => $typeId,
     ':incorporation_year' => $incorporation_year,
     ':location' => $location,
     ':id' => $id

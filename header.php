@@ -113,6 +113,10 @@
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE'],
                         );
+                        $canOrganizationTypeManage = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
+                            $_SESSION['user_id'],
+                            RolePermissionManager::$PERMISSIONS['ORGANIZATION_TYPE_MANAGE']
+                        );
                         $canSupervisorMonitor = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['SUPERVISOR_MONITOR'],
@@ -131,6 +135,7 @@
                             $canApplicationList ||
                             $canApplicationReview ||
                             $canEvaluationCreate ||
+                            $canOrganizationTypeManage ||
                             $canSupervisorMonitor ||
                             $canEvaluatorMonitor
                         ): ?>
@@ -148,6 +153,9 @@
                                     <?php endif; ?>
                                     <?php if ($canCallForProposalList): ?>
                                         <li class="nav-item"><a class="nav-link" href="call_for_proposals.php">Bandi</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canOrganizationTypeManage): ?>
+                                        <li class="nav-item"><a class="nav-link" href="organization_types.php">Categorie di enti</a></li>
                                     <?php endif; ?>
                                     <?php if ($canOrganizationList): ?>
                                         <li class="nav-item"><a class="nav-link" href="organizations.php">Enti</a></li>

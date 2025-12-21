@@ -16,26 +16,34 @@ $canDelete = $rolePermissionManager->userHasPermission($_SESSION['user_id'], Rol
 $canSeeApplications = $rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_LIST']);
 
 // Determine sorting parameters
-$allowedSortFields = ['name', 'type', 'incorporation_year', 'location'];
+$allowedSortFields = [
+    'name' => 'o.name',
+    'type' => 'ot.name',
+    'incorporation_year' => 'o.incorporation_year',
+    'location' => 'o.location',
+];
 $allowedSortOrders = ['asc', 'desc'];
 
-$sortField = isset($_GET['sort']) && in_array($_GET['sort'], $allowedSortFields)
+$sortField = isset($_GET['sort']) && array_key_exists($_GET['sort'], $allowedSortFields)
     ? $_GET['sort']
     : 'name';
 $sortOrder = isset($_GET['order']) && in_array(strtolower($_GET['order']), $allowedSortOrders)
     ? strtoupper($_GET['order'])
     : 'ASC';
+$orderByField = $allowedSortFields[$sortField];
 
 // Fetch all organizations with sorting
 $stmt = $pdo->prepare(
     "SELECT
-        id,
-        name,
-        type,
-        incorporation_year, 
-        location AS location, 
-        (SELECT COUNT(*) FROM application WHERE organization_id = organization.id) AS application_count
-    FROM organization ORDER BY $sortField $sortOrder"
+        o.id,
+        o.name,
+        ot.name AS type,
+        o.incorporation_year, 
+        o.location AS location, 
+        (SELECT COUNT(*) FROM application WHERE organization_id = o.id) AS application_count
+    FROM organization o
+    JOIN organization_type ot ON o.type_id = ot.id
+    ORDER BY $orderByField $sortOrder"
 );
 $stmt->execute();
 $organizations = $stmt->fetchAll(PDO::FETCH_ASSOC);

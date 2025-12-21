@@ -50,6 +50,7 @@ class RolePermissionManager
         'ORGANIZATION_UPDATE' => 'organization:update',
         'ORGANIZATION_DELETE' => 'organization:delete',
         'ORGANIZATION_LIST'   => 'organization:list',
+        'ORGANIZATION_TYPE_MANAGE' => 'organization_type:manage',
 
         # call for proposals
         'CALL_FOR_PROPOSAL_CREATE' => 'call_for_proposal:create',
