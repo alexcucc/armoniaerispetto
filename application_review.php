@@ -115,6 +115,7 @@ $canFinalize = $application['status'] === 'APPROVED';
             </div>
             <input type="hidden" name="supervisor_id" value="<?php echo htmlspecialchars($application['supervisor_id']); ?>">
             <input type="hidden" name="application_id" value="<?php echo htmlspecialchars($appId); ?>">
+            <br>
             <div class="button-container">
                 <a href="supervisor_applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
                 <button type="submit" class="page-button">Invia</button>
