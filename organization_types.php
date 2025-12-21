@@ -44,23 +44,13 @@ $organizationTypes = $typesStmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php endif; ?>
 
-                <div class="contact-form-container">
-                    <h2>Aggiungi tipologia</h2>
-                    <form class="contact-form" action="organization_type_save.php" method="POST">
-                        <input type="hidden" name="action" value="create">
-                        <div class="form-group">
-                            <label class="form-label required" for="name">Nome</label>
-                            <input type="text" id="name" name="name" class="form-input" required maxlength="255">
-                        </div>
-                        <div class="button-container">
-                            <a href="index.php?open_gestione=1" class="page-button" style="background-color: #007bff;">Indietro</a>
-                            <button type="submit" class="page-button">Aggiungi</button>
-                        </div>
-                    </form>
+                <div class="button-container" style="margin-bottom: 16px;">
+                    <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
+                    <a class="page-button" href="organization_type_add.php">Aggiungi tipologia</a>
                 </div>
 
                 <div class="users-table-container">
-                    <h2 style="margin-top: 32px;">Tipologie esistenti</h2>
+                    <h2>Tipologie esistenti</h2>
                     <?php if (empty($organizationTypes)): ?>
                         <p>Non sono ancora state create tipologie di ente.</p>
                     <?php else: ?>
@@ -77,22 +67,7 @@ $organizationTypes = $typesStmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($type['name']); ?></td>
                                     <td>
                                         <div class="actions-cell organization-actions">
-                                            <form class="inline-form" action="organization_type_save.php" method="POST" style="display:inline-flex; align-items: center; gap: 8px;">
-                                                <input type="hidden" name="action" value="update">
-                                                <input type="hidden" name="id" value="<?php echo (int) $type['id']; ?>">
-                                                <label class="sr-only" for="name-<?php echo (int) $type['id']; ?>">Nome tipologia</label>
-                                                <input
-                                                    type="text"
-                                                    id="name-<?php echo (int) $type['id']; ?>"
-                                                    name="name"
-                                                    class="form-input"
-                                                    value="<?php echo htmlspecialchars($type['name']); ?>"
-                                                    required
-                                                    maxlength="255"
-                                                    style="width: 240px;"
-                                                >
-                                                <button type="submit" class="page-button" style="padding: 10px 16px;">Salva</button>
-                                            </form>
+                                            <a class="page-button" href="organization_type_edit.php?id=<?php echo (int) $type['id']; ?>" style="padding: 10px 16px;">Modifica</a>
                                             <form class="inline-form delete-type-form" action="organization_type_save.php" method="POST" style="display:inline-block;">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="id" value="<?php echo (int) $type['id']; ?>">

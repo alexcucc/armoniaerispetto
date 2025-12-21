@@ -19,11 +19,15 @@ $action = $_POST['action'] ?? '';
 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
 $name = trim((string) filter_input(INPUT_POST, 'name', FILTER_UNSAFE_RAW));
 
-function redirectWithMessage(string $type, string $message): void
+function redirectWithMessage(string $type, string $message, string $location = 'organization_types.php', array $formData = []): void
 {
     $key = $type === 'error' ? 'error_message' : 'success_message';
     $_SESSION[$key] = $message;
-    header('Location: organization_types.php');
+    if (!empty($formData)) {
+        $_SESSION['form_data'] = $formData;
+    }
+
+    header('Location: ' . $location);
     exit();
 }
 
@@ -32,7 +36,11 @@ if (!in_array($action, ['create', 'update', 'delete'], true)) {
 }
 
 if ($action !== 'delete' && $name === '') {
-    redirectWithMessage('error', 'Inserisci un nome valido per la tipologia.');
+    $redirectTarget = $action === 'create'
+        ? 'organization_type_add.php'
+        : 'organization_type_edit.php?id=' . (int) $id;
+
+    redirectWithMessage('error', 'Inserisci un nome valido per la tipologia.', $redirectTarget, ['name' => $name]);
 }
 
 try {
@@ -40,7 +48,7 @@ try {
         $duplicateStmt = $pdo->prepare('SELECT COUNT(*) FROM organization_type WHERE LOWER(name) = LOWER(:name)');
         $duplicateStmt->execute([':name' => $name]);
         if ((int) $duplicateStmt->fetchColumn() > 0) {
-            redirectWithMessage('error', 'Esiste già una tipologia con questo nome.');
+            redirectWithMessage('error', 'Esiste già una tipologia con questo nome.', 'organization_type_add.php', ['name' => $name]);
         }
 
         $insertStmt = $pdo->prepare('INSERT INTO organization_type (name) VALUES (:name)');
@@ -63,7 +71,7 @@ try {
         $duplicateStmt = $pdo->prepare('SELECT COUNT(*) FROM organization_type WHERE LOWER(name) = LOWER(:name) AND id <> :id');
         $duplicateStmt->execute([':name' => $name, ':id' => $id]);
         if ((int) $duplicateStmt->fetchColumn() > 0) {
-            redirectWithMessage('error', 'Esiste già una tipologia con questo nome.');
+            redirectWithMessage('error', 'Esiste già una tipologia con questo nome.', 'organization_type_edit.php?id=' . (int) $id, ['name' => $name]);
         }
 
         $updateStmt = $pdo->prepare('UPDATE organization_type SET name = :name WHERE id = :id');
