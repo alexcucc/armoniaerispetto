@@ -96,7 +96,7 @@ $canFinalize = $application['status'] === 'APPROVED';
                 <p class="form-help">Campo obbligatorio quando la risposta viene respinta.</p>
             </div>
             <div class="form-group">
-                <label class="form-label<?php echo $isEditing ? '' : ' required'; ?>" for="checklist">checklist.pdf</label>
+                <label class="form-label<?php echo $isEditing ? '' : ' required'; ?>" for="checklist">Checklist (PDF)</label>
                 <input
                     type="file"
                     id="checklist"
@@ -109,7 +109,9 @@ $canFinalize = $application['status'] === 'APPROVED';
                     <p class="form-help">Lascia vuoto per mantenere il file esistente.</p>
                     <p class="form-help">
                         File attuale:
-                        <a href="application_checklist_download.php?id=<?php echo $appId; ?>">Scarica checklist</a>
+                        <a href="application_checklist_download.php?id=<?php echo $appId; ?>">
+                            <?php echo htmlspecialchars(basename($application['checklist_path'])); ?>
+                        </a>
                     </p>
                 <?php endif; ?>
             </div>

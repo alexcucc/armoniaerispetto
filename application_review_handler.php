@@ -69,20 +69,32 @@ try {
     $destinationPath = $existingChecklist;
 
     if ($hasNewChecklist) {
-        $extension = strtolower(pathinfo($_FILES['checklist']['name'], PATHINFO_EXTENSION));
+        $uploadedChecklistName = $_FILES['checklist']['name'] ?? '';
+        $extension = strtolower(pathinfo($uploadedChecklistName, PATHINFO_EXTENSION));
         if ($extension !== 'pdf') {
+            header('Location: supervisor_applications.php?error=1');
+            exit();
+        }
+
+        $originalChecklistName = basename($uploadedChecklistName);
+        if ($originalChecklistName === '' || strtolower(pathinfo($originalChecklistName, PATHINFO_EXTENSION)) !== 'pdf') {
             header('Location: supervisor_applications.php?error=1');
             exit();
         }
 
         $destinationDir = 'private/documents/applications/' . $applicationId;
         if (!is_dir($destinationDir)) {
-            mkdir($destinationDir, 0755, true);
+            if (!mkdir($destinationDir, 0755, true)) {
+                header('Location: supervisor_applications.php?error=1');
+                exit();
+            }
         }
-        $destinationPath = $destinationDir . '/checklist.pdf';
+        $destinationPath = $destinationDir . '/' . $originalChecklistName;
 
-        if ($existingChecklist && file_exists($existingChecklist)) {
-            unlink($existingChecklist);
+        $destinationBasePath = realpath($destinationDir);
+        $existingChecklistRealPath = $existingChecklist ? realpath($existingChecklist) : false;
+        if ($existingChecklistRealPath && $destinationBasePath && strpos($existingChecklistRealPath, $destinationBasePath) === 0 && is_file($existingChecklistRealPath)) {
+            unlink($existingChecklistRealPath);
         }
 
         if (!move_uploaded_file($_FILES['checklist']['tmp_name'], $destinationPath)) {
