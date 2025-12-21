@@ -11,7 +11,8 @@ INSERT INTO organization_type (name)
 SELECT DISTINCT type FROM organization WHERE type IS NOT NULL AND type <> '';
 
 UPDATE organization o
-JOIN organization_type ot ON ot.name = o.type
+JOIN organization_type ot
+  ON ot.name COLLATE utf8mb4_unicode_ci = o.type COLLATE utf8mb4_unicode_ci
 SET o.type_id = ot.id;
 
 ALTER TABLE organization
@@ -25,6 +26,6 @@ INSERT INTO permission (name, description) VALUES
 
 INSERT INTO role_permission (role_id, permission_id)
 VALUES (
-    (SELECT id FROM role WHERE name = 'Admin'),
-    (SELECT id FROM permission WHERE name = 'organization_type:manage')
+    (SELECT id FROM role WHERE name = 'Admin' LIMIT 1),
+    (SELECT id FROM permission WHERE name = 'organization_type:manage' LIMIT 1)
 );
