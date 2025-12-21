@@ -38,25 +38,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="form-group" style="position: relative;">
                 <label class="form-label required" for="user-search">Utente</label>
-                <input
-                    type="text"
+                <select
                     id="user-search"
                     class="form-input"
-                    name="user-search"
-                    placeholder="Filtra per nome o cognome"
-                    aria-label="Filtra e seleziona utenti per nome o cognome"
-                    autocomplete="off"
+                    name="user_id"
+                    aria-label="Seleziona un utente"
+                    autofocus
                     required
                 >
-                <button type="button" id="user-dropdown-toggle" class="autocomplete-toggle" aria-label="Mostra tutti gli utenti disponibili">▼</button>
-                <input type="hidden" id="user_id" name="user_id">
-                <div id="user-suggestions" class="autocomplete-list" role="listbox"></div>
-                <datalist id="available-users">
+                    <option value="" disabled selected hidden>Seleziona un utente</option>
                     <?php foreach ($users as $user): ?>
                         <?php $displayName = htmlspecialchars($user['last_name'] . ' ' . $user['first_name'] . ' (' . $user['email'] . ')'); ?>
-                        <option data-user-id="<?php echo $user['id']; ?>" value="<?php echo $displayName; ?>"></option>
+                        <option value="<?php echo $user['id']; ?>"><?php echo $displayName; ?></option>
                     <?php endforeach; ?>
-                </datalist>
+                </select>
             </div>
         </form>
     </div>
@@ -64,134 +59,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include 'footer.php'; ?>
 <script>
     (function() {
-        const userInput = document.getElementById('user-search');
-        const userIdInput = document.getElementById('user_id');
-        const options = Array.from(document.querySelectorAll('#available-users option'));
-        const form = document.querySelector('form.contact-form');
-        const suggestionBox = document.getElementById('user-suggestions');
-        const toggleButton = document.getElementById('user-dropdown-toggle');
-        const users = options.map((option) => ({
-            id: option.dataset.userId,
-            label: option.value,
-        }));
+        const select = document.getElementById('user-search');
+        const options = Array.from(select.options).filter((option) => option.value);
 
-        const ensureStyles = () => {
-            if (document.getElementById('autocomplete-styles')) return;
-            const style = document.createElement('style');
-            style.id = 'autocomplete-styles';
-            style.textContent = `
-                .autocomplete-list {
-                    border: 1px solid #ccc;
-                    border-top: none;
-                    max-height: 200px;
-                    overflow-y: auto;
-                    background: #fff;
-                    position: absolute;
-                    width: 100%;
-                    z-index: 2;
-                    display: none;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                    left: 0;
-                    top: calc(100% - 1px);
-                }
-                .autocomplete-item {
-                    padding: 8px 10px;
-                    cursor: pointer;
-                }
-                .autocomplete-item:hover,
-                .autocomplete-item:focus {
-                    background-color: #f0f0f0;
-                }
-                .autocomplete-toggle {
-                    position: absolute;
-                    right: 8px;
-                    top: 34px;
-                    background: transparent;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 0.9rem;
-                    padding: 4px;
-                    color: #555;
-                }
-                .form-group .form-input {
-                    padding-right: 32px;
-                }
-            `;
-            document.head.appendChild(style);
-        };
+        select.addEventListener('keydown', (event) => {
+            if (event.key.length !== 1) return;
 
-        let showAllOnEmpty = false;
+            const typed = event.key.toLowerCase();
+            const match = options.find((option) => option.text.toLowerCase().startsWith(typed));
 
-        const selectUser = (user) => {
-            userInput.value = user.label;
-            userIdInput.value = user.id;
-            userInput.setCustomValidity('');
-            suggestionBox.style.display = 'none';
-            showAllOnEmpty = false;
-        };
-
-        const renderSuggestions = (forceShowAll = false) => {
-            const query = userInput.value.trim().toLowerCase();
-            const shouldShowAll = forceShowAll || showAllOnEmpty;
-            const filtered = query === ''
-                ? (shouldShowAll ? users : [])
-                : users.filter((user) => user.label.toLowerCase().includes(query));
-
-            suggestionBox.innerHTML = '';
-
-            filtered.forEach((user) => {
-                const item = document.createElement('div');
-                item.className = 'autocomplete-item';
-                item.textContent = user.label;
-                item.tabIndex = 0;
-                item.setAttribute('role', 'option');
-                item.addEventListener('mousedown', (event) => {
-                    event.preventDefault();
-                    selectUser(user);
-                });
-                suggestionBox.appendChild(item);
-            });
-
-            suggestionBox.style.display = filtered.length ? 'block' : 'none';
-        };
-
-        form.addEventListener('submit', (event) => {
-            if (!userIdInput.value) {
+            if (match) {
                 event.preventDefault();
-                userInput.reportValidity();
+                select.value = match.value;
             }
         });
-
-        userInput.addEventListener('input', () => {
-            userIdInput.value = '';
-            userInput.setCustomValidity('Seleziona un utente dalla lista.');
-            showAllOnEmpty = false;
-            renderSuggestions();
-        });
-
-        userInput.addEventListener('focus', () => renderSuggestions());
-
-        userInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                suggestionBox.style.display = 'none';
-                showAllOnEmpty = false;
-            }, 150);
-        });
-
-        toggleButton.addEventListener('click', () => {
-            const isOpen = suggestionBox.style.display === 'block';
-            if (isOpen) {
-                suggestionBox.style.display = 'none';
-                showAllOnEmpty = false;
-                return;
-            }
-
-            showAllOnEmpty = true;
-            renderSuggestions(true);
-            userInput.focus();
-        });
-
-        ensureStyles();
     })();
 </script>
 </body>
