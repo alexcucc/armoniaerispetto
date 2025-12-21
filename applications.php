@@ -336,7 +336,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     <?php
                                     $statusKey = strtoupper((string) $app['status']);
                                     $statusLabel = $statusLabels[$statusKey] ?? ucwords(strtolower(str_replace('_', ' ', $statusKey)));
-                                    $isLocked = in_array($statusKey, ['APPROVED', 'FINAL_VALIDATION'], true);
+                                    $isLocked = in_array($statusKey, ['APPROVED', 'FINAL_VALIDATION', 'REJECTED'], true);
                                     $canDeleteApplication = $statusKey === 'SUBMITTED';
                                     $rejectionReason = trim((string) ($app['rejection_reason'] ?? ''));
                                     ?>
