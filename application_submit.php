@@ -115,6 +115,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             <label class="form-label required" for="application_pdf">PDF della risposta al bando</label>
             <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf" required>
           </div>
+          <br>
           <div class="button-container">
             <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
             <button type="submit" id="application-submit" class="page-button">Carica</button>
