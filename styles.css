@@ -427,14 +427,16 @@ img {
 }
 
 .logo {
-  height: 3rem;
-  width: 3rem;
-  margin-right: 1em;
+  height: 2.5rem;
+  width: 2.5rem;
+  margin-right: 0.75em;
 }
 
 header h1 {
-  margin-top: 0px;
-  margin-bottom: 0px;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  line-height: 1.1;
 }
 
 main {
@@ -451,6 +453,11 @@ header {
   top: 0;
   z-index: 2100;
   box-shadow: 0 1px 10px 3px rgba(0,0,0,0.5);
+}
+
+.header-content {
+  align-items: center;
+  margin: 0 auto;
 }
 
 h1, h2 {
@@ -616,7 +623,7 @@ th {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: auto;
+  margin: 0 auto;
 }
 
 .page-button:hover {
@@ -1022,7 +1029,7 @@ ul.nav-links {
 ul.nav-links a {
   color: #ecf0f1;
   text-decoration: none;
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin: 0.15rem 0.5rem;
   border-radius: 0.5em;
   position: relative;
@@ -1229,12 +1236,12 @@ body.management-page .users-table {
   background: none;
   border: none;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   cursor: pointer;
-  margin: 1rem;
+  margin: 0.5rem;
   padding: 0;
-  margin-top: 0rem;
-  margin-bottom: 0rem;
+  margin-top: 0;
+  margin-bottom: 0;
   transition: all 0.3s ease;
 }
 
@@ -1243,8 +1250,8 @@ body.management-page .users-table {
   flex: 0;
   justify-content: center;
   align-items: center;
-  margin: 0.5em;
-  margin-top: 0.3em;
+  margin: 0.25em 0.35em;
+  margin-top: 0.2em;
   margin-bottom: 0;
 }
 
@@ -1704,7 +1711,7 @@ p {
   }
 
   .title h1 {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
   }
 
   /* Disabilita le strutture overlay */
