@@ -837,6 +837,67 @@ ul.nav-links {
   border-color: #f1cf7a;
 }
 
+.motivation-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  z-index: 1100;
+}
+
+.motivation-modal.open {
+  display: flex;
+}
+
+.motivation-modal__dialog {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  width: min(720px, 100%);
+  margin-top: 5vh;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.motivation-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.motivation-modal__title {
+  font-size: 1.15rem;
+  margin: 0;
+  color: #2E8B57;
+}
+
+.motivation-modal__close {
+  border: none;
+  background: none;
+  color: #555;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.motivation-modal__close:hover {
+  color: #000;
+}
+
+.motivation-modal__body {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #333;
+  line-height: 1.5;
+}
+
 .close-btn {
   background-color: #ff9800;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -1723,4 +1784,3 @@ p {
 .status-closed {
     color: #dc3545;
 }
-

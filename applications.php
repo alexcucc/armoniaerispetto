@@ -346,8 +346,8 @@ $resetUrl = 'applications.php?' . http_build_query([
                                             <?php if ($rejectionReason !== ''): ?>
                                                 <button
                                                     type="button"
-                                                    class="icon-button motivation-icon"
-                                                    title="<?php echo htmlspecialchars($rejectionReason, ENT_QUOTES); ?>"
+                                                    class="icon-button motivation-icon motivation-viewer"
+                                                    data-reason="<?php echo htmlspecialchars($rejectionReason, ENT_QUOTES); ?>"
                                                     aria-label="Visualizza motivazione"
                                                 >
                                                     <i class="fas fa-info-circle" aria-hidden="true"></i>

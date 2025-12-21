@@ -177,4 +177,67 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  const motivationButtons = Array.from(document.querySelectorAll('.motivation-viewer[data-reason]'));
+
+  if (motivationButtons.length) {
+    const modal = document.createElement('div');
+    modal.className = 'motivation-modal';
+    modal.innerHTML = `
+      <div class="motivation-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="motivation-modal-title">
+        <div class="motivation-modal__header">
+          <h2 id="motivation-modal-title" class="motivation-modal__title">Motivazione del respingimento</h2>
+          <button type="button" class="motivation-modal__close" aria-label="Chiudi finestra">&times;</button>
+        </div>
+        <div class="motivation-modal__body"></div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const body = modal.querySelector('.motivation-modal__body');
+    const closeButton = modal.querySelector('.motivation-modal__close');
+
+    const closeModal = () => {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    const openModal = (reasonText) => {
+      if (!body) {
+        return;
+      }
+
+      body.textContent = reasonText;
+      modal.classList.add('open');
+      modal.removeAttribute('aria-hidden');
+      closeButton?.focus();
+    };
+
+    closeButton?.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && modal.classList.contains('open')) {
+        closeModal();
+      }
+    });
+
+    motivationButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const reasonText = button.dataset.reason ?? '';
+
+        if (!reasonText) {
+          return;
+        }
+
+        openModal(reasonText);
+      });
+    });
+  }
 });
