@@ -1212,6 +1212,7 @@
         const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
         const nextStepButton = document.getElementById('next-step-button');
         const previousStepButton = document.getElementById('previous-step-button');
+        const backLink = document.querySelector('.evaluation-actions__back-link');
         const criterionWeights = <?php echo json_encode($criterionWeights, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
         const sectionWeightMultipliers = <?php echo json_encode($sectionWeightMultipliers, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
         const sectionKeys = [
@@ -1226,6 +1227,27 @@
           'thematic_culture_education',
         ];
         let activeStepIndex = 0;
+        let hasUnsavedChanges = false;
+
+        const markUnsavedChanges = () => {
+          hasUnsavedChanges = true;
+        };
+
+        const resetUnsavedChanges = () => {
+          hasUnsavedChanges = false;
+        };
+
+        const handleBackNavigation = (event) => {
+          if (!hasUnsavedChanges) {
+            return;
+          }
+
+          const shouldLeave = window.confirm('Hai modificato la valutazione. Uscendo senza salvare perderai le modifiche. Vuoi continuare?');
+
+          if (!shouldLeave) {
+            event.preventDefault();
+          }
+        };
 
         const clampScore = (value) => {
           if (Number.isNaN(value)) {
@@ -1503,6 +1525,13 @@
         }
 
         if (form && totalScoreElement) {
+          const formFields = form.querySelectorAll('input, textarea, select');
+
+          formFields.forEach((field) => {
+            field.addEventListener('input', markUnsavedChanges);
+            field.addEventListener('change', markUnsavedChanges);
+          });
+
           const scoreInputs = form.querySelectorAll('input.score-input');
           scoreInputs.forEach((input) => {
             input.addEventListener('input', () => {
@@ -1518,11 +1547,16 @@
           calculateSectionScore();
         }
 
+        if (backLink) {
+          backLink.addEventListener('click', handleBackNavigation);
+        }
+
         form.addEventListener('submit', async function (event) {
           const submitter = event.submitter || null;
           const actionValue = submitter ? submitter.value : null;
 
           if (actionValue !== 'submit') {
+            resetUnsavedChanges();
             return;
           }
 
@@ -1545,6 +1579,7 @@
             const data = await response.json();
 
             if (data.success) {
+              resetUnsavedChanges();
               modal.style.display = 'block';
               let redirected = false;
               const goHome = () => {
