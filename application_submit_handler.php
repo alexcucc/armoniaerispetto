@@ -80,6 +80,12 @@ if ($pdfExtension !== 'pdf') {
     exit();
 }
 
+$originalPdfName = basename($pdfName);
+if ($originalPdfName === '' || strtolower(pathinfo($originalPdfName, PATHINFO_EXTENSION)) !== 'pdf') {
+    header('Location: applications.php');
+    exit();
+}
+
 try {
     $pdo->beginTransaction();
     $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, status) VALUES (:call_id, :org_id, :sup_id, :name, "SUBMITTED")');
@@ -98,7 +104,7 @@ $applicationId = $pdo->lastInsertId();
         }
     }
 
-    $destinationPath = $destinationDir . '/domanda.pdf';
+    $destinationPath = $destinationDir . '/' . $originalPdfName;
 
     if (!move_uploaded_file($pdfTmpPath, $destinationPath)) {
         throw new RuntimeException('Unable to move uploaded file');

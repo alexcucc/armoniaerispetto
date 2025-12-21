@@ -24,7 +24,7 @@ if (!$id || !$supervisorIdInput || !$projectName) {
     exit();
 }
 
-$applicationStmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, checklist_path FROM application WHERE id = :id');
+$applicationStmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, checklist_path, application_pdf_path FROM application WHERE id = :id');
 $applicationStmt->execute([':id' => $id]);
 $existingApplication = $applicationStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -78,6 +78,7 @@ if ($pdfUploaded && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK) {
 
 $destinationPath = null;
 $pdfTmpPath = null;
+$existingPdfPath = $existingApplication['application_pdf_path'] ?? null;
 if ($pdfUploaded) {
     $pdfTmpPath = $_FILES['application_pdf']['tmp_name'];
     $pdfName = $_FILES['application_pdf']['name'];
@@ -88,8 +89,14 @@ if ($pdfUploaded) {
         exit();
     }
 
+    $originalPdfName = basename($pdfName);
+    if ($originalPdfName === '' || strtolower(pathinfo($originalPdfName, PATHINFO_EXTENSION)) !== 'pdf') {
+        header('Location: application_edit.php?id=' . urlencode($id));
+        exit();
+    }
+
     $destinationDir = 'private/documents/applications/' . $id;
-    $destinationPath = $destinationDir . '/domanda.pdf';
+    $destinationPath = $destinationDir . '/' . $originalPdfName;
 }
 
 try {
@@ -102,8 +109,12 @@ try {
             }
         }
 
-        if (file_exists($destinationPath) && !unlink($destinationPath)) {
-            throw new RuntimeException('Unable to replace existing PDF');
+        $destinationBasePath = realpath($destinationDir);
+        $existingPdfRealPath = $existingPdfPath ? realpath($existingPdfPath) : false;
+        if ($existingPdfRealPath && $destinationBasePath && strpos($existingPdfRealPath, $destinationBasePath) === 0) {
+            if (!unlink($existingPdfRealPath)) {
+                throw new RuntimeException('Unable to replace existing PDF');
+            }
         }
 
         if (!move_uploaded_file($pdfTmpPath, $destinationPath)) {

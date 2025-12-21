@@ -50,6 +50,10 @@ if ($currentSupervisorName === null) {
 
 $canChangeSupervisor = empty($application['checklist_path']);
 
+$currentPdfName = null;
+if (!empty($application['application_pdf_path'])) {
+    $currentPdfName = basename($application['application_pdf_path']);
+}
 
 $errorMessage = $_SESSION['error_message'] ?? null;
 $formData = $_SESSION['form_data'] ?? [];
@@ -120,7 +124,7 @@ if (!empty($formData)) {
                 <label class="form-label" for="current_application_pdf">PDF attuale della risposta al bando</label>
                 <?php if (!empty($application['application_pdf_path'])): ?>
                 <p id="current_application_pdf">
-                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>" target="_blank" rel="noopener">Scarica il PDF attuale</a>
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($currentPdfName ?? 'Scarica il PDF attuale'); ?></a>
                 </p>
                 <?php else: ?>
                 <p id="current_application_pdf">Nessun PDF caricato.</p>
