@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
     <?php include 'common-head.php';?>
     <title>Vincitori bando corrente</title>
   </head>
-  <body class="management-page">
+  <body class="management-page management-page--scroll">
     <?php include 'header.php';?>
     <main>
       <div class="hero">
@@ -30,11 +30,11 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
               <article>
                 <h3>1. Bambini nel deserto</h3>
                 <p>
-                  La scelta della ONG nei Paesi in cui opera è orientata alla tutela dell’ambiente. In Senegal, le attività includono<br>
-                  agroecologia, rimboschimento delle mangrovie e la ristrutturazione dell’eco-lodge di Keur Bamboung, quale<br>
-                  infrastruttura di supporto alla salvaguardia dell’Area Marina Protetta e risorsa di reddito per gli abitanti dei villaggi che<br>
+                  La scelta della ONG nei Paesi in cui opera è orientata alla tutela dell’ambiente.<br> In Senegal, le attività includono
+                  agroecologia, rimboschimento delle mangrovie e la ristrutturazione dell’eco-lodge di Keur Bamboung, quale
+                  infrastruttura di supporto alla salvaguardia dell’Area Marina Protetta e risorsa di reddito per gli abitanti dei villaggi che
                   ne hanno la gestione.<br>
-                  L’impegno comprende inoltre la promozione delle energie rinnovabili, il rafforzamento di una scuola di qualità e percorsi<br>
+                  L’impegno comprende inoltre la promozione delle energie rinnovabili, il rafforzamento di una scuola di qualità e percorsi
                   di formazione professionale e inserimento lavorativo dei giovani, tra cui la scuola dei meccanici in Burkina Faso
                 </p>
                 <div class="winners-gallery" aria-label="Immagini del progetto Bambini nel deserto">
@@ -59,17 +59,17 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
               <article>
                 <h3>2. Atena ODV</h3>
                 <p>
-                  Atena ODV, attraverso le attività del Centro di Recupero Animali Selvatici - CRAS di Rimini,<br>
-                  opera nelle province di Rimini e Forlì-Cesena e, in collaborazione con le istituzioni locali, anche<br>
-                  nella Repubblica di San Marino. Il Centro si impegna nella protezione, nel recupero, nella cura e<br>
-                  nella riabilitazione della fauna selvatica, fino alla reimmissione in natura, accogliendo ogni anno<br>
-                  oltre 4.500 esemplari, con particolare attenzione alle specie più vulnerabili e di interesse<br>
-                  conservazionistico. Al CRAS accedono ogni giorno decine di animali feriti o debilitati, spesso<br>
+                  Atena ODV, attraverso le attività del Centro di Recupero Animali Selvatici - CRAS di Rimini,
+                  opera nelle province di Rimini e Forlì-Cesena e, in collaborazione con le istituzioni locali, anche
+                  nella Repubblica di San Marino.<br> Il Centro si impegna nella protezione, nel recupero, nella cura e
+                  nella riabilitazione della fauna selvatica, fino alla reimmissione in natura, accogliendo ogni anno
+                  oltre 4.500 esemplari, con particolare attenzione alle specie più vulnerabili e di interesse
+                  conservazionistico.<br> Al CRAS accedono ogni giorno decine di animali feriti o debilitati, spesso
                   vittime di traumi e patologie legati a cambiamenti climatici e ambientali e alle attività antropiche.<br>
-                  Questo lavoro è reso possibile da una rete capillare di volontari, volontarie e cittadinanza attiva,<br>
-                  che operano in sinergia con veterinari esperti in fauna selvatica, in costante collaborazione con le<br>
-                  forze dell’ordine e grazie al sostegno decisivo di enti e istituzioni che scelgono di supportare il<br>
-                  CRAS, rafforzandone la capacità di intervento e contribuendo in modo concreto alla tutela di<br>
+                  Questo lavoro è reso possibile da una rete capillare di volontari, volontarie e cittadinanza attiva,
+                  che operano in sinergia con veterinari esperti in fauna selvatica, in costante collaborazione con le
+                  forze dell’ordine e grazie al sostegno decisivo di enti e istituzioni che scelgono di supportare il
+                  CRAS, rafforzandone la capacità di intervento e contribuendo in modo concreto alla tutela di
                   ecosistemi e biodiversità
                 </p>
                 <div class="winners-gallery" aria-label="Immagini del Centro di Recupero Animali Selvatici di Rimini">
@@ -106,18 +106,18 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
               <article>
                 <h3>3. Cras ODV</h3>
                 <p>
-                  Il centro di recupero animali selvatici di Cuneo è uno dei pochi centri in Italia<br>
-                  che si occupa indiscriminatamente di qualsiasi tipo di fauna autoctona e<br>
-                  esotica in difficoltà. Forniamo servizio di pronto soccorso 24 ore su 24.<br>
-                  Per questo disponiamo di una sala operatoria di primo soccorso e di una sala<br>
-                  per prima degenza. Il nostro scopo è quello di curare, guarire e reintrodurre gli<br>
-                  animali nel loro ambiente, quando possibile. Dopo le cure, il settore tutela<br>
-                  Flora e Fauna della provincia di Cuneo individua un luogo protetto e idoneo al<br>
-                  rilascio. Sono inoltre molti i progetti portati avanti dal nostro centro, con<br>
+                  Il centro di recupero animali selvatici di Cuneo è uno dei pochi centri in Italia
+                  che si occupa indiscriminatamente di qualsiasi tipo di fauna autoctona e
+                  esotica in difficoltà.<br> Forniamo servizio di pronto soccorso 24 ore su 24.
+                  Per questo disponiamo di una sala operatoria di primo soccorso e di una sala
+                  per prima degenza.<br> Il nostro scopo è quello di curare, guarire e reintrodurre gli
+                  animali nel loro ambiente, quando possibile.<br> Dopo le cure, il settore tutela
+                  Flora e Fauna della provincia di Cuneo individua un luogo protetto e idoneo al
+                  rilascio. Sono inoltre molti i progetti portati avanti dal nostro centro, con
                   programmi di reintroduzione di specie gravemente minacciate da estinzione.<br>
-                  Grazie al lavoro instancabile dei nostri volontari che ogni giorno si prendono<br>
-                  cura degli animali ospitati al centro, possiamo garantire a tutti i nostri ospiti<br>
-                  cure e assistenza, dalla pulizia delle gabbie all’alimentazione, ogni persona<br>
+                  Grazie al lavoro instancabile dei nostri volontari che ogni giorno si prendono
+                  cura degli animali ospitati al centro, possiamo garantire a tutti i nostri ospiti
+                  cure e assistenza, dalla pulizia delle gabbie all’alimentazione, ogni persona
                   rende possibile la sopravvivenza del centro e degli animali ospitati
                 </p>
                 <div class="winners-gallery" aria-label="Immagini del Centro di Recupero Animali Selvatici di Cuneo">
@@ -140,10 +140,6 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
                   <figure class="winners-gallery__item">
                     <img src="images/cras_tasso.jpg" alt="Tasso ospitato al centro di recupero." loading="lazy">
                     <figcaption>Accoglienza di un tasso.</figcaption>
-                  </figure>
-                  <figure class="winners-gallery__item">
-                    <img src="images/cras_cuore_sala_rx.jpg" alt="Tecnica veterinaria durante un esame radiografico su un cervo." loading="lazy">
-                    <figcaption>Diagnostica radiografica.</figcaption>
                   </figure>
                 </div>
               </article>

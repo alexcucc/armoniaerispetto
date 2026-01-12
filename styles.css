@@ -1190,6 +1190,20 @@ body.management-page .content {
   overflow: hidden;
 }
 
+body.management-page--scroll main {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+}
+
+body.management-page--scroll .hero,
+body.management-page--scroll .content-container,
+body.management-page--scroll .content {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+}
+
 body.management-page .users-table-container {
   display: flex;
   flex-direction: column;
