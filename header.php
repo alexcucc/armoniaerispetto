@@ -85,6 +85,7 @@
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['USER_LIST']
                         );
+                        $canViewWinners = $canUserList;
                         $canOrganizationList = isset($_SESSION['user_id']) && $rolePermissionManager->userHasPermission(
                             $_SESSION['user_id'],
                             RolePermissionManager::$PERMISSIONS['ORGANIZATION_LIST']
@@ -144,6 +145,9 @@
                                 <ul class="submenu">
                                     <?php if ($canUserList): ?>
                                         <li class="nav-item"><a class="nav-link" href="users.php">Utenti</a></li>
+                                    <?php endif; ?>
+                                    <?php if ($canViewWinners): ?>
+                                        <li class="nav-item"><a class="nav-link" href="call_for_proposal_winners.php">Vincitori bando</a></li>
                                     <?php endif; ?>
                                     <?php if ($canEvaluatorList): ?>
                                         <li class="nav-item"><a class="nav-link" href="evaluators.php">Valutatori</a></li>

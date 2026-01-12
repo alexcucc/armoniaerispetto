@@ -395,6 +395,31 @@ img {
     margin-right: -10%;
 }
 
+.winners-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.winners-gallery__item {
+  margin: 0;
+}
+
+.winners-gallery__item img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 0.5em;
+  display: block;
+}
+
+.winners-gallery__item figcaption {
+  margin-top: 0.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
 .desktop-only {
   display: block;
 }
