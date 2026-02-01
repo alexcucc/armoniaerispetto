@@ -113,7 +113,7 @@ function buildEvaluatorsSortLink(string $field, string $sortField, string $sortO
                                 <td><?php echo htmlspecialchars($evaluator['last_name'] . ' ' . $evaluator['first_name']); ?></td>
                                 <td><?php echo htmlspecialchars($evaluator['email']); ?></td>
                                 <td>
-                                    <div class="actions-cell">
+                                    <div class="actions-cell role-actions">
                                         <?php if ($canImpersonate): ?>
                                             <button
                                                 class="impersonate-btn"

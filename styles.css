@@ -947,6 +947,14 @@ ul.nav-links {
   justify-content: center;
 }
 
+.actions-cell.role-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, max-content));
+  column-gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
 .organization-actions {
   flex-wrap: nowrap;
 }

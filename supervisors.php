@@ -112,7 +112,7 @@ function buildSupervisorsSortLink(string $field, string $sortField, string $sort
                                 <td><?php echo htmlspecialchars($supervisor['last_name'] . ' ' . $supervisor['first_name']); ?></td>
                                 <td><?php echo htmlspecialchars($supervisor['email']); ?></td>
                                 <td>
-                                    <div class="actions-cell">
+                                    <div class="actions-cell role-actions">
                                         <?php if ($canImpersonate): ?>
                                             <button
                                                 class="impersonate-btn"
