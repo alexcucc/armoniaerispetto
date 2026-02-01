@@ -31,7 +31,7 @@ if ($applicationId === false) {
     $applicationId = null;
 }
 
-$allowedSortFields = ['call_title', 'organization_name', 'project_name', 'supervisor_name', 'status'];
+$allowedSortFields = ['call_title', 'organization_name', 'project_name', 'supervisor_name', 'status', 'application_created_at'];
 $allowedSortOrders = ['asc', 'desc'];
 $statusLabels = [
     'SUBMITTED' => 'In attesa',
@@ -131,7 +131,7 @@ if (!empty($whereClauses)) {
     $whereClause = 'WHERE ' . implode(' AND ', $whereClauses);
 }
 
-$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.application_pdf_path, a.rejection_reason FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
+$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.created_at AS application_created_at, a.application_pdf_path, a.rejection_reason FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
 $stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -289,7 +289,8 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     'organization_name' => 'Ente',
                                     'project_name' => 'Nome Progetto',
                                     'supervisor_name' => 'Convalidatore',
-                                    'status' => 'Stato'
+                                    'status' => 'Stato',
+                                    'application_created_at' => 'Inserito il'
                                 ];
                                 foreach ($columns as $field => $label) {
                                     $link = buildApplicationsSortLink($field, $sortField, $sortOrder, $currentFilters);
@@ -323,7 +324,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                         <tbody>
                             <?php if (empty($applications)): ?>
                                 <tr>
-                                    <td colspan="8">Nessuna risposta al bando trovata.</td>
+                                    <td colspan="9">Nessuna risposta al bando trovata.</td>
                                 </tr>
                             <?php else: ?>
                             <?php foreach ($applications as $app): ?>
@@ -339,8 +340,12 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     $isLocked = in_array($statusKey, ['APPROVED', 'FINAL_VALIDATION', 'REJECTED'], true);
                                     $canDeleteApplication = $statusKey === 'SUBMITTED';
                                     $rejectionReason = trim((string) ($app['rejection_reason'] ?? ''));
+                                    $createdAt = $app['application_created_at']
+                                        ? date('d/m/Y H:i', strtotime($app['application_created_at']))
+                                        : '-';
                                     ?>
                                     <td><?php echo htmlspecialchars($statusLabel); ?></td>
+                                    <td><?php echo htmlspecialchars($createdAt); ?></td>
                                     <td>
                                         <?php if ($statusKey === 'REJECTED'): ?>
                                             <?php if ($rejectionReason !== ''): ?>
