@@ -8,15 +8,16 @@ CREATE TABLE organization_type (
 ALTER TABLE organization ADD COLUMN type_id INT DEFAULT NULL;
 
 INSERT INTO organization_type (name)
-SELECT DISTINCT type FROM organization WHERE type IS NOT NULL AND type <> '';
+SELECT DISTINCT TRIM(type)
+FROM organization
+WHERE type IS NOT NULL AND TRIM(type) <> '';
 
 UPDATE organization o
 JOIN organization_type ot
-  ON ot.name COLLATE utf8mb4_unicode_ci = o.type COLLATE utf8mb4_unicode_ci
+  ON ot.name = TRIM(o.type)
 SET o.type_id = ot.id;
 
 ALTER TABLE organization
-    MODIFY type_id INT NOT NULL,
     ADD CONSTRAINT fk_organization_type FOREIGN KEY (type_id) REFERENCES organization_type(id);
 
 ALTER TABLE organization DROP COLUMN type;
