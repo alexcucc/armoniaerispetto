@@ -34,6 +34,13 @@ $projectNameValue = $formData['project_name'] ?? '';
 $orgStmt = $pdo->prepare('SELECT id, name FROM organization ORDER BY name');
 $orgStmt->execute();
 $organizations = $orgStmt->fetchAll(PDO::FETCH_ASSOC);
+$selectedOrganizationName = '';
+foreach ($organizations as $org) {
+    if ((int) $org['id'] === (int) $selectedOrganizationId) {
+        $selectedOrganizationName = $org['name'];
+        break;
+    }
+}
 
 // Load supervisors
 $supStmt = $pdo->prepare('SELECT s.id, u.first_name, u.last_name FROM supervisor s JOIN user u ON s.user_id = u.id ORDER BY u.first_name, u.last_name');
@@ -68,18 +75,20 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             </select>
           </div>
           <div class="form-group" style="position: relative;">
-            <label class="form-label required" for="organization_id">Ente</label>
-            <select
-              id="organization_id"
-              name="organization_id"
+            <label class="form-label required" for="organization_name">Ente</label>
+            <input
+              type="text"
+              id="organization_name"
               class="form-input"
+              name="organization_name"
+              list="organization-options"
+              value="<?php echo htmlspecialchars($selectedOrganizationName); ?>"
+              placeholder="Inizia a digitare il nome dell'ente"
+              autocomplete="off"
               required
             >
-              <option value="" disabled <?php echo $selectedOrganizationId ? '' : 'selected'; ?>></option>
-              <?php foreach ($organizations as $org): ?>
-              <option value="<?php echo $org['id']; ?>" <?php echo ((int) $selectedOrganizationId === (int) $org['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($org['name']); ?></option>
-              <?php endforeach; ?>
-            </select>
+            <input type="hidden" id="organization_id" name="organization_id" value="<?php echo htmlspecialchars($selectedOrganizationId); ?>">
+            <datalist id="organization-options"></datalist>
           </div>
           <div class="form-group">
             <label class="form-label required" for="supervisor_id">Convalidatore</label>
@@ -109,15 +118,16 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include 'footer.php'; ?>
     <script>
       (function() {
-        const organizationSelect = document.getElementById('organization_id');
+        const organizationInput = document.getElementById('organization_name');
+        const organizationIdInput = document.getElementById('organization_id');
         const callSelect = document.getElementById('call_id');
+        const organizationOptions = document.getElementById('organization-options');
         const duplicateWarning = document.getElementById('duplicate-warning');
         const submitButton = document.getElementById('application-submit');
         const form = document.querySelector('form.contact-form');
-        let typedSequence = '';
-        let typeaheadTimeout = null;
 
         let currentDuplicateCheckController = null;
+        const organizations = <?php echo json_encode($organizations, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 
         const clearDuplicateWarning = () => {
           duplicateWarning.style.display = 'none';
@@ -133,7 +143,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 
         const checkDuplicateApplication = async () => {
           const callId = callSelect.value;
-          const organizationId = organizationSelect.value;
+          const organizationId = organizationIdInput.value;
 
           if (!callId || !organizationId) {
             clearDuplicateWarning();
@@ -173,50 +183,56 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           }
         };
 
-        form.addEventListener('submit', (event) => {
-          if (!organizationSelect.value) {
-            event.preventDefault();
-            organizationSelect.reportValidity();
-          }
-        });
+        const renderOrganizationOptions = (searchValue) => {
+          const query = searchValue.trim().toLowerCase();
+          organizationOptions.innerHTML = '';
 
-        organizationSelect.addEventListener('change', () => {
+          organizations
+            .filter((org) => query.length === 0 || org.name.toLowerCase().includes(query))
+            .forEach((org) => {
+              const option = document.createElement('option');
+              option.value = org.name;
+              organizationOptions.appendChild(option);
+            });
+        };
+
+        const syncOrganizationId = (value) => {
+          const normalized = value.trim().toLowerCase();
+          const match = organizations.find((org) => org.name.toLowerCase() === normalized);
+          if (match) {
+            organizationIdInput.value = match.id;
+            organizationInput.setCustomValidity('');
+            checkDuplicateApplication();
+            return;
+          }
+
+          organizationIdInput.value = '';
           clearDuplicateWarning();
-          checkDuplicateApplication();
+        };
+
+        form.addEventListener('submit', (event) => {
+          if (!organizationIdInput.value) {
+            event.preventDefault();
+            organizationInput.setCustomValidity('Seleziona un ente valido dall’elenco.');
+            organizationInput.reportValidity();
+          }
         });
 
-        organizationSelect.addEventListener('keydown', (event) => {
-          const key = event.key;
-
-          if (key && key.length === 1 && /^[a-zA-Z0-9]$/.test(key)) {
-            typedSequence += key.toLowerCase();
-            if (typeaheadTimeout) {
-              clearTimeout(typeaheadTimeout);
-            }
-            typeaheadTimeout = setTimeout(() => {
-              typedSequence = '';
-            }, 600);
-
-            const availableOptions = Array.from(organizationSelect.options).filter((option) => !option.disabled && option.value !== '');
-            const matchingOption = availableOptions.find((option) =>
-              option.textContent.trim().toLowerCase().startsWith(typedSequence)
-            );
-
-            if (matchingOption) {
-              organizationSelect.value = matchingOption.value;
-              organizationSelect.dispatchEvent(new Event('change', { bubbles: true }));
-              event.preventDefault();
-            }
-          } else {
-            typedSequence = '';
-          }
+        organizationInput.addEventListener('input', (event) => {
+          const value = event.target.value;
+          organizationInput.setCustomValidity('');
+          renderOrganizationOptions(value);
+          syncOrganizationId(value);
         });
 
         callSelect.addEventListener('change', checkDuplicateApplication);
 
-        if (callSelect.value && organizationSelect.value) {
+        if (callSelect.value && organizationIdInput.value) {
           checkDuplicateApplication();
         }
+
+        renderOrganizationOptions(organizationInput.value);
+        syncOrganizationId(organizationInput.value);
 
       })();
     </script>

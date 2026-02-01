@@ -38,26 +38,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="submit" class="page-button">Aggiungi</button>
             </div>
             <div class="form-group" style="position: relative;">
-                <label class="form-label required" for="user-search">Utente</label>
+                <label class="form-label required" for="user_name">Utente</label>
                 <input
                     type="text"
-                    id="user-search"
+                    id="user_name"
                     class="form-input"
-                    name="user-search"
-                    placeholder="Filtra per nome o cognome"
-                    aria-label="Filtra e seleziona utenti per nome o cognome"
+                    name="user_name"
+                    list="user-options"
+                    placeholder="Inizia a digitare nome o cognome"
+                    aria-label="Seleziona un utente"
                     autocomplete="off"
                     required
                 >
-                <button type="button" id="user-dropdown-toggle" class="autocomplete-toggle" aria-label="Mostra tutti gli utenti disponibili">▼</button>
                 <input type="hidden" id="user_id" name="user_id">
-                <div id="user-suggestions" class="autocomplete-list" role="listbox"></div>
-                <datalist id="available-users">
-                    <?php foreach ($users as $user): ?>
-                        <?php $displayName = htmlspecialchars($user['last_name'] . ' ' . $user['first_name'] . ' (' . $user['email'] . ')'); ?>
-                        <option data-user-id="<?php echo $user['id']; ?>" value="<?php echo $displayName; ?>"></option>
-                    <?php endforeach; ?>
-                </datalist>
+                <datalist id="user-options"></datalist>
             </div>
         </form>
     </div>
@@ -65,134 +59,55 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include 'footer.php'; ?>
 <script>
     (function() {
-        const userInput = document.getElementById('user-search');
+        const userInput = document.getElementById('user_name');
         const userIdInput = document.getElementById('user_id');
-        const options = Array.from(document.querySelectorAll('#available-users option'));
+        const userOptions = document.getElementById('user-options');
         const form = document.querySelector('form.contact-form');
-        const suggestionBox = document.getElementById('user-suggestions');
-        const toggleButton = document.getElementById('user-dropdown-toggle');
-        const users = options.map((option) => ({
-            id: option.dataset.userId,
-            label: option.value,
-        }));
+        const users = <?php echo json_encode($users, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 
-        const ensureStyles = () => {
-            if (document.getElementById('autocomplete-styles')) return;
-            const style = document.createElement('style');
-            style.id = 'autocomplete-styles';
-            style.textContent = `
-                .autocomplete-list {
-                    border: 1px solid #ccc;
-                    border-top: none;
-                    max-height: 200px;
-                    overflow-y: auto;
-                    background: #fff;
-                    position: absolute;
-                    width: 100%;
-                    z-index: 2;
-                    display: none;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                    left: 0;
-                    top: calc(100% - 1px);
-                }
-                .autocomplete-item {
-                    padding: 8px 10px;
-                    cursor: pointer;
-                }
-                .autocomplete-item:hover,
-                .autocomplete-item:focus {
-                    background-color: #f0f0f0;
-                }
-                .autocomplete-toggle {
-                    position: absolute;
-                    right: 8px;
-                    top: 34px;
-                    background: transparent;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 0.9rem;
-                    padding: 4px;
-                    color: #555;
-                }
-                .form-group .form-input {
-                    padding-right: 32px;
-                }
-            `;
-            document.head.appendChild(style);
-        };
+        const getUserLabel = (user) => `${user.last_name} ${user.first_name} (${user.email})`;
 
-        let showAllOnEmpty = false;
+        const renderUserOptions = (searchValue) => {
+            const query = searchValue.trim().toLowerCase();
+            userOptions.innerHTML = '';
 
-        const selectUser = (user) => {
-            userInput.value = user.label;
-            userIdInput.value = user.id;
-            userInput.setCustomValidity('');
-            suggestionBox.style.display = 'none';
-            showAllOnEmpty = false;
-        };
-
-        const renderSuggestions = (forceShowAll = false) => {
-            const query = userInput.value.trim().toLowerCase();
-            const shouldShowAll = forceShowAll || showAllOnEmpty;
-            const filtered = query === ''
-                ? (shouldShowAll ? users : [])
-                : users.filter((user) => user.label.toLowerCase().includes(query));
-
-            suggestionBox.innerHTML = '';
-
-            filtered.forEach((user) => {
-                const item = document.createElement('div');
-                item.className = 'autocomplete-item';
-                item.textContent = user.label;
-                item.tabIndex = 0;
-                item.setAttribute('role', 'option');
-                item.addEventListener('mousedown', (event) => {
-                    event.preventDefault();
-                    selectUser(user);
+            users
+                .filter((user) => query.length === 0 || getUserLabel(user).toLowerCase().includes(query))
+                .forEach((user) => {
+                    const option = document.createElement('option');
+                    option.value = getUserLabel(user);
+                    userOptions.appendChild(option);
                 });
-                suggestionBox.appendChild(item);
-            });
+        };
 
-            suggestionBox.style.display = filtered.length ? 'block' : 'none';
+        const syncUserId = (value) => {
+            const normalized = value.trim().toLowerCase();
+            const match = users.find((user) => getUserLabel(user).toLowerCase() === normalized);
+            if (match) {
+                userIdInput.value = match.id;
+                userInput.setCustomValidity('');
+                return;
+            }
+
+            userIdInput.value = '';
         };
 
         form.addEventListener('submit', (event) => {
             if (!userIdInput.value) {
                 event.preventDefault();
+                userInput.setCustomValidity('Seleziona un utente valido dall’elenco.');
                 userInput.reportValidity();
             }
         });
 
-        userInput.addEventListener('input', () => {
-            userIdInput.value = '';
-            userInput.setCustomValidity('Seleziona un utente dalla lista.');
-            showAllOnEmpty = false;
-            renderSuggestions();
+        userInput.addEventListener('input', (event) => {
+            const value = event.target.value;
+            userInput.setCustomValidity('');
+            renderUserOptions(value);
+            syncUserId(value);
         });
 
-        userInput.addEventListener('focus', () => renderSuggestions());
-
-        userInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                suggestionBox.style.display = 'none';
-                showAllOnEmpty = false;
-            }, 150);
-        });
-
-        toggleButton.addEventListener('click', () => {
-            const isOpen = suggestionBox.style.display === 'block';
-            if (isOpen) {
-                suggestionBox.style.display = 'none';
-                showAllOnEmpty = false;
-                return;
-            }
-
-            showAllOnEmpty = true;
-            renderSuggestions(true);
-            userInput.focus();
-        });
-
-        ensureStyles();
+        renderUserOptions('');
     })();
 </script>
 </body>

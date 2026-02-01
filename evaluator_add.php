@@ -37,21 +37,21 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="submit" class="page-button">Aggiungi</button>
             </div>
             <div class="form-group" style="position: relative;">
-                <label class="form-label required" for="user-search">Utente</label>
-                <select
-                    id="user-search"
+                <label class="form-label required" for="user_name">Utente</label>
+                <input
+                    type="text"
+                    id="user_name"
                     class="form-input"
-                    name="user_id"
+                    name="user_name"
+                    list="user-options"
+                    placeholder="Inizia a digitare nome o cognome"
                     aria-label="Seleziona un utente"
+                    autocomplete="off"
                     autofocus
                     required
                 >
-                    <option value="" disabled selected hidden>Seleziona un utente</option>
-                    <?php foreach ($users as $user): ?>
-                        <?php $displayName = htmlspecialchars($user['last_name'] . ' ' . $user['first_name'] . ' (' . $user['email'] . ')'); ?>
-                        <option value="<?php echo $user['id']; ?>"><?php echo $displayName; ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <input type="hidden" id="user_id" name="user_id">
+                <datalist id="user-options"></datalist>
             </div>
         </form>
     </div>
@@ -59,20 +59,55 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include 'footer.php'; ?>
 <script>
     (function() {
-        const select = document.getElementById('user-search');
-        const options = Array.from(select.options).filter((option) => option.value);
+        const userInput = document.getElementById('user_name');
+        const userIdInput = document.getElementById('user_id');
+        const userOptions = document.getElementById('user-options');
+        const form = document.querySelector('form.contact-form');
+        const users = <?php echo json_encode($users, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
 
-        select.addEventListener('keydown', (event) => {
-            if (event.key.length !== 1) return;
+        const getUserLabel = (user) => `${user.last_name} ${user.first_name} (${user.email})`;
 
-            const typed = event.key.toLowerCase();
-            const match = options.find((option) => option.text.toLowerCase().startsWith(typed));
+        const renderUserOptions = (searchValue) => {
+            const query = searchValue.trim().toLowerCase();
+            userOptions.innerHTML = '';
 
+            users
+                .filter((user) => query.length === 0 || getUserLabel(user).toLowerCase().includes(query))
+                .forEach((user) => {
+                    const option = document.createElement('option');
+                    option.value = getUserLabel(user);
+                    userOptions.appendChild(option);
+                });
+        };
+
+        const syncUserId = (value) => {
+            const normalized = value.trim().toLowerCase();
+            const match = users.find((user) => getUserLabel(user).toLowerCase() === normalized);
             if (match) {
+                userIdInput.value = match.id;
+                userInput.setCustomValidity('');
+                return;
+            }
+
+            userIdInput.value = '';
+        };
+
+        form.addEventListener('submit', (event) => {
+            if (!userIdInput.value) {
                 event.preventDefault();
-                select.value = match.value;
+                userInput.setCustomValidity('Seleziona un utente valido dall’elenco.');
+                userInput.reportValidity();
             }
         });
+
+        userInput.addEventListener('input', (event) => {
+            const value = event.target.value;
+            userInput.setCustomValidity('');
+            renderUserOptions(value);
+            syncUserId(value);
+        });
+
+        renderUserOptions('');
     })();
 </script>
 </body>
