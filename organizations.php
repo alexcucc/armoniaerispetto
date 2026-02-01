@@ -123,7 +123,7 @@ function buildOrganizationsSortLink(string $field, string $sortField, string $so
                                 <td><?php echo htmlspecialchars($org['incorporation_year']); ?></td>
                                 <td><?php echo htmlspecialchars($org['location']); ?></td>
                                 <td>
-                                    <div class="actions-cell organization-actions">
+                                    <div class="actions-cell role-actions">
                                         <?php if ($canSeeApplications): ?>
                                             <button class="view-btn" onclick="window.location.href='applications.php?organization_id=<?php echo $org['id']; ?>'">
                                                 <i class="fas fa-eye"></i> Risposte ai bandi

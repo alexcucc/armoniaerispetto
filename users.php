@@ -98,7 +98,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </td>
                                     <td><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></td>
                                     <td>
-                                        <div class="actions-cell">
+                                        <div class="actions-cell role-actions">
                                             <button class="delete-btn" data-id="<?php echo $user['id']; ?>">
                                                 <i class="fas fa-trash"></i> Elimina
                                             </button>

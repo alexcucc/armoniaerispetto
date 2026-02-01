@@ -66,7 +66,7 @@ $organizationTypes = $typesStmt->fetchAll(PDO::FETCH_ASSOC);
                                 <tr>
                                     <td><?php echo htmlspecialchars($type['name']); ?></td>
                                     <td>
-                                        <div class="actions-cell organization-actions">
+                                        <div class="actions-cell role-actions">
                                             <a class="page-button" href="organization_type_edit.php?id=<?php echo (int) $type['id']; ?>" style="padding: 10px 16px;">Modifica</a>
                                             <form class="inline-form delete-type-form" action="organization_type_save.php" method="POST" style="display:inline-block;">
                                                 <input type="hidden" name="action" value="delete">

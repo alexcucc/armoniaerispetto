@@ -109,7 +109,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                     <td>
-                                        <div class="actions-cell">
+                                        <div class="actions-cell role-actions">
                                             <?php if ($canViewResults): ?>
                                                 <a class="page-button" href="call_for_proposal_results.php?id=<?php echo $cfp['id']; ?>">Graduatoria</a>
                                             <?php endif; ?>

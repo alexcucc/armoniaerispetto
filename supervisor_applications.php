@@ -243,7 +243,7 @@ if ($supervisorId) {
                                                 <?php endif; ?>
                                             </td>
                                         <td>
-                                            <div class="actions-cell">
+                                            <div class="actions-cell role-actions">
                                                 <?php if ($isClosed): ?>
                                                     <span class="text-muted">Bando chiuso</span>
                                                 <?php elseif ($canEdit): ?>
