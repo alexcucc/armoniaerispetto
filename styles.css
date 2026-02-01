@@ -975,6 +975,7 @@ ul.nav-links {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  animation: impersonation-blink 1.2s ease-in-out infinite;
 }
 
 .impersonation-bar__indicator {
@@ -986,19 +987,31 @@ ul.nav-links {
 }
 
 .impersonation-bar__action {
-  color: #644800;
+  color: #ffffff;
+  background-color: #d62828;
   text-decoration: none;
   font-weight: 700;
   padding: 0.2rem 0.55rem;
-  border: 1px solid #e9c872;
+  border: 1px solid #b01f1f;
   border-radius: 999px;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .impersonation-bar__action:hover,
 .impersonation-bar__action:focus-visible {
-  background-color: #ffefc8;
-  border-color: #d8ad3d;
+  background-color: #b71c1c;
+  border-color: #8f1515;
+  color: #ffffff;
+}
+
+@keyframes impersonation-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
 
 .filter-info {
