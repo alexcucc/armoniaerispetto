@@ -220,7 +220,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                         . '</th>';
                                 }
                                 ?>
-                                <th>Motivazione</th>
+                                <th>Motivo</th>
                             </tr>
                         </thead>
                         <tbody>

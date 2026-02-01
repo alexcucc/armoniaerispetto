@@ -312,7 +312,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                                         . '</th>';
                                 }
                                 ?>
-                                <th>Motivazione</th>
+                                <th>Motivo</th>
                                 <th>Domanda</th>
                                 <?php
                                 ?>

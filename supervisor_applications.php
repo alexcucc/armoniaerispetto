@@ -192,7 +192,7 @@ if ($supervisorId) {
                                 <th>Ente</th>
                                 <th>Nome Progetto</th>
                                 <th>Stato</th>
-                                <th>Motivazione</th>
+                                <th>Motivo</th>
                                 <th>Azioni</th>
                             </tr>
                         </thead>
