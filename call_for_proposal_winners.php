@@ -2,13 +2,6 @@
 session_start();
 
 require_once 'db/common-db.php';
-require_once 'RolePermissionManager.php';
-$rolePermissionManager = new RolePermissionManager($pdo);
-
-if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['USER_LIST'])) {
-    header('Location: login.php');
-    exit();
-}
 ?>
 <!DOCTYPE html>
 <html lang="it">
