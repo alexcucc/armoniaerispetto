@@ -343,7 +343,7 @@ usort($evaluations, function (array $a, array $b) {
                               href="applications.php?application_id=<?php echo $row['application_id']; ?>"
                               target="_blank"
                               rel="noopener noreferrer"
-                            >Apri risposta</a>
+                            >Apri domanda</a>
                           </div>
                         </td>
                         <td>
