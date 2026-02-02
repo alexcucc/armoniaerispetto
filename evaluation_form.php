@@ -237,7 +237,17 @@
           if ($sectionData) {
               foreach ($definition['fields'] as $fieldName) {
                   if (array_key_exists($fieldName, $sectionData)) {
-                      $evaluationData[$sectionKey][$fieldName] = (int) $sectionData[$fieldName];
+                      $rawValue = $sectionData[$fieldName];
+                      if ($rawValue === null) {
+                          continue;
+                      }
+
+                      $score = (int) $rawValue;
+                      if ($score < 1) {
+                          continue;
+                      }
+
+                      $evaluationData[$sectionKey][$fieldName] = $score;
                   }
               }
           }
