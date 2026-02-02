@@ -555,6 +555,12 @@
       .criteria-info-text ul {
         margin: 0.3rem 0 0.2rem 1.2rem;
       }
+
+      .evaluation-step h3:focus {
+        outline: 2px solid #0ea5e9;
+        outline-offset: 3px;
+        border-radius: 0.25rem;
+      }
     </style>
   </head>
   <body>
@@ -1210,6 +1216,7 @@
         const totalScoreElement = document.getElementById('total-score-value');
         const sectionScoreElement = document.getElementById('section-score-value');
         const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
+        const evaluationContent = document.querySelector('.evaluation-content');
         const nextStepButton = document.getElementById('next-step-button');
         const previousStepButton = document.getElementById('previous-step-button');
         const backLink = document.querySelector('.evaluation-actions__back-link');
@@ -1441,13 +1448,51 @@
             return;
           }
 
+          const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+          if (evaluationContent && evaluationContent.scrollHeight > evaluationContent.clientHeight) {
+            const containerRect = evaluationContent.getBoundingClientRect();
+            const stepRect = stepElement.getBoundingClientRect();
+            const topPosition = (stepRect.top - containerRect.top) + evaluationContent.scrollTop;
+            const top = Math.max(0, topPosition);
+
+            if (typeof evaluationContent.scrollTo === 'function') {
+              evaluationContent.scrollTo({ top, behavior });
+            } else {
+              evaluationContent.scrollTop = top;
+            }
+
+            return;
+          }
+
           const offset = 90;
           const topPosition = stepElement.getBoundingClientRect().top + window.scrollY - offset;
 
           window.scrollTo({
             top: topPosition < 0 ? 0 : topPosition,
-            behavior: 'smooth'
+            behavior
           });
+        };
+
+        const focusStepHeading = (stepElement) => {
+          if (!stepElement) {
+            return;
+          }
+
+          const heading = stepElement.querySelector('h3');
+          if (!heading) {
+            return;
+          }
+
+          if (!heading.hasAttribute('tabindex')) {
+            heading.setAttribute('tabindex', '-1');
+          }
+
+          try {
+            heading.focus({ preventScroll: true });
+          } catch (error) {
+            heading.focus();
+          }
         };
 
         const updateNavigationState = () => {
@@ -1491,7 +1536,9 @@
           calculateSectionScore();
 
           if (forceScroll) {
-            scrollToStep(stepElements[activeStepIndex]);
+            const activeStepElement = stepElements[activeStepIndex];
+            focusStepHeading(activeStepElement);
+            scrollToStep(activeStepElement);
           }
         };
 
