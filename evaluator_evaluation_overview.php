@@ -74,10 +74,10 @@ $completedQuery = "SELECT e.id AS evaluation_id, c.title AS call_title, o.name A
     . "JOIN user su ON s.user_id = su.id"
     . $completedFilterClause;
 
-$pendingQuery = "SELECT a.id AS application_id, c.title AS call_title, o.name AS organization_name, "
+$pendingQuery = "SELECT e.id AS evaluation_id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
     . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
-    . "COALESCE(e.status, 'NOT_STARTED') AS status, a.updated_at "
+    . "COALESCE(e.status, 'NOT_STARTED') AS status, COALESCE(e.updated_at, a.updated_at) AS updated_at "
     . "FROM evaluator ev "
     . "JOIN user u ON ev.user_id = u.id "
     . "JOIN application a ON a.status = 'FINAL_VALIDATION' "
@@ -166,6 +166,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
         </div>
         <div class="content-container">
             <div class="content">
+                <div id="message" class="message" style="display: none;"></div>
                 <div class="button-container">
                     <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
@@ -249,16 +250,21 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                         . '</th>';
                                 }
                                 ?>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($evaluations)): ?>
                                 <tr>
-                                    <td colspan="6">Nessuna valutazione trovata.</td>
+                                    <td colspan="7">Nessuna valutazione trovata.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($evaluations as $evaluation): ?>
-                                    <?php $formattedDate = $evaluation['updated_at'] ? date('d/m/Y H:i', strtotime($evaluation['updated_at'])) : '-'; ?>
+                                    <?php
+                                        $formattedDate = $evaluation['updated_at'] ? date('d/m/Y H:i', strtotime($evaluation['updated_at'])) : '-';
+                                        $evaluationId = isset($evaluation['evaluation_id']) ? (int) $evaluation['evaluation_id'] : 0;
+                                        $canDelete = $evaluationId > 0;
+                                    ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($evaluation['call_title']); ?></td>
                                         <td><?php echo htmlspecialchars($evaluation['organization_name']); ?></td>
@@ -266,6 +272,21 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                         <td><?php echo htmlspecialchars($evaluation['supervisor_name']); ?></td>
                                         <td><?php echo htmlspecialchars($statusLabels[$evaluation['status']] ?? $evaluation['status']); ?></td>
                                         <td><?php echo htmlspecialchars($formattedDate); ?></td>
+                                        <td>
+                                            <div class="actions-cell">
+                                                <?php if ($canDelete): ?>
+                                                    <button
+                                                        type="button"
+                                                        class="delete-btn delete-evaluation-btn"
+                                                        data-id="<?php echo $evaluationId; ?>"
+                                                    >
+                                                        <i class="fas fa-trash"></i> Elimina
+                                                    </button>
+                                                <?php else: ?>
+                                                    <span class="text-muted">-</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -277,5 +298,44 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
     </div>
 </main>
 <?php include 'footer.php'; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-evaluation-btn');
+        const messageDiv = document.getElementById('message');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                if (!confirm('Sei sicuro di voler eliminare questa valutazione?')) {
+                    return;
+                }
+
+                const evaluationId = this.dataset.id;
+                try {
+                    const response = await fetch('evaluation_delete.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: evaluationId })
+                    });
+
+                    const data = await response.json();
+
+                    messageDiv.textContent = data.message || 'Operazione completata.';
+                    messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
+                    messageDiv.style.display = 'block';
+
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    messageDiv.textContent = "Si è verificato un errore durante l'eliminazione.";
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

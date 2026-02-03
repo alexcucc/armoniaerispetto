@@ -59,7 +59,8 @@ if (!empty($filters)) {
 }
 
 $applicationsQuery = "SELECT a.id, c.title AS call_title, o.name AS organization_name, "
-    . "CONCAT(u.last_name, ' ', u.first_name) AS supervisor_name, a.status, a.updated_at, a.rejection_reason "
+    . "CONCAT(u.last_name, ' ', u.first_name) AS supervisor_name, a.status, a.updated_at, a.rejection_reason, "
+    . "(SELECT COUNT(*) FROM evaluation e WHERE e.application_id = a.id) AS evaluation_count "
     . "FROM application a "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
     . "JOIN organization o ON a.organization_id = o.id "
@@ -139,6 +140,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
         </div>
         <div class="content-container">
             <div class="content">
+                <div id="message" class="message" style="display: none;"></div>
                 <div class="button-container">
                     <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
@@ -221,12 +223,13 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                 }
                                 ?>
                                 <th>Motivo</th>
+                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($applications)): ?>
                                 <tr>
-                                    <td colspan="6">Nessuna risposta al bando trovata.</td>
+                                    <td colspan="7">Nessuna risposta al bando trovata.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($applications as $application): ?>
@@ -234,6 +237,9 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                         $statusKey = strtoupper((string) $application['status']);
                                         $statusLabel = $statusLabels[$statusKey] ?? $statusKey;
                                         $rejectionReason = trim((string) ($application['rejection_reason'] ?? ''));
+                                        $evaluationCount = (int) ($application['evaluation_count'] ?? 0);
+                                        $hasEvaluations = $evaluationCount > 0;
+                                        $canDeleteValidation = in_array($statusKey, ['APPROVED', 'REJECTED', 'FINAL_VALIDATION'], true);
                                         $formattedDate = $application['updated_at']
                                             ? date('d/m/Y H:i', strtotime($application['updated_at']))
                                             : '-';
@@ -269,6 +275,23 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                                 <span class="text-muted">-</span>
                                             <?php endif; ?>
                                         </td>
+                                        <td>
+                                            <div class="actions-cell">
+                                                <?php if ($canDeleteValidation && !$hasEvaluations): ?>
+                                                    <button
+                                                        type="button"
+                                                        class="delete-btn delete-validation-btn"
+                                                        data-id="<?php echo (int) $application['id']; ?>"
+                                                    >
+                                                        <i class="fas fa-trash"></i> Annulla convalida
+                                                    </button>
+                                                <?php elseif ($canDeleteValidation && $hasEvaluations): ?>
+                                                    <span class="text-muted" title="Valutazioni già compilate">Valutazioni presenti</span>
+                                                <?php else: ?>
+                                                    <span class="text-muted">-</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -280,5 +303,44 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
     </div>
 </main>
 <?php include 'footer.php'; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-validation-btn');
+        const messageDiv = document.getElementById('message');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                if (!confirm('Sei sicuro di voler annullare questa convalida? La risposta al bando tornerà allo stato precedente.')) {
+                    return;
+                }
+
+                const appId = this.dataset.id;
+                try {
+                    const response = await fetch('supervisor_validation_delete.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: appId })
+                    });
+
+                    const data = await response.json();
+
+                    messageDiv.textContent = data.message || 'Operazione completata.';
+                    messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
+                    messageDiv.style.display = 'block';
+
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    messageDiv.textContent = "Si è verificato un errore durante l'annullamento della convalida.";
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
