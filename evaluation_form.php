@@ -1505,13 +1505,49 @@
           }
         };
 
+        const getStepScoreInputs = (stepElement) => {
+          if (!stepElement) {
+            return [];
+          }
+
+          return Array.from(stepElement.querySelectorAll('input.score-input'));
+        };
+
+        const isScoreValueValid = (input) => {
+          if (!input) {
+            return true;
+          }
+
+          const rawValue = (input.value || '').trim();
+          if (rawValue === '') {
+            return false;
+          }
+
+          const numericValue = Number(rawValue);
+          return Number.isFinite(numericValue)
+            && Number.isInteger(numericValue)
+            && numericValue >= 1
+            && numericValue <= 10;
+        };
+
+        const isStepComplete = (stepElement) => {
+          const inputs = getStepScoreInputs(stepElement);
+          if (inputs.length === 0) {
+            return true;
+          }
+
+          return inputs.every((input) => isScoreValueValid(input));
+        };
+
         const updateNavigationState = () => {
           if (!nextStepButton || !previousStepButton || stepElements.length === 0) {
             return;
           }
 
           previousStepButton.disabled = activeStepIndex <= 0;
-          nextStepButton.disabled = activeStepIndex >= stepElements.length - 1;
+          const isLastStep = activeStepIndex >= stepElements.length - 1;
+          const currentStep = stepElements[activeStepIndex] || null;
+          nextStepButton.disabled = isLastStep || !isStepComplete(currentStep);
         };
 
         const isStepValid = (stepElement) => {
@@ -1519,12 +1555,21 @@
             return true;
           }
 
-          const inputs = Array.from(stepElement.querySelectorAll('input'));
+          const inputs = getStepScoreInputs(stepElement);
           for (const input of inputs) {
-            if (!input.checkValidity()) {
-              input.reportValidity();
-              return false;
+            if (isScoreValueValid(input)) {
+              input.setCustomValidity('');
+              continue;
             }
+
+            const message = (input.value || '').trim() === ''
+              ? 'Compila tutti i punteggi della sezione per continuare.'
+              : 'Inserisci un punteggio valido (1-10) per continuare.';
+
+            input.setCustomValidity(message);
+            input.reportValidity();
+            input.setCustomValidity('');
+            return false;
           }
 
           return true;
@@ -1595,6 +1640,7 @@
               enforceInputBounds(input);
               calculateTotalScore();
               calculateSectionScore();
+              updateNavigationState();
             });
 
             enforceInputBounds(input);
