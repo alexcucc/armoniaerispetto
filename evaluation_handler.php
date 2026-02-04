@@ -304,12 +304,12 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
         }
 
         $score = (int) $rawValue;
-        if ($score < 1 || $score > 10) {
+        if ($score < 0 || $score > 10) {
             if ($isSubmitAction) {
                 sendResponseAndExit(
                     $isAjaxRequest,
                     false,
-                    'I punteggi devono essere compresi tra 1 e 10 per la sezione "' . $definition['label'] . '".'
+                    'I punteggi devono essere compresi tra 0 e 10 per la sezione "' . $definition['label'] . '".'
                 );
             }
 

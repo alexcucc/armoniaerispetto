@@ -237,7 +237,7 @@
                       }
 
                       $score = (int) $rawValue;
-                      if ($score < 1) {
+                      if ($score < 0) {
                           continue;
                       }
 
@@ -278,7 +278,7 @@
           $valueAttr = ' value="' . (int) $selected . '"';
       }
 
-      echo '<input type="number" class="score-input" id="' . $inputIdAttr . '" name="' . $sanitizedName . '" aria-label="' . $ariaLabelAttr . '" min="1" max="10" step="1"' . $valueAttr . '>';
+      echo '<input type="number" class="score-input" id="' . $inputIdAttr . '" name="' . $sanitizedName . '" aria-label="' . $ariaLabelAttr . '" min="0" max="10" step="1"' . $valueAttr . '>';
   }
 
   function renderWeightBadge(?int $weight): void
@@ -634,7 +634,7 @@
           <div class="evaluation-header">
             <div>
               <h2>Valutazione <?php echo htmlspecialchars($entity_name); ?></h2>
-              <p class="form-note">Tutte le valutazioni utilizzano una scala da 1 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
+              <p class="form-note">Tutte le valutazioni utilizzano una scala da 0 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
             </div>
             <div class="evaluation-status-panel evaluation-status-panel--<?php echo htmlspecialchars($displayStatusClass); ?>">
               <span class="evaluation-status-panel__label">Stato valutazione</span>
@@ -665,9 +665,9 @@
             <label class="form-label required">Esperienza <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'experience_score'); ?></label>
             <?php renderScoreInput('proposing_entity[experience_score]', 'Esperienza', $evaluationData['proposing_entity']['experience_score']); ?>
             <small class="form-text">
-              <p class="form-note">Utilizza la scala 1-10 considerando questi riferimenti:</p>
+              <p class="form-note">Utilizza la scala 0-10 considerando questi riferimenti:</p>
               <ul>
-                <li><strong>1-3:</strong> Enti di recente costituzione con struttura in fase di sviluppo e scarsa esperienza gestionale.</li>
+                <li><strong>0-3:</strong> Enti di recente costituzione con struttura in fase di sviluppo e scarsa esperienza gestionale.</li>
                 <li><strong>4-6:</strong> Organizzazioni consolidate con prime esperienze significative e crescente riconoscibilità.</li>
                 <li><strong>7-8:</strong> Enti con solida esperienza, struttura organizzativa definita e collaborazioni stabili.</li>
                 <li><strong>9-10:</strong> Lunga tradizione, ampia rete di collaborazioni e forte riconoscimento istituzionale e sociale.</li>
@@ -1327,7 +1327,7 @@
             return null;
           }
 
-          return Math.min(Math.max(value, 1), 10);
+          return Math.min(Math.max(value, 0), 10);
         };
 
         const enforceInputBounds = (input) => {
@@ -1658,7 +1658,7 @@
           const numericValue = Number(rawValue);
           return Number.isFinite(numericValue)
             && Number.isInteger(numericValue)
-            && numericValue >= 1
+            && numericValue >= 0
             && numericValue <= 10;
         };
 
@@ -1704,7 +1704,7 @@
 
             const message = (input.value || '').trim() === ''
               ? 'Compila tutti i punteggi della sezione per continuare.'
-              : 'Inserisci un punteggio valido (1-10) per continuare.';
+              : 'Inserisci un punteggio valido (0-10) per continuare.';
 
             input.setCustomValidity(message);
             input.reportValidity();
