@@ -86,6 +86,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.page-button.back-button').forEach((button) => {
     button.addEventListener('click', (event) => {
+      const explicitTarget = button.dataset.backTarget;
+      const href = button.getAttribute('href');
+      const target = explicitTarget || href;
+
+      if (target && target !== '#') {
+        event.preventDefault();
+        window.location.href = target;
+        return;
+      }
+
       event.preventDefault();
       window.location.href = 'index.php?open_gestione=1';
     });
