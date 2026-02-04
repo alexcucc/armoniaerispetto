@@ -33,6 +33,18 @@ try {
         exit();
     }
 
+    $applicationStmt = $pdo->prepare("SELECT 1 FROM application WHERE supervisor_id = ? LIMIT 1");
+    $applicationStmt->execute([$supervisorId]);
+
+    if ($applicationStmt->fetchColumn()) {
+        $pdo->rollBack();
+        echo json_encode([
+            'success' => false,
+            'message' => 'Impossibile eliminare il convalidatore perché sono presenti risposte al bando associate.'
+        ]);
+        exit();
+    }
+
     $stmt = $pdo->prepare("DELETE FROM supervisor WHERE id = ?");
     $stmt->execute([$supervisorId]);
 

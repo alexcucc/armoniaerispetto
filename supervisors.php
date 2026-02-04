@@ -35,10 +35,19 @@ switch ($sortField) {
 }
 
 $stmt = $pdo->prepare(
-    "SELECT s.id, u.id AS user_id, u.first_name, u.last_name, u.email " .
-    "FROM supervisor s " .
-    "JOIN user u ON s.user_id = u.id " .
-    "ORDER BY $orderByClause"
+    "SELECT s.id,
+            u.id AS user_id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            (
+                SELECT COUNT(*)
+                FROM application a
+                WHERE a.supervisor_id = s.id
+            ) AS application_count
+     FROM supervisor s
+     JOIN user u ON s.user_id = u.id
+     ORDER BY $orderByClause"
 );
 $stmt->execute();
 $supervisors = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -122,7 +131,7 @@ function buildSupervisorsSortLink(string $field, string $sortField, string $sort
                                                 <i class="fas fa-user-secret"></i> Assumi ruolo
                                             </button>
                                         <?php endif; ?>
-                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['SUPERVISOR_DELETE'])): ?>
+                                        <?php if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['SUPERVISOR_DELETE']) && (int) $supervisor['application_count'] === 0): ?>
                                             <button class="delete-btn" data-id="<?php echo $supervisor['id']; ?>">
                                                 <i class="fas fa-trash"></i> Elimina
                                             </button>
