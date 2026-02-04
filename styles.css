@@ -1851,3 +1851,86 @@ p {
 .status-closed {
     color: #dc3545;
 }
+
+.evaluation-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.22rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    border: 1px solid transparent;
+    background: #f1f5f9;
+    color: #0f172a;
+    white-space: nowrap;
+}
+
+.evaluation-status-badge::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: currentColor;
+    flex: 0 0 auto;
+}
+
+.evaluation-status-badge--submitted {
+    background: #dcfce7;
+    color: #166534;
+    border-color: #86efac;
+}
+
+.evaluation-status-badge--draft {
+    background: #fff7ed;
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+
+.evaluation-status-badge--pending {
+    background: #e0f2fe;
+    color: #0369a1;
+    border-color: #bae6fd;
+}
+
+.evaluation-status-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-left: 4px solid #94a3b8;
+    min-width: 220px;
+}
+
+.evaluation-status-panel__label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.evaluation-status-panel__note {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.evaluation-status-panel--submitted {
+    border-left-color: #22c55e;
+    background: #f0fdf4;
+}
+
+.evaluation-status-panel--draft {
+    border-left-color: #fb923c;
+    background: #fff7ed;
+}
+
+.evaluation-status-panel--pending {
+    border-left-color: #38bdf8;
+    background: #f0f9ff;
+}

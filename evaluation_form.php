@@ -254,6 +254,23 @@
       }
   }
 
+  $evaluationStatusLabels = [
+      'SUBMITTED' => 'Inviata',
+      'DRAFT' => 'Bozza',
+      'PENDING' => 'Da iniziare',
+  ];
+  $evaluationStatusNotes = [
+      'DRAFT' => 'Bozza salvata: puoi continuare a modificare e inviare quando vuoi.',
+      'PENDING' => 'Valutazione non ancora iniziata: compila i punteggi e salva la bozza.',
+  ];
+  $displayStatusKey = $existingEvaluationId !== null ? ($existingEvaluationStatus ?? 'DRAFT') : 'PENDING';
+  if (!isset($evaluationStatusLabels[$displayStatusKey])) {
+      $displayStatusKey = 'PENDING';
+  }
+  $displayStatusLabel = $evaluationStatusLabels[$displayStatusKey] ?? $displayStatusKey;
+  $displayStatusNote = $evaluationStatusNotes[$displayStatusKey] ?? 'Compila la valutazione e salva la bozza prima di inviarla.';
+  $displayStatusClass = strtolower($displayStatusKey);
+
   function renderScoreInput(string $name, string $ariaLabel, ?int $selected = null): void
   {
       $sanitizedName = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
@@ -566,6 +583,20 @@
         margin: 0.3rem 0 0.2rem 1.2rem;
       }
 
+      .thematic-max-note {
+        margin: 0.35rem 0 0.75rem;
+        padding: 0.2rem 0.6rem;
+        background: #fff7ed;
+        border: 1px dashed #fed7aa;
+        color: #9a3412;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
       .evaluation-step h3:focus {
         outline: 2px solid #0ea5e9;
         outline-offset: 3px;
@@ -589,9 +620,13 @@
             <div>
               <h2>Valutazione <?php echo htmlspecialchars($entity_name); ?></h2>
               <p class="form-note">Tutte le valutazioni utilizzano una scala da 1 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
-              <?php if ($existingEvaluationId !== null): ?>
-                <p class="form-note"><strong>Stato corrente:</strong> bozza modificabile.</p>
-              <?php endif; ?>
+            </div>
+            <div class="evaluation-status-panel evaluation-status-panel--<?php echo htmlspecialchars($displayStatusClass); ?>">
+              <span class="evaluation-status-panel__label">Stato valutazione</span>
+              <span class="evaluation-status-badge evaluation-status-badge--<?php echo htmlspecialchars($displayStatusClass); ?>">
+                <?php echo htmlspecialchars($displayStatusLabel); ?>
+              </span>
+              <p class="evaluation-status-panel__note"><?php echo htmlspecialchars($displayStatusNote); ?></p>
             </div>
           </div>
 
@@ -928,6 +963,7 @@
 
           <div class="evaluation-step" data-step-index="4">
             <h3>Criteri Tematici - Ripopolamento <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_repopulation'); ?></h3>
+            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
           <div class="form-group">
             <label class="form-label required">Habitat dell'intervento</label>
             <?php renderScoreInput('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
@@ -969,6 +1005,7 @@
 
           <div class="evaluation-step" data-step-index="5">
             <h3>Criteri Tematici - Salvaguardia <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_safeguard'); ?></h3>
+            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
             <div class="form-group">
               <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
               <?php renderScoreInput('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
@@ -1036,6 +1073,7 @@
 
           <div class="evaluation-step" data-step-index="6">
             <h3>Criteri Tematici - Coabitazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_cohabitation'); ?></h3>
+            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
             <div class="form-group">
               <label class="form-label required">Strategia di riduzione dei rischi</label>
               <?php renderScoreInput('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
@@ -1084,6 +1122,7 @@
           </div>
           <div class="evaluation-step" data-step-index="7">
             <h3>Criteri Tematici - Supporto di comunità <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_community_support'); ?></h3>
+            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
             <div class="form-group">
               <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
               <?php renderScoreInput('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
@@ -1132,6 +1171,7 @@
           </div>
           <div class="evaluation-step" data-step-index="8">
             <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_culture_education'); ?></h3>
+            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
             <div class="form-group">
               <label class="form-label required">Strumenti di disseminazione</label>
               <?php renderScoreInput('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>

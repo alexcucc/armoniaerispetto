@@ -326,6 +326,10 @@ usort($evaluations, function (array $a, array $b) {
                       <?php
                         $statusKey = $row['status'];
                         $statusLabel = $statusLabels[$statusKey] ?? $statusKey;
+                        $statusClass = 'evaluation-status-badge';
+                        if (in_array($statusKey, ['SUBMITTED', 'DRAFT', 'PENDING'], true)) {
+                            $statusClass .= ' evaluation-status-badge--' . strtolower($statusKey);
+                        }
                         $dateLabel = $row['reference_date'] ?? '';
                         $isDraft = $statusKey === 'DRAFT';
                         $isPending = $statusKey === 'PENDING';
@@ -334,7 +338,11 @@ usort($evaluations, function (array $a, array $b) {
                       <tr>
                         <td><?php echo htmlspecialchars($row['call_title']); ?></td>
                         <td><?php echo htmlspecialchars($row['ente']); ?></td>
-                        <td><?php echo htmlspecialchars($statusLabel); ?></td>
+                        <td>
+                          <span class="<?php echo htmlspecialchars($statusClass); ?>">
+                            <?php echo htmlspecialchars($statusLabel); ?>
+                          </span>
+                        </td>
                         <td><?php echo htmlspecialchars($dateLabel); ?></td>
                         <td>
                           <div class="actions-cell">
