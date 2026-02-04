@@ -6,11 +6,22 @@ require_once 'db/common-db.php';
 require_once 'RolePermissionManager.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
-if (!isset($_SESSION['user_id']) ||
-    !$rolePermissionManager->userHasPermission(
-        $_SESSION['user_id'],
+$userId = $_SESSION['user_id'] ?? null;
+$isMonitor = false;
+$isSupervisor = false;
+
+if ($userId !== null) {
+    $isMonitor = $rolePermissionManager->userHasPermission(
+        $userId,
         RolePermissionManager::$PERMISSIONS['SUPERVISOR_MONITOR']
-    )) {
+    );
+    $isSupervisor = $rolePermissionManager->userHasPermission(
+        $userId,
+        RolePermissionManager::$PERMISSIONS['APPLICATION_REVIEW']
+    );
+}
+
+if (!$userId || (!$isMonitor && !$isSupervisor)) {
     echo json_encode(['success' => false, 'message' => 'Accesso non autorizzato.']);
     exit();
 }
@@ -28,10 +39,22 @@ $applicationId = (int) $applicationId;
 try {
     $pdo->beginTransaction();
 
-    $applicationStmt = $pdo->prepare(
-        'SELECT status, checklist_path FROM application WHERE id = :id FOR UPDATE'
-    );
-    $applicationStmt->execute([':id' => $applicationId]);
+    if ($isMonitor) {
+        $applicationStmt = $pdo->prepare(
+            'SELECT status, checklist_path FROM application WHERE id = :id FOR UPDATE'
+        );
+        $applicationStmt->execute([':id' => $applicationId]);
+    } else {
+        $applicationStmt = $pdo->prepare(
+            'SELECT a.status, a.checklist_path FROM application a '
+            . 'JOIN supervisor s ON a.supervisor_id = s.id '
+            . 'WHERE a.id = :id AND s.user_id = :user_id FOR UPDATE'
+        );
+        $applicationStmt->execute([
+            ':id' => $applicationId,
+            ':user_id' => $userId
+        ]);
+    }
     $application = $applicationStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$application) {
@@ -41,7 +64,20 @@ try {
     }
 
     $status = strtoupper((string) ($application['status'] ?? ''));
-    if (!in_array($status, ['APPROVED', 'REJECTED', 'FINAL_VALIDATION'], true)) {
+    if (!$isMonitor && $status === 'FINAL_VALIDATION') {
+        $pdo->rollBack();
+        echo json_encode([
+            'success' => false,
+            'message' => 'Impossibile annullare la convalida: è già definitiva.'
+        ]);
+        exit();
+    }
+
+    $allowedStatuses = $isMonitor
+        ? ['APPROVED', 'REJECTED', 'FINAL_VALIDATION']
+        : ['APPROVED', 'REJECTED'];
+
+    if (!in_array($status, $allowedStatuses, true)) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Non è presente una convalida da annullare.']);
         exit();

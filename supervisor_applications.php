@@ -124,6 +124,7 @@ if ($supervisorId) {
                 <div class="button-container">
                     <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
+                <div id="message" class="message" style="display: none;"></div>
                 <form method="get" class="filters-form">
                     <div class="form-group">
                         <select id="call_id" name="call_id" class="form-input">
@@ -211,6 +212,7 @@ if ($supervisorId) {
                                         $isFinal = $statusKey === 'FINAL_VALIDATION';
                                         $isClosed = ($app['call_status'] ?? null) === 'CLOSED';
                                         $canEdit = !$isFinal && !$isClosed;
+                                        $canDeleteValidation = !$isClosed && in_array($statusKey, ['APPROVED', 'REJECTED'], true);
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($app['call_title']); ?></td>
@@ -246,10 +248,23 @@ if ($supervisorId) {
                                             <div class="actions-cell role-actions">
                                                 <?php if ($isClosed): ?>
                                                     <span class="text-muted">Bando chiuso</span>
-                                                <?php elseif ($canEdit): ?>
-                                                    <a class="page-button<?php echo $statusKey === 'SUBMITTED' ? '' : ' secondary-button'; ?>" href="application_review.php?application_id=<?php echo $app['id']; ?>">
-                                                        <?php echo $statusKey === 'SUBMITTED' ? 'Convalida' : 'Modifica'; ?>
-                                                    </a>
+                                                <?php else: ?>
+                                                    <?php if ($canEdit): ?>
+                                                        <a class="page-button<?php echo $statusKey === 'SUBMITTED' ? '' : ' secondary-button'; ?>" href="application_review.php?application_id=<?php echo $app['id']; ?>">
+                                                            <?php echo $statusKey === 'SUBMITTED' ? 'Convalida' : 'Modifica'; ?>
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <?php if ($canDeleteValidation): ?>
+                                                        <button
+                                                            type="button"
+                                                            class="delete-btn delete-validation-btn"
+                                                            data-id="<?php echo (int) $app['id']; ?>"
+                                                        >
+                                                            <i class="fas fa-trash"></i> Annulla convalida
+                                                        </button>
+                                                    <?php elseif (!$canEdit): ?>
+                                                        <span class="text-muted">-</span>
+                                                    <?php endif; ?>
                                                 <?php endif; ?>
                                             </div>
                                         </td>
@@ -264,5 +279,48 @@ if ($supervisorId) {
     </div>
 </main>
 <?php include 'footer.php'; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-validation-btn');
+        const messageDiv = document.getElementById('message');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                if (!confirm('Sei sicuro di voler annullare questa convalida? La risposta al bando tornerà allo stato precedente.')) {
+                    return;
+                }
+
+                const appId = this.dataset.id;
+                try {
+                    const response = await fetch('supervisor_validation_delete.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: appId })
+                    });
+
+                    const data = await response.json();
+
+                    if (messageDiv) {
+                        messageDiv.textContent = data.message || 'Operazione completata.';
+                        messageDiv.className = 'message ' + (data.success ? 'success' : 'error');
+                        messageDiv.style.display = 'block';
+                    }
+
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    if (messageDiv) {
+                        messageDiv.textContent = "Si è verificato un errore durante l'annullamento della convalida.";
+                        messageDiv.className = 'message error';
+                        messageDiv.style.display = 'block';
+                    }
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
