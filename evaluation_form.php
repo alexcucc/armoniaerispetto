@@ -223,12 +223,6 @@
       $existingEvaluationId = (int) $existingEvaluation['id'];
       $existingEvaluationStatus = $existingEvaluation['status'];
 
-      if ($existingEvaluationStatus === 'SUBMITTED') {
-          $_SESSION['evaluation_error'] = 'La valutazione è già stata inviata e non può essere modificata.';
-          header('Location: evaluations.php');
-          exit;
-      }
-
       foreach ($sectionDefinitions as $sectionKey => $definition) {
           $columns = implode(', ', $definition['fields']);
           $sectionStmt = $pdo->prepare("SELECT {$columns} FROM {$definition['table']} WHERE evaluation_id = :evaluation_id LIMIT 1");
@@ -260,6 +254,7 @@
       'PENDING' => 'Da iniziare',
   ];
   $evaluationStatusNotes = [
+      'SUBMITTED' => 'Valutazione inviata: puoi modificarla e reinviarla se necessario.',
       'DRAFT' => 'Bozza salvata: puoi continuare a modificare e inviare quando vuoi.',
       'PENDING' => 'Valutazione non ancora iniziata: compila i punteggi e salva la bozza.',
   ];
@@ -1303,6 +1298,7 @@
           'thematic_community_support',
           'thematic_culture_education',
         ];
+        const incompleteMessage = 'valutazione incompleta: valutazione non inviabile';
         let activeStepIndex = 0;
         let hasUnsavedChanges = false;
 
@@ -1666,6 +1662,14 @@
             && numericValue <= 10;
         };
 
+        const isScoreMissing = (input) => {
+          if (!input) {
+            return false;
+          }
+
+          return (input.value || '').trim() === '';
+        };
+
         const isStepComplete = (stepElement) => {
           const inputs = getStepScoreInputs(stepElement);
           if (inputs.length === 0) {
@@ -1803,6 +1807,15 @@
           }
 
           event.preventDefault();
+
+          const hasMissingScores = stepElements.some((step) => {
+            const inputs = getStepScoreInputs(step);
+            return inputs.some((input) => isScoreMissing(input));
+          });
+          if (hasMissingScores) {
+            alert(incompleteMessage);
+            return;
+          }
 
           const formData = new FormData(form);
           if (submitter && submitter.name) {

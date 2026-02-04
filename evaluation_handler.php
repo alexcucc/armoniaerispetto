@@ -118,10 +118,6 @@ if ($existingEvaluation !== null) {
     if ($providedEvaluationId !== null && $providedEvaluationId !== (int) $existingEvaluation['id']) {
         sendResponseAndExit($isAjaxRequest, false, 'Identificativo valutazione non valido.');
     }
-
-    if ($existingEvaluation['status'] === 'SUBMITTED') {
-        sendResponseAndExit($isAjaxRequest, false, 'La valutazione è già stata inviata e non può essere modificata.');
-    }
 } elseif ($providedEvaluationId !== null) {
     sendResponseAndExit($isAjaxRequest, false, 'Identificativo valutazione non valido.');
 }
@@ -239,6 +235,8 @@ $sectionDefinitions = [
     ],
 ];
 
+$incompleteMessage = 'valutazione incompleta: valutazione non inviabile';
+
 $sumNullable = static function (array $values): ?int {
     $filtered = array_filter($values, static fn ($value) => $value !== null);
     if ($filtered === []) {
@@ -256,7 +254,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
             sendResponseAndExit(
                 $isAjaxRequest,
                 false,
-                'Compilare tutti i punteggi per la sezione "' . $definition['label'] . '".'
+                $incompleteMessage
             );
         }
 
@@ -270,7 +268,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
                 sendResponseAndExit(
                     $isAjaxRequest,
                     false,
-                    'Compilare tutti i punteggi per la sezione "' . $definition['label'] . '".'
+                    $incompleteMessage
                 );
             }
 
@@ -284,7 +282,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
                 sendResponseAndExit(
                     $isAjaxRequest,
                     false,
-                    'Compilare tutti i punteggi per la sezione "' . $definition['label'] . '".'
+                    $incompleteMessage
                 );
             }
 

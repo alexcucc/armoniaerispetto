@@ -332,6 +332,7 @@ usort($evaluations, function (array $a, array $b) {
                         }
                         $dateLabel = $row['reference_date'] ?? '';
                         $isDraft = $statusKey === 'DRAFT';
+                        $isSubmitted = $statusKey === 'SUBMITTED';
                         $isPending = $statusKey === 'PENDING';
                         $hasChecklist = !empty($row['checklist_path']);
                       ?>
@@ -370,12 +371,19 @@ usort($evaluations, function (array $a, array $b) {
                         </td>
                         <td>
                           <div class="actions-cell">
-                            <?php if ($isDraft): ?>
-                              <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Continua</a>
-                            <?php elseif ($isPending): ?>
+                            <?php if ($isPending): ?>
                               <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Inizia valutazione</a>
                             <?php else: ?>
-                              <span class="text-muted">-</span>
+                              <?php if ($isDraft): ?>
+                                <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Continua</a>
+                              <?php elseif ($isSubmitted): ?>
+                                <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Modifica</a>
+                              <?php else: ?>
+                                <span class="text-muted">-</span>
+                              <?php endif; ?>
+                              <?php if ($isDraft || $isSubmitted): ?>
+                                <a class="page-button secondary-button" href="evaluation_summary.php?application_id=<?php echo $row['application_id']; ?>">Sintesi</a>
+                              <?php endif; ?>
                             <?php endif; ?>
                           </div>
                         </td>
