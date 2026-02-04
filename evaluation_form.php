@@ -298,7 +298,12 @@
   function renderCriterionWeightBadge(array $weights, string $sectionKey, string $fieldName): void
   {
       $weight = $weights[$sectionKey][$fieldName] ?? null;
+      if ($weight === null) {
+          return;
+      }
+
       renderWeightBadge($weight);
+      echo '<span class="criteria-weighted-score" aria-live="polite">Voto pesato: 0</span>';
   }
 
   function renderSectionWeightBadge(array $sectionWeights, string $sectionKey): void
@@ -521,6 +526,19 @@
         border: 1px solid #bae6fd;
       }
 
+      .criteria-weighted-score {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.5rem;
+        margin-left: 0.35rem;
+        border-radius: 9999px;
+        background: #fef3c7;
+        color: #b45309;
+        font-weight: 700;
+        font-size: 0.78rem;
+        border: 1px solid #fde68a;
+      }
+
       .section-weight-badge {
         margin-left: 0.6rem;
       }
@@ -543,9 +561,11 @@
       }
 
       .criteria-row__weight {
-        flex: 0 0 110px;
+        flex: 0 0 220px;
         display: flex;
         align-items: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
       }
 
       .criteria-label {
@@ -1357,6 +1377,75 @@
           return match ? match[1] : null;
         };
 
+        const extractSectionName = (inputName) => {
+          if (typeof inputName !== 'string') {
+            return null;
+          }
+
+          const match = inputName.match(/^([^\[]+)\[/);
+          return match ? match[1] : null;
+        };
+
+        const getCriterionWeight = (input) => {
+          if (!input) {
+            return null;
+          }
+
+          const sectionKey = extractSectionName(input.name);
+          const fieldName = extractFieldName(input.name);
+          if (!sectionKey || !fieldName) {
+            return null;
+          }
+
+          const sectionWeights = criterionWeights[sectionKey];
+          if (!sectionWeights) {
+            return null;
+          }
+
+          const weight = sectionWeights[fieldName];
+          return Number.isFinite(weight) ? weight : null;
+        };
+
+        const calculateWeightedCriterionScore = (input) => {
+          const weight = getCriterionWeight(input);
+          if (weight === null) {
+            return null;
+          }
+
+          const value = clampScore(Number.parseInt(input.value, 10));
+          if (value === null) {
+            return 0;
+          }
+
+          const scoreScale = 10;
+          return (value * weight) / scoreScale;
+        };
+
+        const updateCriterionWeightedScore = (input) => {
+          if (!input) {
+            return;
+          }
+
+          const group = input.closest('.form-group');
+          if (!group) {
+            return;
+          }
+
+          const weightedScoreBadge = group.querySelector('.criteria-weighted-score');
+          if (!weightedScoreBadge) {
+            return;
+          }
+
+          const weightedScore = calculateWeightedCriterionScore(input);
+          const displayValue = weightedScore === null ? '0' : formatScore(weightedScore);
+          weightedScoreBadge.textContent = `Voto pesato: ${displayValue}`;
+        };
+
+        const updateAllCriterionWeightedScores = () => {
+          const scoreInputs = form ? form.querySelectorAll('input.score-input') : [];
+          scoreInputs.forEach((input) => updateCriterionWeightedScore(input));
+        };
+
         const calculateWeightedSectionScore = (sectionIndex) => {
           const sectionElement = stepElements[sectionIndex];
 
@@ -1425,6 +1514,7 @@
             const input = group.querySelector(':scope > input.score-input');
             const description = group.querySelector(':scope > small');
             const weightBadge = label ? label.querySelector('.criteria-weight-badge') : null;
+            const weightedScoreBadge = label ? label.querySelector('.criteria-weighted-score') : null;
 
             if (!label || !input) {
               return;
@@ -1439,6 +1529,9 @@
             if (weightBadge) {
               weightBadge.remove();
             }
+            if (weightedScoreBadge) {
+              weightedScoreBadge.remove();
+            }
             labelWrapper.appendChild(label);
 
             const inputWrapper = document.createElement('div');
@@ -1449,6 +1542,9 @@
             weightWrapper.className = 'criteria-row__weight';
             if (weightBadge) {
               weightWrapper.appendChild(weightBadge);
+            }
+            if (weightedScoreBadge) {
+              weightWrapper.appendChild(weightedScoreBadge);
             }
 
             row.appendChild(labelWrapper);
@@ -1661,6 +1757,7 @@
         }
 
         transformCriteriaLayout();
+        updateAllCriterionWeightedScores();
 
         if (stepElements.length > 0) {
           setActiveStep(0, { forceScroll: false });
@@ -1681,9 +1778,11 @@
               calculateTotalScore();
               calculateSectionScore();
               updateNavigationState();
+              updateCriterionWeightedScore(input);
             });
 
             enforceInputBounds(input);
+            updateCriterionWeightedScore(input);
           });
 
           calculateTotalScore();
