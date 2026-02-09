@@ -1585,33 +1585,19 @@
           });
         };
 
-        const scrollToStep = (stepElement) => {
-          if (!stepElement) {
-            return;
-          }
-
+        const scrollToPageTop = () => {
           const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 
-          if (evaluationContent && evaluationContent.scrollHeight > evaluationContent.clientHeight) {
-            const containerRect = evaluationContent.getBoundingClientRect();
-            const stepRect = stepElement.getBoundingClientRect();
-            const topPosition = (stepRect.top - containerRect.top) + evaluationContent.scrollTop;
-            const top = Math.max(0, topPosition);
-
+          if (evaluationContent) {
             if (typeof evaluationContent.scrollTo === 'function') {
-              evaluationContent.scrollTo({ top, behavior });
+              evaluationContent.scrollTo({ top: 0, behavior });
             } else {
-              evaluationContent.scrollTop = top;
+              evaluationContent.scrollTop = 0;
             }
-
-            return;
           }
 
-          const offset = 90;
-          const topPosition = stepElement.getBoundingClientRect().top + window.scrollY - offset;
-
           window.scrollTo({
-            top: topPosition < 0 ? 0 : topPosition,
+            top: 0,
             behavior
           });
         };
@@ -1733,7 +1719,7 @@
           if (forceScroll) {
             const activeStepElement = stepElements[activeStepIndex];
             focusStepHeading(activeStepElement);
-            scrollToStep(activeStepElement);
+            scrollToPageTop();
           }
         };
 
