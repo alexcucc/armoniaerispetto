@@ -71,8 +71,18 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             const query = searchValue.trim().toLowerCase();
             userOptions.innerHTML = '';
 
+            const matchesQuery = (user) => {
+                if (query.length === 0) {
+                    return true;
+                }
+
+                return user.last_name.toLowerCase().startsWith(query)
+                    || user.first_name.toLowerCase().startsWith(query)
+                    || user.email.toLowerCase().startsWith(query);
+            };
+
             users
-                .filter((user) => query.length === 0 || getUserLabel(user).toLowerCase().includes(query))
+                .filter(matchesQuery)
                 .forEach((user) => {
                     const option = document.createElement('option');
                     option.value = getUserLabel(user);

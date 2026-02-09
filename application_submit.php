@@ -188,7 +188,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           organizationOptions.innerHTML = '';
 
           organizations
-            .filter((org) => query.length === 0 || org.name.toLowerCase().includes(query))
+            .filter((org) => query.length === 0 || org.name.toLowerCase().startsWith(query))
             .forEach((org) => {
               const option = document.createElement('option');
               option.value = org.name;
