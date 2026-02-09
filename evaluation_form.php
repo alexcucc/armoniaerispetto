@@ -152,6 +152,11 @@
       ],
   ];
 
+  $sectionMaxScores = [];
+  foreach ($sectionDefinitions as $sectionKey => $definition) {
+      $sectionMaxScores[$sectionKey] = count($definition['fields']) * 10;
+  }
+
   // Pesature allineate al calcolo complessivo in call_for_proposal_results.php
   $criterionWeights = [
       'proposing_entity' => [
@@ -309,6 +314,16 @@
       }
 
       echo '<span class="section-weight-badge">Peso sezione: ' . (int) $weight . '</span>';
+  }
+
+  function renderSectionMaxNote(array $sectionMaxScores, string $sectionKey): void
+  {
+      $maxScore = $sectionMaxScores[$sectionKey] ?? null;
+      if ($maxScore === null) {
+          return;
+      }
+
+      echo '<p class="section-max-note">Punteggio massimo sezione: <strong>' . (int) $maxScore . '</strong></p>';
   }
   ?>
 <!DOCTYPE html>
@@ -598,7 +613,7 @@
         margin: 0.3rem 0 0.2rem 1.2rem;
       }
 
-      .thematic-max-note {
+      .section-max-note {
         margin: 0.35rem 0 0.75rem;
         padding: 0.2rem 0.6rem;
         background: #fff7ed;
@@ -649,6 +664,7 @@
             <div class="evaluation-content">
           <div class="evaluation-step active" data-step-index="0">
             <h3>Soggetto Proponente</h3>
+            <?php renderSectionMaxNote($sectionMaxScores, 'proposing_entity'); ?>
           <div class="form-group">
             <label class="form-label required">Informazioni Generali <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'general_information_score'); ?></label>
             <?php renderScoreInput('proposing_entity[general_information_score]', 'Informazioni Generali', $evaluationData['proposing_entity']['general_information_score']); ?>
@@ -740,6 +756,7 @@
 
           <div class="evaluation-step" data-step-index="1">
             <h3>Progetto</h3>
+            <?php renderSectionMaxNote($sectionMaxScores, 'project'); ?>
           <div class="form-group">
             <label class="form-label required">Identificazione dei bisogni e analisi dei problemi <?php renderCriterionWeightBadge($criterionWeights, 'project', 'needs_identification_and_problem_analysis_score'); ?></label>
             <?php renderScoreInput('project[needs_identification_and_problem_analysis_score]', 'Identificazione dei bisogni e analisi dei problemi', $evaluationData['project']['needs_identification_and_problem_analysis_score']); ?>
@@ -852,6 +869,7 @@
 
           <div class="evaluation-step" data-step-index="2">
             <h3>Piano Finanziario</h3>
+            <?php renderSectionMaxNote($sectionMaxScores, 'financial_plan'); ?>
           <div class="form-group">
             <label class="form-label required">Completezza e chiarezza del budget <?php renderCriterionWeightBadge($criterionWeights, 'financial_plan', 'completeness_and_clarity_of_budget_score'); ?></label>
             <?php renderScoreInput('financial_plan[completeness_and_clarity_of_budget_score]', 'Completezza e chiarezza del budget', $evaluationData['financial_plan']['completeness_and_clarity_of_budget_score']); ?>
@@ -895,6 +913,7 @@
 
           <div class="evaluation-step" data-step-index="3">
             <h3>Elementi Qualitativi</h3>
+            <?php renderSectionMaxNote($sectionMaxScores, 'qualitative_elements'); ?>
           <div class="form-group">
             <label class="form-label required">L'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'impact_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[impact_score]', 'L\'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento', $evaluationData['qualitative_elements']['impact_score']); ?>
@@ -978,7 +997,7 @@
 
           <div class="evaluation-step" data-step-index="4">
             <h3>Criteri Tematici - Ripopolamento <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_repopulation'); ?></h3>
-            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
+            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_repopulation'); ?>
           <div class="form-group">
             <label class="form-label required">Habitat dell'intervento</label>
             <?php renderScoreInput('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
@@ -1020,7 +1039,7 @@
 
           <div class="evaluation-step" data-step-index="5">
             <h3>Criteri Tematici - Salvaguardia <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_safeguard'); ?></h3>
-            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
+            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_safeguard'); ?>
             <div class="form-group">
               <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
               <?php renderScoreInput('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
@@ -1088,7 +1107,7 @@
 
           <div class="evaluation-step" data-step-index="6">
             <h3>Criteri Tematici - Coabitazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_cohabitation'); ?></h3>
-            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
+            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_cohabitation'); ?>
             <div class="form-group">
               <label class="form-label required">Strategia di riduzione dei rischi</label>
               <?php renderScoreInput('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
@@ -1137,7 +1156,7 @@
           </div>
           <div class="evaluation-step" data-step-index="7">
             <h3>Criteri Tematici - Supporto di comunità <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_community_support'); ?></h3>
-            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
+            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_community_support'); ?>
             <div class="form-group">
               <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
               <?php renderScoreInput('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
@@ -1186,7 +1205,7 @@
           </div>
           <div class="evaluation-step" data-step-index="8">
             <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_culture_education'); ?></h3>
-            <p class="thematic-max-note">Punteggio massimo complessivo Criteri Tematici: <strong>70</strong></p>
+            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_culture_education'); ?>
             <div class="form-group">
               <label class="form-label required">Strumenti di disseminazione</label>
               <?php renderScoreInput('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
