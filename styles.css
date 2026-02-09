@@ -1003,6 +1003,7 @@ ul.nav-links {
   border: 1px solid #b01f1f;
   border-radius: 999px;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  animation: impersonation-blink 1.2s ease-in-out infinite;
 }
 
 .impersonation-bar__action:hover,
