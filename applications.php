@@ -131,7 +131,7 @@ if (!empty($whereClauses)) {
     $whereClause = 'WHERE ' . implode(' AND ', $whereClauses);
 }
 
-$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.created_at AS application_created_at, a.application_pdf_path, a.rejection_reason FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
+$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.created_at AS application_created_at, a.application_pdf_path, a.budget_pdf_path, a.rejection_reason FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
 $stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -314,7 +314,7 @@ $resetUrl = 'applications.php?' . http_build_query([
                                 }
                                 ?>
                                 <th>Motivo</th>
-                                <th>Documento</th>
+                                <th>Documenti</th>
                                 <?php
                                 ?>
                                 <th>Azioni</th>
@@ -373,10 +373,17 @@ $resetUrl = 'applications.php?' . http_build_query([
                                     </td>
                                     <td>
                                         <div class="actions-cell">
-                                            <?php if (!empty($app['application_pdf_path'])): ?>
+                                            <?php if (!empty($app['application_pdf_path']) || !empty($app['budget_pdf_path'])): ?>
+                                                <?php if (!empty($app['application_pdf_path'])): ?>
                                                 <button class="download-btn" onclick="window.location.href='application_download.php?id=<?php echo $app['id']; ?>'">
-                                                    <i class="fas fa-file-download"></i> Scarica
+                                                    <i class="fas fa-file-download"></i> Risposta
                                                 </button>
+                                                <?php endif; ?>
+                                                <?php if (!empty($app['budget_pdf_path'])): ?>
+                                                <button class="download-btn" onclick="window.location.href='application_download.php?id=<?php echo $app['id']; ?>&type=budget'">
+                                                    <i class="fas fa-file-download"></i> Budget
+                                                </button>
+                                                <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="text-muted">Non disponibile</span>
                                             <?php endif; ?>

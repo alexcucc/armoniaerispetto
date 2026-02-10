@@ -16,16 +16,23 @@ if (!$id) {
     exit();
 }
 
-$stmt = $pdo->prepare('SELECT application_pdf_path FROM application WHERE id = :id');
+$downloadType = strtolower((string) ($_GET['type'] ?? 'application'));
+if (!in_array($downloadType, ['application', 'budget'], true)) {
+    http_response_code(404);
+    exit();
+}
+
+$column = $downloadType === 'budget' ? 'budget_pdf_path' : 'application_pdf_path';
+$stmt = $pdo->prepare("SELECT $column AS file_path FROM application WHERE id = :id");
 $stmt->execute([':id' => $id]);
 $application = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$application || empty($application['application_pdf_path'])) {
+if (!$application || empty($application['file_path'])) {
     http_response_code(404);
     exit();
 }
 
 $baseDir = realpath('private/documents/applications');
-$filePath = $application['application_pdf_path'];
+$filePath = $application['file_path'];
 $realPath = realpath($filePath);
 
 if (!$realPath || !$baseDir || strpos($realPath, $baseDir) !== 0 || !is_file($realPath)) {

@@ -59,33 +59,58 @@ if ($duplicateCheckStmt->fetchColumn() > 0) {
     exit();
 }
 
-$pdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
+function validateUploadedPdf(array $file): array
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Invalid uploaded file');
+    }
 
-if (!$pdfUploaded) {
+    $tmpPath = $file['tmp_name'] ?? '';
+    $originalName = basename((string) ($file['name'] ?? ''));
+    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+    if ($tmpPath === '' || $originalName === '' || $extension !== 'pdf') {
+        throw new RuntimeException('Invalid PDF file');
+    }
+
+    return [
+        'tmp_path' => $tmpPath,
+        'original_name' => $originalName
+    ];
+}
+
+function buildUploadDestinationPath(string $destinationDir, string $label, string $originalName): string
+{
+    $fileNameWithoutExtension = preg_replace('/[^A-Za-z0-9._-]+/', '_', (string) pathinfo($originalName, PATHINFO_FILENAME));
+    if ($fileNameWithoutExtension === null || $fileNameWithoutExtension === '') {
+        $fileNameWithoutExtension = 'documento';
+    }
+
+    return $destinationDir . '/' . $label . '_' . $fileNameWithoutExtension . '.pdf';
+}
+
+$applicationPdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
+$budgetPdfUploaded = isset($_FILES['budget_pdf']) && $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
+
+if (!$applicationPdfUploaded || !$budgetPdfUploaded) {
     header('Location: applications.php');
     exit();
 }
 
-if ($_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK) {
+if ($_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK || $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_OK) {
     header('Location: applications.php');
     exit();
 }
 
-$pdfTmpPath = $_FILES['application_pdf']['tmp_name'];
-$pdfName = $_FILES['application_pdf']['name'];
-$pdfExtension = strtolower(pathinfo($pdfName, PATHINFO_EXTENSION));
-
-if ($pdfExtension !== 'pdf') {
+try {
+    $applicationPdf = validateUploadedPdf($_FILES['application_pdf']);
+    $budgetPdf = validateUploadedPdf($_FILES['budget_pdf']);
+} catch (RuntimeException $e) {
     header('Location: applications.php');
     exit();
 }
 
-$originalPdfName = basename($pdfName);
-if ($originalPdfName === '' || strtolower(pathinfo($originalPdfName, PATHINFO_EXTENSION)) !== 'pdf') {
-    header('Location: applications.php');
-    exit();
-}
-
+$movedFiles = [];
 try {
     $pdo->beginTransaction();
     $insertStmt = $pdo->prepare('INSERT INTO application (call_for_proposal_id, organization_id, supervisor_id, project_name, status) VALUES (:call_id, :org_id, :sup_id, :name, "SUBMITTED")');
@@ -95,7 +120,7 @@ try {
         'sup_id' => $supervisorId,
         'name' => $projectName
     ]);
-$applicationId = $pdo->lastInsertId();
+    $applicationId = $pdo->lastInsertId();
 
     $destinationDir = 'private/documents/applications/' . $applicationId;
     if (!is_dir($destinationDir)) {
@@ -104,15 +129,23 @@ $applicationId = $pdo->lastInsertId();
         }
     }
 
-    $destinationPath = $destinationDir . '/' . $originalPdfName;
+    $applicationPdfPath = buildUploadDestinationPath($destinationDir, 'risposta', $applicationPdf['original_name']);
+    $budgetPdfPath = buildUploadDestinationPath($destinationDir, 'budget', $budgetPdf['original_name']);
 
-    if (!move_uploaded_file($pdfTmpPath, $destinationPath)) {
-        throw new RuntimeException('Unable to move uploaded file');
+    if (!move_uploaded_file($applicationPdf['tmp_path'], $applicationPdfPath)) {
+        throw new RuntimeException('Unable to move uploaded application PDF');
     }
+    $movedFiles[] = $applicationPdfPath;
 
-    $updateStmt = $pdo->prepare('UPDATE application SET application_pdf_path = :pdf_path WHERE id = :id');
+    if (!move_uploaded_file($budgetPdf['tmp_path'], $budgetPdfPath)) {
+        throw new RuntimeException('Unable to move uploaded budget PDF');
+    }
+    $movedFiles[] = $budgetPdfPath;
+
+    $updateStmt = $pdo->prepare('UPDATE application SET application_pdf_path = :application_pdf_path, budget_pdf_path = :budget_pdf_path WHERE id = :id');
     $updateStmt->execute([
-        ':pdf_path' => $destinationPath,
+        ':application_pdf_path' => $applicationPdfPath,
+        ':budget_pdf_path' => $budgetPdfPath,
         ':id' => $applicationId
     ]);
 
@@ -120,6 +153,11 @@ $applicationId = $pdo->lastInsertId();
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
+    }
+    foreach ($movedFiles as $movedFile) {
+        if (is_file($movedFile)) {
+            unlink($movedFile);
+        }
     }
     header('Location: applications.php');
     exit();

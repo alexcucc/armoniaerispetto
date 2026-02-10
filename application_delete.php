@@ -24,7 +24,7 @@ if (!$appId) {
 try {
     $pdo->beginTransaction();
 
-    $selectStmt = $pdo->prepare('SELECT application_pdf_path, status FROM application WHERE id = :id');
+    $selectStmt = $pdo->prepare('SELECT application_pdf_path, budget_pdf_path, status FROM application WHERE id = :id');
     $selectStmt->execute([':id' => $appId]);
     $application = $selectStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -46,18 +46,30 @@ try {
     if ($stmt->rowCount() > 0) {
         $pdo->commit();
 
-        if (!empty($application['application_pdf_path'])) {
-            $filePath = $application['application_pdf_path'];
-            $realPath = realpath($filePath);
+        $baseDir = realpath('private/documents/applications');
+        $directoriesToCheck = [];
+        $paths = [
+            $application['application_pdf_path'] ?? null,
+            $application['budget_pdf_path'] ?? null,
+        ];
 
-            if ($realPath && is_file($realPath)) {
+        foreach ($paths as $filePath) {
+            if (empty($filePath)) {
+                continue;
+            }
+
+            $realPath = realpath($filePath);
+            if ($realPath && $baseDir && strpos($realPath, $baseDir) === 0 && is_file($realPath)) {
                 unlink($realPath);
-                $directory = dirname($realPath);
-                if (is_dir($directory)) {
-                    $files = glob($directory . '/*');
-                    if ($files !== false && count($files) === 0) {
-                        rmdir($directory);
-                    }
+                $directoriesToCheck[dirname($realPath)] = true;
+            }
+        }
+
+        foreach (array_keys($directoriesToCheck) as $directory) {
+            if (is_dir($directory)) {
+                $files = glob($directory . '/*');
+                if ($files !== false && count($files) === 0) {
+                    rmdir($directory);
                 }
             }
         }

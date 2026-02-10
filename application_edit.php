@@ -18,7 +18,7 @@ if (!$appId) {
 
 $stmt = $pdo->prepare(
     'SELECT a.call_for_proposal_id, a.organization_id, a.supervisor_id, a.project_name, '
-    . 'a.application_pdf_path, a.checklist_path, '
+    . 'a.application_pdf_path, a.budget_pdf_path, a.checklist_path, '
     . 'c.title AS call_title, o.name AS organization_name '
     . 'FROM application a '
     . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
@@ -53,6 +53,10 @@ $canChangeSupervisor = empty($application['checklist_path']);
 $currentPdfName = null;
 if (!empty($application['application_pdf_path'])) {
     $currentPdfName = basename($application['application_pdf_path']);
+}
+$currentBudgetPdfName = null;
+if (!empty($application['budget_pdf_path'])) {
+    $currentBudgetPdfName = basename($application['budget_pdf_path']);
 }
 
 $errorMessage = $_SESSION['error_message'] ?? null;
@@ -124,7 +128,7 @@ if (!empty($formData)) {
                 <label class="form-label" for="current_application_pdf">PDF attuale della risposta al bando</label>
                 <?php if (!empty($application['application_pdf_path'])): ?>
                 <p id="current_application_pdf">
-                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($currentPdfName ?? 'Scarica il PDF attuale'); ?></a>
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=application" target="_blank" rel="noopener"><?php echo htmlspecialchars($currentPdfName ?? 'Scarica il PDF attuale'); ?></a>
                 </p>
                 <?php else: ?>
                 <p id="current_application_pdf">Nessun PDF caricato.</p>
@@ -133,6 +137,21 @@ if (!empty($formData)) {
             <div class="form-group">
                 <label class="form-label" for="application_pdf">Sostituisci PDF della risposta al bando</label>
                 <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf">
+                <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="current_budget_pdf">PDF attuale del modulo budget</label>
+                <?php if (!empty($application['budget_pdf_path'])): ?>
+                <p id="current_budget_pdf">
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=budget" target="_blank" rel="noopener"><?php echo htmlspecialchars($currentBudgetPdfName ?? 'Scarica il PDF attuale'); ?></a>
+                </p>
+                <?php else: ?>
+                <p id="current_budget_pdf">Nessun PDF caricato.</p>
+                <?php endif; ?>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="budget_pdf">Sostituisci PDF del modulo budget</label>
+                <input type="file" id="budget_pdf" name="budget_pdf" class="form-input" accept="application/pdf">
                 <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
             </div>
             <div class="button-container">

@@ -113,6 +113,8 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
         c.title AS call_title,
         COALESCE(o.name, 'Soggetto proponente') AS ente,
         e.updated_at AS reference_date,
+        a.application_pdf_path,
+        a.budget_pdf_path,
         a.checklist_path
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
@@ -145,6 +147,8 @@ if ($selectedStatus === '' || $selectedStatus === 'DRAFT') {
         c.title AS call_title,
         COALESCE(o.name, 'Soggetto proponente') AS ente,
         e.updated_at AS reference_date,
+        a.application_pdf_path,
+        a.budget_pdf_path,
         a.checklist_path
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
@@ -177,6 +181,8 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
         c.title AS call_title,
         COALESCE(o.name, 'Soggetto proponente') AS ente,
         a.created_at AS reference_date,
+        a.application_pdf_path,
+        a.budget_pdf_path,
         a.checklist_path
       FROM application a
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
@@ -314,8 +320,8 @@ usort($evaluations, function (array $a, array $b) {
                     <th>Bando</th>
                     <th>Ente</th>
                     <th>Stato</th>
-                    <th>Ultimo aggiornamento</th>
                     <th>Risposta al bando</th>
+                    <th>Modulo budget</th>
                     <th>Checklist</th>
                     <th>Azione</th>
                   </tr>
@@ -330,10 +336,11 @@ usort($evaluations, function (array $a, array $b) {
                         if (in_array($statusKey, ['SUBMITTED', 'DRAFT', 'PENDING'], true)) {
                             $statusClass .= ' evaluation-status-badge--' . strtolower($statusKey);
                         }
-                        $dateLabel = $row['reference_date'] ?? '';
                         $isDraft = $statusKey === 'DRAFT';
                         $isSubmitted = $statusKey === 'SUBMITTED';
                         $isPending = $statusKey === 'PENDING';
+                        $hasApplicationPdf = !empty($row['application_pdf_path']);
+                        $hasBudgetPdf = !empty($row['budget_pdf_path']);
                         $hasChecklist = !empty($row['checklist_path']);
                       ?>
                       <tr>
@@ -344,15 +351,32 @@ usort($evaluations, function (array $a, array $b) {
                             <?php echo htmlspecialchars($statusLabel); ?>
                           </span>
                         </td>
-                        <td><?php echo htmlspecialchars($dateLabel); ?></td>
                         <td>
                           <div class="actions-cell">
-                            <a
-                              class="page-button secondary-button"
-                              href="applications.php?application_id=<?php echo $row['application_id']; ?>"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >Apri domanda</a>
+                            <?php if ($hasApplicationPdf): ?>
+                              <a
+                                class="page-button secondary-button"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=application"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >Apri</a>
+                            <?php else: ?>
+                              <span>Non disponibile</span>
+                            <?php endif; ?>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="actions-cell">
+                            <?php if ($hasBudgetPdf): ?>
+                              <a
+                                class="page-button secondary-button"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >Apri</a>
+                            <?php else: ?>
+                              <span>Non disponibile</span>
+                            <?php endif; ?>
                           </div>
                         </td>
                         <td>
@@ -363,7 +387,7 @@ usort($evaluations, function (array $a, array $b) {
                                 href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                              >Apri Checklist</a>
+                              >Apri</a>
                             <?php else: ?>
                               <span>Non disponibile</span>
                             <?php endif; ?>
