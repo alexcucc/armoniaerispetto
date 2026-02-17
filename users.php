@@ -10,7 +10,12 @@ if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($
 }
 
 // Get all users from database
-$stmt = $pdo->prepare("SELECT id, email, first_name, last_name, phone, organization, created_at, email_verified FROM user");
+$stmt = $pdo->prepare(
+    "SELECT u.id, u.email, u.first_name, u.last_name, u.phone, u.organization, u.created_at, u.email_verified, "
+    . "EXISTS (SELECT 1 FROM evaluator e WHERE e.user_id = u.id) AS is_evaluator, "
+    . "EXISTS (SELECT 1 FROM supervisor s WHERE s.user_id = u.id) AS is_supervisor "
+    . "FROM user u"
+);
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -99,7 +104,28 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></td>
                                     <td>
                                         <div class="actions-cell role-actions">
-                                            <button class="delete-btn" data-id="<?php echo $user['id']; ?>">
+                                            <?php
+                                                $isEvaluator = (int) ($user['is_evaluator'] ?? 0) === 1;
+                                                $isSupervisor = (int) ($user['is_supervisor'] ?? 0) === 1;
+                                                $isProtectedRole = $isEvaluator || $isSupervisor;
+                                                $cannotDeleteTitle = "Impossibile eliminare: l'utente ";
+
+                                                if ($isEvaluator && $isSupervisor) {
+                                                    $cannotDeleteTitle .= 'è un valutatore e un convalidatore';
+                                                } elseif ($isEvaluator) {
+                                                    $cannotDeleteTitle .= 'è un valutatore';
+                                                } elseif ($isSupervisor) {
+                                                    $cannotDeleteTitle .= 'è un convalidatore';
+                                                }
+                                            ?>
+                                            <button
+                                                class="delete-btn"
+                                                data-id="<?php echo $user['id']; ?>"
+                                                <?php if ($isProtectedRole): ?>
+                                                    disabled
+                                                    title="<?php echo htmlspecialchars($cannotDeleteTitle, ENT_QUOTES, 'UTF-8'); ?>"
+                                                <?php endif; ?>
+                                            >
                                                 <i class="fas fa-trash"></i> Elimina
                                             </button>
                                         </div>
