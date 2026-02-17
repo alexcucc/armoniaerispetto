@@ -108,26 +108,12 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 $isEvaluator = (int) ($user['is_evaluator'] ?? 0) === 1;
                                                 $isSupervisor = (int) ($user['is_supervisor'] ?? 0) === 1;
                                                 $isProtectedRole = $isEvaluator || $isSupervisor;
-                                                $cannotDeleteTitle = "Impossibile eliminare: l'utente ";
-
-                                                if ($isEvaluator && $isSupervisor) {
-                                                    $cannotDeleteTitle .= 'è un valutatore e un convalidatore';
-                                                } elseif ($isEvaluator) {
-                                                    $cannotDeleteTitle .= 'è un valutatore';
-                                                } elseif ($isSupervisor) {
-                                                    $cannotDeleteTitle .= 'è un convalidatore';
-                                                }
                                             ?>
-                                            <button
-                                                class="delete-btn"
-                                                data-id="<?php echo $user['id']; ?>"
-                                                <?php if ($isProtectedRole): ?>
-                                                    disabled
-                                                    title="<?php echo htmlspecialchars($cannotDeleteTitle, ENT_QUOTES, 'UTF-8'); ?>"
-                                                <?php endif; ?>
-                                            >
-                                                <i class="fas fa-trash"></i> Elimina
-                                            </button>
+                                            <?php if (!$isProtectedRole): ?>
+                                                <button class="delete-btn" data-id="<?php echo $user['id']; ?>">
+                                                    <i class="fas fa-trash"></i> Elimina
+                                                </button>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
