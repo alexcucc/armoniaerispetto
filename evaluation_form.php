@@ -332,14 +332,19 @@
     <?php include 'common-head.php'; ?>
     <title>Invia la Valutazione</title>
     <style>
+      .contact-form-container.evaluation-page {
+        margin: 0.45rem 0 0.3rem;
+        padding: 0.35rem 0.9rem 0.45rem;
+      }
+
       .total-score-overlay {
         background-color: #ffffff;
         border: 1px solid #d1d5db;
         border-radius: 0.65rem;
-        padding: 0.7rem 0.85rem;
+        padding: 0.55rem 0.7rem;
         box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.88rem;
         color: #1f2937;
         text-align: center;
       }
@@ -353,42 +358,74 @@
 
       .total-score-overlay__label {
         display: block;
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         font-weight: 500;
         color: #4b5563;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.15rem;
         letter-spacing: 0.02em;
       }
 
+      .total-score-overlay__value-row {
+        display: inline-flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0.28rem;
+      }
+
       .total-score-overlay__value {
-        font-size: 1.4rem;
+        font-size: 1.22rem;
         color: #0c4a6e;
       }
 
-      @media (max-width: 768px) {
-        .total-score-overlay {
-          width: 100%;
-          max-width: none;
-        }
+      .total-score-overlay__separator {
+        font-size: 0.95rem;
+        color: #64748b;
+      }
+
+      .total-score-overlay__max {
+        font-size: 1.02rem;
+        color: #0f172a;
+      }
+
+      .total-score-overlay__note {
+        margin: 0.18rem 0 0;
+        font-size: 0.74rem;
+        font-weight: 500;
+        color: #64748b;
       }
 
       .evaluation-header {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        gap: 1rem;
+        gap: 0.7rem;
         flex-wrap: wrap;
+        margin-bottom: 0.2rem;
+      }
+
+      .evaluation-header h2 {
+        margin: 0;
+        text-align: left;
+        font-size: clamp(1.02rem, 1.6vw, 1.35rem);
+        line-height: 1.2;
+      }
+
+      .evaluation-header .form-note {
+        margin-top: 0.15rem;
+        font-size: 0.82rem;
+        line-height: 1.28;
       }
 
       .evaluation-shell {
         display: flex;
         flex-direction: column;
+        gap: 0.3rem;
       }
 
       .evaluation-layout {
         display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 1.5rem;
+        grid-template-columns: minmax(0, 1fr) minmax(205px, 220px);
+        gap: 0.95rem;
         align-items: start;
         flex: 1 1 auto;
         overflow: hidden;
@@ -396,24 +433,24 @@
 
       .evaluation-content {
         min-width: 0;
-        max-height: calc(100vh - 14rem);
+        max-height: calc(100vh - 10.2rem);
         overflow-y: auto;
-        padding-right: 0.35rem;
+        padding-right: 0.22rem;
       }
 
       .evaluation-sidebar {
         position: sticky;
-        top: 6.5rem;
+        top: calc(var(--header-height, 70px) + 0.3rem);
         display: flex;
         flex-direction: column;
-        gap: 0.8rem;
+        gap: 0.55rem;
         align-items: stretch;
-        min-width: 240px;
+        min-width: 205px;
         z-index: 1100;
       }
 
       .contact-form {
-        padding-bottom: 1.5rem;
+        padding-bottom: 0.45rem;
       }
 
       .evaluation-step {
@@ -424,25 +461,36 @@
         display: block;
       }
 
+      .evaluation-step h3 {
+        margin: 0 0 0.35rem;
+        text-align: left;
+        line-height: 1.2;
+        font-size: 1rem;
+      }
+
+      .evaluation-step .form-group + .form-group {
+        margin-top: 0.42rem;
+      }
+
       .evaluation-actions {
         background: rgba(255, 255, 255, 0.95);
         border: 1px solid #e5e7eb;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
-        padding: 0.85rem 0.95rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+        padding: 0.55rem 0.65rem;
         display: flex;
         flex-direction: column;
         flex-wrap: nowrap;
-        gap: 0.65rem;
+        gap: 0.45rem;
         justify-content: flex-start;
         align-items: stretch;
-        border-radius: 0.75rem;
+        border-radius: 0.55rem;
       }
 
       .evaluation-actions__nav,
       .evaluation-actions__main {
         display: flex;
         align-items: stretch;
-        gap: 0.55rem;
+        gap: 0.4rem;
         flex-direction: column;
         justify-content: flex-start;
       }
@@ -473,15 +521,15 @@
       .evaluation-actions .page-button {
         width: 100%;
         min-width: 8rem;
-        padding: 0.55rem 0.9rem;
-        font-size: 0.95rem;
+        padding: 0.45rem 0.65rem;
+        font-size: 0.86rem;
       }
 
       .evaluation-actions .back-button {
         width: auto;
-        min-width: 7rem;
-        padding: 0.55rem 0.9rem;
-        font-size: 0.95rem;
+        min-width: 6.5rem;
+        padding: 0.45rem 0.65rem;
+        font-size: 0.86rem;
         align-self: flex-start;
         width: -webkit-fill-available;
       }
@@ -490,30 +538,14 @@
         border-radius: 0.4rem;
       }
 
-      @media (max-width: 640px) {
-        .evaluation-layout {
-          grid-template-columns: 1fr;
-          overflow: visible;
-        }
-
-        .evaluation-sidebar {
-          position: relative;
-          top: auto;
-        }
-
-        .evaluation-content {
-          max-height: none;
-          overflow: visible;
-        }
-      }
-
       .score-input {
         width: 100%;
-        max-width: 140px;
-        padding: 0.55rem 0.65rem;
+        max-width: 88px;
+        padding: 0.34rem 0.45rem;
         border-radius: 0.4rem;
         border: 1px solid #cbd5e1;
         font-weight: 600;
+        font-size: 0.9rem;
       }
 
       .score-input:focus {
@@ -526,26 +558,26 @@
       .section-weight-badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.1rem 0.5rem;
+        padding: 0.05rem 0.38rem;
         margin-left: 0.4rem;
         border-radius: 9999px;
         background: #ecfeff;
         color: #0ea5e9;
         font-weight: 700;
-        font-size: 0.78rem;
+        font-size: 0.7rem;
         border: 1px solid #bae6fd;
       }
 
       .criteria-weighted-score {
         display: inline-flex;
         align-items: center;
-        padding: 0.1rem 0.5rem;
+        padding: 0.05rem 0.38rem;
         margin-left: 0.35rem;
         border-radius: 9999px;
         background: #fef3c7;
         color: #b45309;
         font-weight: 700;
-        font-size: 0.78rem;
+        font-size: 0.7rem;
         border: 1px solid #fde68a;
       }
 
@@ -555,34 +587,38 @@
 
       .criteria-row {
         display: flex;
-        align-items: center;
-        gap: 0.75rem;
+        align-items: flex-start;
+        gap: 0.45rem;
         flex-wrap: wrap;
       }
 
       .criteria-row__label {
-        flex: 1 1 320px;
+        flex: 1 1 250px;
+        min-width: 0;
       }
 
       .criteria-row__input {
-        flex: 0 0 150px;
+        flex: 0 0 90px;
         display: flex;
         align-items: center;
+        justify-content: flex-end;
       }
 
       .criteria-row__weight {
-        flex: 0 0 220px;
+        flex: 1 1 170px;
         display: flex;
         align-items: center;
-        gap: 0.35rem;
+        gap: 0.25rem;
         flex-wrap: wrap;
       }
 
       .criteria-label {
         display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
+        align-items: flex-start;
+        gap: 0.3rem;
         margin: 0;
+        line-height: 1.25;
+        font-size: 0.86rem;
       }
 
       .criteria-info-toggle {
@@ -590,8 +626,9 @@
         color: #0369a1;
         border: 1px solid #bae6fd;
         border-radius: 0.4rem;
-        padding: 0.35rem 0.65rem;
+        padding: 0.24rem 0.5rem;
         font-weight: 700;
+        font-size: 0.74rem;
         cursor: pointer;
       }
 
@@ -603,24 +640,24 @@
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 0.5rem;
-        padding: 0.65rem 0.8rem;
-        font-size: 0.92rem;
+        padding: 0.45rem 0.58rem;
+        font-size: 0.82rem;
         color: #0f172a;
-        margin-top: 0.45rem;
+        margin-top: 0.3rem;
       }
 
       .criteria-info-text ul {
-        margin: 0.3rem 0 0.2rem 1.2rem;
+        margin: 0.22rem 0 0.15rem 1rem;
       }
 
       .section-max-note {
-        margin: 0.35rem 0 0.75rem;
-        padding: 0.2rem 0.6rem;
+        margin: 0.2rem 0 0.38rem;
+        padding: 0.12rem 0.52rem;
         background: #fff7ed;
         border: 1px dashed #fed7aa;
         color: #9a3412;
         border-radius: 9999px;
-        font-size: 0.85rem;
+        font-size: 0.77rem;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
@@ -632,12 +669,89 @@
         outline-offset: 3px;
         border-radius: 0.25rem;
       }
+
+      @media (max-width: 1000px) {
+        .evaluation-layout {
+          grid-template-columns: 1fr;
+          gap: 0.55rem;
+          overflow: visible;
+        }
+
+        .evaluation-sidebar {
+          order: -1;
+          position: sticky;
+          top: calc(var(--header-height, 70px) + 0.2rem);
+          min-width: 0;
+          z-index: 1200;
+        }
+
+        .evaluation-content {
+          max-height: calc(100vh - 13rem);
+          overflow-y: auto;
+          padding-right: 0.08rem;
+        }
+
+        .evaluation-header .form-note,
+        .evaluation-status-panel__note {
+          display: none;
+        }
+      }
+
+      @media (max-height: 820px) and (min-width: 1001px) {
+        .evaluation-header .form-note,
+        .evaluation-status-panel__note {
+          display: none;
+        }
+
+        .evaluation-content {
+          max-height: calc(100vh - 8.5rem);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .contact-form-container.evaluation-page {
+          padding: 0.3rem 0.55rem 0.35rem;
+        }
+
+        .total-score-overlay {
+          width: 100%;
+          max-width: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .criteria-row__label,
+        .criteria-row__input,
+        .criteria-row__weight {
+          flex: 1 1 100%;
+        }
+
+        .criteria-row__input {
+          justify-content: flex-start;
+        }
+
+        .score-input {
+          max-width: 100%;
+        }
+
+        .total-score-overlay__value {
+          font-size: 1.1rem;
+        }
+
+        .total-score-overlay__max {
+          font-size: 0.95rem;
+        }
+
+        .evaluation-content {
+          max-height: calc(100vh - 13.6rem);
+        }
+      }
     </style>
   </head>
   <body>
     <?php include 'header.php'; ?>
     <main>
-      <div class="contact-form-container" style="margin-top:2em;">
+      <div class="contact-form-container evaluation-page">
         <div class="evaluation-shell">
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
@@ -1257,11 +1371,21 @@
           <div class="total-score-overlay" role="status" aria-live="polite">
             <div class="total-score-overlay__group">
               <span class="total-score-overlay__label">Totale punteggio</span>
-              <span class="total-score-overlay__value" id="total-score-value">0</span>
+              <span class="total-score-overlay__value-row">
+                <span class="total-score-overlay__value" id="total-score-value">0</span>
+                <span class="total-score-overlay__separator">/</span>
+                <span class="total-score-overlay__max" id="total-score-max-value">0</span>
+              </span>
+              <p class="total-score-overlay__note">Punteggio massimo pesato</p>
             </div>
             <div class="total-score-overlay__group">
               <span class="total-score-overlay__label">Totale sezione corrente</span>
-              <span class="total-score-overlay__value" id="section-score-value">0</span>
+              <span class="total-score-overlay__value-row">
+                <span class="total-score-overlay__value" id="section-score-value">0</span>
+                <span class="total-score-overlay__separator">/</span>
+                <span class="total-score-overlay__max" id="section-score-max-value">0</span>
+              </span>
+              <p class="total-score-overlay__note">Massimo pesato sezione</p>
             </div>
           </div>
           <div class="evaluation-actions" aria-label="Navigazione e azioni di salvataggio">
@@ -1298,7 +1422,9 @@
         const modal = document.getElementById('evaluation-success-modal');
         const closeButton = document.getElementById('close-evaluation-modal');
         const totalScoreElement = document.getElementById('total-score-value');
+        const totalScoreMaxElement = document.getElementById('total-score-max-value');
         const sectionScoreElement = document.getElementById('section-score-value');
+        const sectionScoreMaxElement = document.getElementById('section-score-max-value');
         const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
         const evaluationContent = document.querySelector('.evaluation-content');
         const nextStepButton = document.getElementById('next-step-button');
@@ -1492,6 +1618,40 @@
           return sectionTotal * multiplier;
         };
 
+        const calculateWeightedSectionMaxScore = (sectionIndex) => {
+          const sectionElement = stepElements[sectionIndex];
+
+          if (!sectionElement) {
+            return 0;
+          }
+
+          const inputs = Array.from(sectionElement.querySelectorAll('input.score-input'));
+          const sectionKey = getSectionKey(sectionIndex);
+          const multiplier = sectionWeightMultipliers[sectionKey] ?? 1;
+
+          let sectionMax = 0;
+
+          inputs.forEach((input) => {
+            const fieldName = extractFieldName(input.name);
+            const weight = sectionKey && fieldName && criterionWeights[sectionKey]
+              ? (criterionWeights[sectionKey][fieldName] ?? 1)
+              : 1;
+
+            sectionMax += weight;
+          });
+
+          return sectionMax * multiplier;
+        };
+
+        const calculateTotalMaxScore = () => {
+          let totalMax = 0;
+          stepElements.forEach((_, index) => {
+            totalMax += calculateWeightedSectionMaxScore(index);
+          });
+
+          return totalMax;
+        };
+
         function calculateTotalScore() {
           if (!form || !totalScoreElement) {
             return;
@@ -1503,6 +1663,10 @@
           });
 
           totalScoreElement.textContent = formatScore(total);
+
+          if (totalScoreMaxElement) {
+            totalScoreMaxElement.textContent = formatScore(calculateTotalMaxScore());
+          }
         }
 
         function calculateSectionScore() {
@@ -1517,8 +1681,13 @@
           }
 
           const weightedSectionScore = calculateWeightedSectionScore(activeStepIndex);
+          const weightedSectionMaxScore = calculateWeightedSectionMaxScore(activeStepIndex);
 
           sectionScoreElement.textContent = formatScore(weightedSectionScore);
+
+          if (sectionScoreMaxElement) {
+            sectionScoreMaxElement.textContent = formatScore(weightedSectionMaxScore);
+          }
         }
 
         const transformCriteriaLayout = () => {
