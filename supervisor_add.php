@@ -44,14 +44,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     id="user_name"
                     class="form-input"
                     name="user_name"
-                    list="user-options"
                     placeholder="Inizia a digitare nome o cognome"
                     aria-label="Seleziona un utente"
+                    aria-controls="user-options"
+                    aria-expanded="false"
                     autocomplete="off"
                     required
                 >
                 <input type="hidden" id="user_id" name="user_id">
-                <datalist id="user-options"></datalist>
+                <div id="user-options" class="autocomplete-options" role="listbox" hidden></div>
             </div>
         </form>
     </div>
@@ -64,35 +65,79 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
         const userOptions = document.getElementById('user-options');
         const form = document.querySelector('form.contact-form');
         const users = <?php echo json_encode($users, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const viewportPadding = 16;
+        let isDropdownOpen = false;
 
         const getUserLabel = (user) => `${user.last_name} ${user.first_name} (${user.email})`;
+        const getUserSearchLabel = (user) => `${user.last_name} ${user.first_name}`;
+        const normalize = (value) => value.trim().toLowerCase();
+        const matchesQuery = (user, query) => (
+            query.length === 0
+            || normalize(getUserSearchLabel(user)).startsWith(query)
+        );
+
+        const positionDropdown = () => {
+            const rect = userInput.getBoundingClientRect();
+            const availableHeight = Math.max(window.innerHeight - rect.bottom - viewportPadding, 120);
+
+            userOptions.style.left = `${rect.left}px`;
+            userOptions.style.top = `${rect.bottom}px`;
+            userOptions.style.width = `${rect.width}px`;
+            userOptions.style.maxHeight = `${availableHeight}px`;
+        };
+
+        const openDropdown = () => {
+            positionDropdown();
+            userOptions.hidden = false;
+            isDropdownOpen = true;
+            userInput.setAttribute('aria-expanded', 'true');
+        };
+
+        const closeDropdown = () => {
+            userOptions.hidden = true;
+            isDropdownOpen = false;
+            userInput.setAttribute('aria-expanded', 'false');
+        };
 
         const renderUserOptions = (searchValue) => {
-            const query = searchValue.trim().toLowerCase();
+            const query = normalize(searchValue);
             userOptions.innerHTML = '';
+            const filteredUsers = users.filter((user) => matchesQuery(user, query));
 
-            const matchesQuery = (user) => {
-                if (query.length === 0) {
-                    return true;
-                }
+            if (filteredUsers.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'autocomplete-empty';
+                emptyState.textContent = 'Nessun utente trovato';
+                userOptions.appendChild(emptyState);
+            } else {
+                filteredUsers.forEach((user) => {
+                    const option = document.createElement('button');
+                    option.type = 'button';
+                    option.className = 'autocomplete-option';
+                    option.role = 'option';
+                    option.textContent = getUserLabel(user);
 
-                return user.last_name.toLowerCase().startsWith(query)
-                    || user.first_name.toLowerCase().startsWith(query)
-                    || user.email.toLowerCase().startsWith(query);
-            };
+                    option.addEventListener('mousedown', (event) => {
+                        event.preventDefault();
+                    });
 
-            users
-                .filter(matchesQuery)
-                .forEach((user) => {
-                    const option = document.createElement('option');
-                    option.value = getUserLabel(user);
+                    option.addEventListener('click', () => {
+                        userInput.value = getUserLabel(user);
+                        userIdInput.value = user.id;
+                        userInput.setCustomValidity('');
+                        closeDropdown();
+                    });
+
                     userOptions.appendChild(option);
                 });
+            }
+
+            openDropdown();
         };
 
         const syncUserId = (value) => {
-            const normalized = value.trim().toLowerCase();
-            const match = users.find((user) => getUserLabel(user).toLowerCase() === normalized);
+            const normalized = normalize(value);
+            const match = users.find((user) => normalize(getUserLabel(user)) === normalized);
             if (match) {
                 userIdInput.value = match.id;
                 userInput.setCustomValidity('');
@@ -117,7 +162,37 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             syncUserId(value);
         });
 
-        renderUserOptions('');
+        userInput.addEventListener('focus', () => {
+            renderUserOptions(userInput.value);
+        });
+
+        userInput.addEventListener('click', () => {
+            renderUserOptions(userInput.value);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (event.target !== userInput && !userOptions.contains(event.target)) {
+                closeDropdown();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDropdown();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (isDropdownOpen) {
+                positionDropdown();
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (isDropdownOpen) {
+                positionDropdown();
+            }
+        }, true);
     })();
 </script>
 </body>

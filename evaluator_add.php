@@ -25,46 +25,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <?php include 'common-head.php'; ?>
     <title>Aggiungi Valutatore</title>
-    <style>
-        .autocomplete-options {
-            position: fixed;
-            z-index: 1200;
-            display: flex;
-            flex-direction: column;
-            background-color: #fff;
-            border: 1px solid #d0d7de;
-            border-radius: 0.5em;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
-            overflow-y: auto;
-        }
-
-        .autocomplete-option {
-            width: 100%;
-            border: 0;
-            border-bottom: 1px solid #edf2f7;
-            background: transparent;
-            text-align: left;
-            padding: 0.55rem 0.75rem;
-            cursor: pointer;
-            color: #1f2937;
-            font: inherit;
-        }
-
-        .autocomplete-option:last-child {
-            border-bottom: 0;
-        }
-
-        .autocomplete-option:hover,
-        .autocomplete-option:focus-visible {
-            background-color: #f1f5f9;
-            outline: none;
-        }
-
-        .autocomplete-empty {
-            padding: 0.55rem 0.75rem;
-            color: #6b7280;
-        }
-    </style>
 </head>
 <body class="management-page">
 <?php include 'header.php'; ?>
