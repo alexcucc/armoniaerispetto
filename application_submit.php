@@ -81,14 +81,16 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
               id="organization_name"
               class="form-input"
               name="organization_name"
-              list="organization-options"
               value="<?php echo htmlspecialchars($selectedOrganizationName); ?>"
               placeholder="Inizia a digitare il nome dell'ente"
+              aria-label="Seleziona un ente"
+              aria-controls="organization-options"
+              aria-expanded="false"
               autocomplete="off"
               required
             >
             <input type="hidden" id="organization_id" name="organization_id" value="<?php echo htmlspecialchars($selectedOrganizationId); ?>">
-            <datalist id="organization-options"></datalist>
+            <div id="organization-options" class="autocomplete-options" role="listbox" hidden></div>
           </div>
           <div class="form-group">
             <label class="form-label required" for="supervisor_id">Convalidatore</label>
@@ -132,6 +134,32 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
 
         let currentDuplicateCheckController = null;
         const organizations = <?php echo json_encode($organizations, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
+        const viewportPadding = 16;
+        let isDropdownOpen = false;
+        const normalize = (value) => value.trim().toLowerCase();
+
+        const positionDropdown = () => {
+          const rect = organizationInput.getBoundingClientRect();
+          const availableHeight = Math.max(window.innerHeight - rect.bottom - viewportPadding, 120);
+
+          organizationOptions.style.left = `${rect.left}px`;
+          organizationOptions.style.top = `${rect.bottom}px`;
+          organizationOptions.style.width = `${rect.width}px`;
+          organizationOptions.style.maxHeight = `${availableHeight}px`;
+        };
+
+        const openDropdown = () => {
+          positionDropdown();
+          organizationOptions.hidden = false;
+          isDropdownOpen = true;
+          organizationInput.setAttribute('aria-expanded', 'true');
+        };
+
+        const closeDropdown = () => {
+          organizationOptions.hidden = true;
+          isDropdownOpen = false;
+          organizationInput.setAttribute('aria-expanded', 'false');
+        };
 
         const clearDuplicateWarning = () => {
           duplicateWarning.style.display = 'none';
@@ -188,20 +216,45 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
         };
 
         const renderOrganizationOptions = (searchValue) => {
-          const query = searchValue.trim().toLowerCase();
+          const query = normalize(searchValue);
           organizationOptions.innerHTML = '';
+          const filteredOrganizations = organizations
+            .filter((org) => query.length === 0 || org.name.toLowerCase().startsWith(query));
 
-          organizations
-            .filter((org) => query.length === 0 || org.name.toLowerCase().startsWith(query))
-            .forEach((org) => {
-              const option = document.createElement('option');
-              option.value = org.name;
+          if (filteredOrganizations.length === 0) {
+            const emptyState = document.createElement('div');
+            emptyState.className = 'autocomplete-empty';
+            emptyState.textContent = 'Nessun ente trovato';
+            organizationOptions.appendChild(emptyState);
+          } else {
+            filteredOrganizations.forEach((org) => {
+              const option = document.createElement('button');
+              option.type = 'button';
+              option.className = 'autocomplete-option';
+              option.role = 'option';
+              option.textContent = org.name;
+
+              option.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+              });
+
+              option.addEventListener('click', () => {
+                organizationInput.value = org.name;
+                organizationIdInput.value = org.id;
+                organizationInput.setCustomValidity('');
+                checkDuplicateApplication();
+                closeDropdown();
+              });
+
               organizationOptions.appendChild(option);
             });
+          }
+
+          openDropdown();
         };
 
         const syncOrganizationId = (value) => {
-          const normalized = value.trim().toLowerCase();
+          const normalized = normalize(value);
           const match = organizations.find((org) => org.name.toLowerCase() === normalized);
           if (match) {
             organizationIdInput.value = match.id;
@@ -229,13 +282,44 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           syncOrganizationId(value);
         });
 
+        organizationInput.addEventListener('focus', () => {
+          renderOrganizationOptions(organizationInput.value);
+        });
+
+        organizationInput.addEventListener('click', () => {
+          renderOrganizationOptions(organizationInput.value);
+        });
+
+        document.addEventListener('click', (event) => {
+          if (event.target !== organizationInput && !organizationOptions.contains(event.target)) {
+            closeDropdown();
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') {
+            closeDropdown();
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          if (isDropdownOpen) {
+            positionDropdown();
+          }
+        });
+
+        window.addEventListener('scroll', () => {
+          if (isDropdownOpen) {
+            positionDropdown();
+          }
+        }, true);
+
         callSelect.addEventListener('change', checkDuplicateApplication);
 
         if (callSelect.value && organizationIdInput.value) {
           checkDuplicateApplication();
         }
 
-        renderOrganizationOptions(organizationInput.value);
         syncOrganizationId(organizationInput.value);
 
       })();
