@@ -1356,6 +1356,10 @@ body.management-page .users-table {
   overflow-y: auto;
 }
 
+.autocomplete-options[hidden] {
+  display: none !important;
+}
+
 .autocomplete-option {
   width: 100%;
   border: 0;
