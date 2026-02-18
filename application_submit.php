@@ -260,6 +260,7 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             organizationIdInput.value = match.id;
             organizationInput.setCustomValidity('');
             checkDuplicateApplication();
+            closeDropdown();
             return;
           }
 
@@ -290,11 +291,19 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
           renderOrganizationOptions(organizationInput.value);
         });
 
-        document.addEventListener('click', (event) => {
+        organizationInput.addEventListener('blur', () => {
+          window.requestAnimationFrame(() => {
+            if (document.activeElement !== organizationInput && !organizationOptions.contains(document.activeElement)) {
+              closeDropdown();
+            }
+          });
+        });
+
+        document.addEventListener('pointerdown', (event) => {
           if (event.target !== organizationInput && !organizationOptions.contains(event.target)) {
             closeDropdown();
           }
-        });
+        }, true);
 
         document.addEventListener('keydown', (event) => {
           if (event.key === 'Escape') {

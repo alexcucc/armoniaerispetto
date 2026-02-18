@@ -141,6 +141,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             if (match) {
                 userIdInput.value = match.id;
                 userInput.setCustomValidity('');
+                closeDropdown();
                 return;
             }
 
@@ -170,11 +171,19 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             renderUserOptions(userInput.value);
         });
 
-        document.addEventListener('click', (event) => {
+        userInput.addEventListener('blur', () => {
+            window.requestAnimationFrame(() => {
+                if (document.activeElement !== userInput && !userOptions.contains(document.activeElement)) {
+                    closeDropdown();
+                }
+            });
+        });
+
+        document.addEventListener('pointerdown', (event) => {
             if (event.target !== userInput && !userOptions.contains(event.target)) {
                 closeDropdown();
             }
-        });
+        }, true);
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
