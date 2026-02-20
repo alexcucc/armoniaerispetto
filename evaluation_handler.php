@@ -236,6 +236,13 @@ $sectionDefinitions = [
 ];
 
 $incompleteMessage = 'valutazione incompleta: valutazione non inviabile';
+$buildIncompleteSectionsMessage = static function (string $baseMessage, array $sectionLabels): string {
+    if ($sectionLabels === []) {
+        return $baseMessage;
+    }
+
+    return $baseMessage . "\nSezioni non completate:\n- " . implode("\n- ", $sectionLabels);
+};
 
 $sumNullable = static function (array $values): ?int {
     $filtered = array_filter($values, static fn ($value) => $value !== null);
@@ -247,15 +254,13 @@ $sumNullable = static function (array $values): ?int {
 };
 
 $sectionScores = [];
+$incompleteSections = [];
 foreach ($sectionDefinitions as $sectionKey => $definition) {
+    $sectionIsIncomplete = false;
     $rawSection = $_POST[$sectionKey] ?? null;
     if (!is_array($rawSection)) {
         if ($isSubmitAction) {
-            sendResponseAndExit(
-                $isAjaxRequest,
-                false,
-                $incompleteMessage
-            );
+            $sectionIsIncomplete = true;
         }
 
         $rawSection = [];
@@ -265,11 +270,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
     foreach ($definition['fields'] as $fieldName) {
         if (!array_key_exists($fieldName, $rawSection)) {
             if ($isSubmitAction) {
-                sendResponseAndExit(
-                    $isAjaxRequest,
-                    false,
-                    $incompleteMessage
-                );
+                $sectionIsIncomplete = true;
             }
 
             $scores[$fieldName] = null;
@@ -279,11 +280,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
         $rawValue = $rawSection[$fieldName];
         if ($rawValue === '' || $rawValue === null) {
             if ($isSubmitAction) {
-                sendResponseAndExit(
-                    $isAjaxRequest,
-                    false,
-                    $incompleteMessage
-                );
+                $sectionIsIncomplete = true;
             }
 
             $scores[$fieldName] = null;
@@ -320,11 +317,23 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
         $scores[$fieldName] = $score;
     }
 
+    if ($isSubmitAction && $sectionIsIncomplete) {
+        $incompleteSections[$sectionKey] = $definition['label'];
+    }
+
     $sectionScores[$sectionKey] = [
         'scores'     => $scores,
         'overall'    => $sumNullable($scores),
         'has_scores' => array_filter($scores, static fn ($value) => $value !== null) !== [],
     ];
+}
+
+if ($isSubmitAction && $incompleteSections !== []) {
+    sendResponseAndExit(
+        $isAjaxRequest,
+        false,
+        $buildIncompleteSectionsMessage($incompleteMessage, array_values($incompleteSections))
+    );
 }
 
 try {

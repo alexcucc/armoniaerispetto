@@ -356,6 +356,12 @@
         padding: 0.15rem 0;
       }
 
+      .total-score-overlay__group--thematic {
+        margin-top: 0.1rem;
+        padding-top: 0.35rem;
+        border-top: 1px dashed #e5e7eb;
+      }
+
       .total-score-overlay__label {
         display: block;
         font-size: 0.78rem;
@@ -1375,6 +1381,15 @@
               </span>
               <p class="total-score-overlay__note">Massimo pesato sezione</p>
             </div>
+            <div class="total-score-overlay__group total-score-overlay__group--thematic" id="thematic-score-group" hidden>
+              <span class="total-score-overlay__label">Totale criteri tematici</span>
+              <span class="total-score-overlay__value-row">
+                <span class="total-score-overlay__value" id="thematic-score-value">0</span>
+                <span class="total-score-overlay__separator">/</span>
+                <span class="total-score-overlay__max" id="thematic-score-max-value">0</span>
+              </span>
+              <p class="total-score-overlay__note">Massimo pesato criteri tematici</p>
+            </div>
           </div>
           <div class="evaluation-actions" aria-label="Navigazione e azioni di salvataggio">
             <div class="evaluation-actions__nav">
@@ -1412,6 +1427,9 @@
         const totalScoreMaxElement = document.getElementById('total-score-max-value');
         const sectionScoreElement = document.getElementById('section-score-value');
         const sectionScoreMaxElement = document.getElementById('section-score-max-value');
+        const thematicScoreGroupElement = document.getElementById('thematic-score-group');
+        const thematicScoreElement = document.getElementById('thematic-score-value');
+        const thematicScoreMaxElement = document.getElementById('thematic-score-max-value');
         const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
         const evaluationContent = document.querySelector('.evaluation-content');
         const nextStepButton = document.getElementById('next-step-button');
@@ -1430,6 +1448,18 @@
           'thematic_community_support',
           'thematic_culture_education',
         ];
+        const sectionLabels = {
+          proposing_entity: 'Soggetto Proponente',
+          project: 'Progetto',
+          financial_plan: 'Piano Finanziario',
+          qualitative_elements: 'Elementi Qualitativi',
+          thematic_repopulation: 'Criteri Tematici - Ripopolamento',
+          thematic_safeguard: 'Criteri Tematici - Salvaguardia',
+          thematic_cohabitation: 'Criteri Tematici - Coabitazione',
+          thematic_community_support: 'Criteri Tematici - Supporto di comunità',
+          thematic_culture_education: 'Criteri Tematici - Cultura - Educazione - Sensibilizzazione',
+        };
+        const thematicDisplayMaxScore = 70;
         const incompleteMessage = 'valutazione incompleta: valutazione non inviabile';
         let activeStepIndex = 0;
         let hasUnsavedChanges = false;
@@ -1495,6 +1525,10 @@
         };
 
         const getSectionKey = (index) => sectionKeys[index] || null;
+        const isThematicStep = (index) => {
+          const sectionKey = getSectionKey(index);
+          return typeof sectionKey === 'string' && sectionKey.startsWith('thematic_');
+        };
 
         const extractFieldName = (inputName) => {
           if (typeof inputName !== 'string') {
@@ -1639,6 +1673,55 @@
           return totalMax;
         };
 
+        const calculateThematicTotalScore = () => {
+          let total = 0;
+          stepElements.forEach((_, index) => {
+            if (!isThematicStep(index)) {
+              return;
+            }
+
+            total += calculateWeightedSectionScore(index);
+          });
+
+          return total;
+        };
+
+        const calculateThematicMaxScore = () => {
+          let totalMax = 0;
+          stepElements.forEach((_, index) => {
+            if (!isThematicStep(index)) {
+              return;
+            }
+
+            totalMax += calculateWeightedSectionMaxScore(index);
+          });
+
+          return totalMax;
+        };
+
+        const calculateThematicScore = () => {
+          if (!thematicScoreElement || !thematicScoreMaxElement) {
+            return;
+          }
+
+          const thematicRawScore = calculateThematicTotalScore();
+          const thematicRawMax = calculateThematicMaxScore();
+          const normalizedThematicScore = thematicRawMax > 0
+            ? (thematicRawScore / thematicRawMax) * thematicDisplayMaxScore
+            : 0;
+
+          thematicScoreElement.textContent = formatScore(normalizedThematicScore);
+          thematicScoreMaxElement.textContent = formatScore(thematicDisplayMaxScore);
+        };
+
+        const updateThematicCounterVisibility = () => {
+          if (!thematicScoreGroupElement) {
+            return;
+          }
+
+          thematicScoreGroupElement.hidden = !isThematicStep(activeStepIndex);
+        };
+
         function calculateTotalScore() {
           if (!form || !totalScoreElement) {
             return;
@@ -1654,6 +1737,8 @@
           if (totalScoreMaxElement) {
             totalScoreMaxElement.textContent = formatScore(calculateTotalMaxScore());
           }
+
+          calculateThematicScore();
         }
 
         function calculateSectionScore() {
@@ -1806,23 +1891,6 @@
           return Array.from(stepElement.querySelectorAll('input.score-input'));
         };
 
-        const isScoreValueValid = (input) => {
-          if (!input) {
-            return true;
-          }
-
-          const rawValue = (input.value || '').trim();
-          if (rawValue === '') {
-            return false;
-          }
-
-          const numericValue = Number(rawValue);
-          return Number.isFinite(numericValue)
-            && Number.isInteger(numericValue)
-            && numericValue >= 0
-            && numericValue <= 10;
-        };
-
         const isScoreMissing = (input) => {
           if (!input) {
             return false;
@@ -1831,13 +1899,36 @@
           return (input.value || '').trim() === '';
         };
 
-        const isStepComplete = (stepElement) => {
-          const inputs = getStepScoreInputs(stepElement);
-          if (inputs.length === 0) {
-            return true;
+        const getSectionLabel = (index) => {
+          const sectionKey = getSectionKey(index);
+          if (sectionKey && sectionLabels[sectionKey]) {
+            return sectionLabels[sectionKey];
           }
 
-          return inputs.every((input) => isScoreValueValid(input));
+          return `Sezione ${index + 1}`;
+        };
+
+        const getIncompleteSectionLabels = () => {
+          const missingSectionLabels = [];
+
+          stepElements.forEach((step, index) => {
+            const inputs = getStepScoreInputs(step);
+            const hasMissingScores = inputs.some((input) => isScoreMissing(input));
+
+            if (hasMissingScores) {
+              missingSectionLabels.push(getSectionLabel(index));
+            }
+          });
+
+          return missingSectionLabels;
+        };
+
+        const buildIncompleteSectionsMessage = (missingSectionLabels) => {
+          if (!Array.isArray(missingSectionLabels) || missingSectionLabels.length === 0) {
+            return incompleteMessage;
+          }
+
+          return `${incompleteMessage}\nSezioni non completate:\n- ${missingSectionLabels.join('\n- ')}`;
         };
 
         const updateNavigationState = () => {
@@ -1847,33 +1938,7 @@
 
           previousStepButton.disabled = activeStepIndex <= 0;
           const isLastStep = activeStepIndex >= stepElements.length - 1;
-          const currentStep = stepElements[activeStepIndex] || null;
-          nextStepButton.disabled = isLastStep || !isStepComplete(currentStep);
-        };
-
-        const isStepValid = (stepElement) => {
-          if (!stepElement) {
-            return true;
-          }
-
-          const inputs = getStepScoreInputs(stepElement);
-          for (const input of inputs) {
-            if (isScoreValueValid(input)) {
-              input.setCustomValidity('');
-              continue;
-            }
-
-            const message = (input.value || '').trim() === ''
-              ? 'Compila tutti i punteggi della sezione per continuare.'
-              : 'Inserisci un punteggio valido (0-10) per continuare.';
-
-            input.setCustomValidity(message);
-            input.reportValidity();
-            input.setCustomValidity('');
-            return false;
-          }
-
-          return true;
+          nextStepButton.disabled = isLastStep;
         };
 
         const setActiveStep = (targetIndex, { forceScroll = true } = {}) => {
@@ -1888,6 +1953,7 @@
           });
 
           updateNavigationState();
+          updateThematicCounterVisibility();
 
           calculateSectionScore();
 
@@ -1901,13 +1967,6 @@
         const attemptStepChange = (targetIndex) => {
           if (targetIndex === activeStepIndex) {
             return;
-          }
-
-          if (targetIndex > activeStepIndex) {
-            const currentStep = stepElements[activeStepIndex];
-            if (!isStepValid(currentStep)) {
-              return;
-            }
           }
 
           setActiveStep(targetIndex);
@@ -1969,12 +2028,9 @@
 
           event.preventDefault();
 
-          const hasMissingScores = stepElements.some((step) => {
-            const inputs = getStepScoreInputs(step);
-            return inputs.some((input) => isScoreMissing(input));
-          });
-          if (hasMissingScores) {
-            alert(incompleteMessage);
+          const missingSectionLabels = getIncompleteSectionLabels();
+          if (missingSectionLabels.length > 0) {
+            alert(buildIncompleteSectionsMessage(missingSectionLabels));
             return;
           }
 
