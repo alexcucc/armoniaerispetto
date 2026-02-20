@@ -511,27 +511,12 @@
         cursor: not-allowed;
       }
 
-      .evaluation-actions__back-link {
-        color: #0f172a;
-        text-decoration: none;
-        font-weight: 600;
-      }
-
       .evaluation-actions .submit-btn,
       .evaluation-actions .page-button {
         width: 100%;
         min-width: 8rem;
         padding: 0.45rem 0.65rem;
         font-size: 0.86rem;
-      }
-
-      .evaluation-actions .back-button {
-        width: auto;
-        min-width: 6.5rem;
-        padding: 0.45rem 0.65rem;
-        font-size: 0.86rem;
-        align-self: flex-start;
-        width: -webkit-fill-available;
       }
 
       .evaluation-actions .submit-btn {
@@ -753,6 +738,9 @@
     <main>
       <div class="contact-form-container evaluation-page">
         <div class="evaluation-shell">
+        <div class="button-container">
+          <a href="evaluations.php" class="page-button back-button evaluation-actions__back-link">Indietro</a>
+        </div>
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
           <input type="hidden" name="application_id" value="<?php echo $application_id; ?>">
@@ -1394,7 +1382,6 @@
               <button type="button" class="page-button" id="next-step-button">Sezione successiva</button>
             </div>
             <div class="evaluation-actions__main">
-              <a href="evaluations.php" class="page-button back-button evaluation-actions__back-link">Indietro</a>
               <button class="submit-btn secondary-button" type="submit" name="action" value="save">Salva bozza</button>
               <button class="submit-btn" type="submit" name="action" value="submit">Invia Valutazione</button>
             </div>
