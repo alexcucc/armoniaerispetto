@@ -57,13 +57,13 @@ if (!empty($filters)) {
 }
 
 $completedFilterClause = $filterClause === ''
-    ? " WHERE e.status = 'SUBMITTED'"
-    : $filterClause . " AND e.status = 'SUBMITTED'";
+    ? " WHERE e.status IN ('SUBMITTED', 'REVISED')"
+    : $filterClause . " AND e.status IN ('SUBMITTED', 'REVISED')";
 
 $completedQuery = "SELECT e.id AS evaluation_id, c.title AS call_title, o.name AS organization_name, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
     . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
-    . "'SUBMITTED' AS status, COALESCE(e.updated_at, a.updated_at) AS updated_at "
+    . "e.status AS status, COALESCE(e.updated_at, a.updated_at) AS updated_at "
     . "FROM evaluation e "
     . "JOIN application a ON e.application_id = a.id "
     . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
@@ -124,6 +124,7 @@ $supervisors = $supervisorsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $statusLabels = [
     'SUBMITTED' => 'Valutata',
+    'REVISED' => 'Revisionata',
     'DRAFT' => 'Valutazione in bozza',
     'NOT_STARTED' => 'In attesa di valutazione',
 ];

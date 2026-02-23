@@ -152,11 +152,6 @@
       ],
   ];
 
-  $sectionMaxScores = [];
-  foreach ($sectionDefinitions as $sectionKey => $definition) {
-      $sectionMaxScores[$sectionKey] = count($definition['fields']) * 10;
-  }
-
   // Pesature allineate al calcolo complessivo in call_for_proposal_results.php
   $criterionWeights = [
       'proposing_entity' => [
@@ -255,11 +250,13 @@
 
   $evaluationStatusLabels = [
       'SUBMITTED' => 'Inviata',
+      'REVISED' => 'Revisionata',
       'DRAFT' => 'Bozza',
       'PENDING' => 'Da iniziare',
   ];
   $evaluationStatusNotes = [
       'SUBMITTED' => 'Valutazione inviata: puoi modificarla e reinviarla se necessario.',
+      'REVISED' => 'Valutazione revisionata dopo un invio precedente.',
       'DRAFT' => 'Bozza salvata: puoi continuare a modificare e inviare quando vuoi.',
       'PENDING' => 'Valutazione non ancora iniziata: compila i punteggi e salva la bozza.',
   ];
@@ -316,15 +313,6 @@
       echo '<span class="section-weight-badge">Peso sezione: ' . (int) $weight . '</span>';
   }
 
-  function renderSectionMaxNote(array $sectionMaxScores, string $sectionKey): void
-  {
-      $maxScore = $sectionMaxScores[$sectionKey] ?? null;
-      if ($maxScore === null) {
-          return;
-      }
-
-      echo '<p class="section-max-note">Punteggio massimo sezione: <strong>' . (int) $maxScore . '</strong></p>';
-  }
   ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -333,18 +321,18 @@
     <title>Invia la Valutazione</title>
     <style>
       .contact-form-container.evaluation-page {
-        margin: 0.45rem 0 0.3rem;
-        padding: 0.35rem 0.9rem 0.45rem;
+        margin: 0.3rem 0 0.2rem;
+        padding: 0.25rem 0.72rem 0.3rem;
       }
 
       .total-score-overlay {
         background-color: #ffffff;
         border: 1px solid #d1d5db;
         border-radius: 0.65rem;
-        padding: 0.55rem 0.7rem;
+        padding: 0.45rem 0.62rem;
         box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
         font-weight: 600;
-        font-size: 0.88rem;
+        font-size: 0.84rem;
         color: #1f2937;
         text-align: center;
       }
@@ -352,22 +340,22 @@
       .total-score-overlay__group {
         display: flex;
         flex-direction: column;
-        gap: 0.1rem;
-        padding: 0.15rem 0;
+        gap: 0.05rem;
+        padding: 0.08rem 0;
       }
 
       .total-score-overlay__group--thematic {
-        margin-top: 0.1rem;
-        padding-top: 0.35rem;
+        margin-top: 0.06rem;
+        padding-top: 0.25rem;
         border-top: 1px dashed #e5e7eb;
       }
 
       .total-score-overlay__label {
         display: block;
-        font-size: 0.78rem;
+        font-size: 0.74rem;
         font-weight: 500;
         color: #4b5563;
-        margin-bottom: 0.15rem;
+        margin-bottom: 0.08rem;
         letter-spacing: 0.02em;
       }
 
@@ -379,7 +367,7 @@
       }
 
       .total-score-overlay__value {
-        font-size: 1.22rem;
+        font-size: 1.1rem;
         color: #0c4a6e;
       }
 
@@ -389,49 +377,69 @@
       }
 
       .total-score-overlay__max {
-        font-size: 1.02rem;
+        font-size: 0.94rem;
         color: #0f172a;
-      }
-
-      .total-score-overlay__note {
-        margin: 0.18rem 0 0;
-        font-size: 0.74rem;
-        font-weight: 500;
-        color: #64748b;
       }
 
       .evaluation-header {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
-        gap: 0.7rem;
+        gap: 0.45rem;
         flex-wrap: wrap;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.12rem;
+      }
+
+      .evaluation-header__main {
+        flex: 1 1 320px;
+        min-width: 0;
+        text-align: center;
       }
 
       .evaluation-header h2 {
         margin: 0;
-        text-align: left;
-        font-size: clamp(1.02rem, 1.6vw, 1.35rem);
+        text-align: center;
+        font-size: clamp(0.98rem, 1.45vw, 1.18rem);
         line-height: 1.2;
       }
 
+      .evaluation-subject-name {
+        margin: 0.2rem auto 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        padding: 0.16rem 0.55rem;
+        border-radius: 9999px;
+        border: 1px solid #bfdbfe;
+        background: #eff6ff;
+        color: #1e3a8a;
+        font-size: 0.84rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .evaluation-subject-name strong {
+        font-weight: 800;
+      }
+
       .evaluation-header .form-note {
-        margin-top: 0.15rem;
-        font-size: 0.82rem;
-        line-height: 1.28;
+        margin-top: 0.18rem;
+        font-size: 0.76rem;
+        line-height: 1.22;
+        color: #64748b;
       }
 
       .evaluation-shell {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.2rem;
       }
 
       .evaluation-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(205px, 220px);
-        gap: 0.95rem;
+        grid-template-columns: minmax(0, 1fr) minmax(188px, 200px);
+        gap: 0.75rem;
         align-items: start;
         flex: 1 1 auto;
         overflow: hidden;
@@ -439,24 +447,24 @@
 
       .evaluation-content {
         min-width: 0;
-        max-height: calc(100vh - 10.2rem);
+        max-height: calc(100vh - 7.6rem);
         overflow-y: auto;
-        padding-right: 0.22rem;
+        padding-right: 0.18rem;
       }
 
       .evaluation-sidebar {
         position: sticky;
-        top: calc(var(--header-height, 70px) + 0.3rem);
+        top: calc(var(--header-height, 70px) + 0.2rem);
         display: flex;
         flex-direction: column;
-        gap: 0.55rem;
+        gap: 0.4rem;
         align-items: stretch;
-        min-width: 205px;
+        min-width: 188px;
         z-index: 1100;
       }
 
       .contact-form {
-        padding-bottom: 0.45rem;
+        padding-bottom: 0.25rem;
       }
 
       .evaluation-step {
@@ -468,25 +476,35 @@
       }
 
       .evaluation-step h3 {
-        margin: 0 0 0.35rem;
+        margin: 0 0 0.22rem;
         text-align: left;
         line-height: 1.2;
-        font-size: 1rem;
+        font-size: 0.95rem;
+      }
+
+      .evaluation-step--proponent h3 {
+        text-align: center;
+        font-size: 1.02rem;
+        color: #0f172a;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.45rem;
+        padding: 0.25rem 0.45rem;
       }
 
       .evaluation-step .form-group + .form-group {
-        margin-top: 0.42rem;
+        margin-top: 0.3rem;
       }
 
       .evaluation-actions {
         background: rgba(255, 255, 255, 0.95);
         border: 1px solid #e5e7eb;
         box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
-        padding: 0.55rem 0.65rem;
+        padding: 0.42rem 0.5rem;
         display: flex;
         flex-direction: column;
         flex-wrap: nowrap;
-        gap: 0.45rem;
+        gap: 0.35rem;
         justify-content: flex-start;
         align-items: stretch;
         border-radius: 0.55rem;
@@ -496,7 +514,7 @@
       .evaluation-actions__main {
         display: flex;
         align-items: stretch;
-        gap: 0.4rem;
+        gap: 0.28rem;
         flex-direction: column;
         justify-content: flex-start;
       }
@@ -520,9 +538,9 @@
       .evaluation-actions .submit-btn,
       .evaluation-actions .page-button {
         width: 100%;
-        min-width: 8rem;
-        padding: 0.45rem 0.65rem;
-        font-size: 0.86rem;
+        min-width: 7rem;
+        padding: 0.34rem 0.52rem;
+        font-size: 0.8rem;
       }
 
       .evaluation-actions .submit-btn {
@@ -531,12 +549,12 @@
 
       .score-input {
         width: 100%;
-        max-width: 88px;
-        padding: 0.34rem 0.45rem;
+        max-width: 72px;
+        padding: 0.28rem 0.36rem;
         border-radius: 0.4rem;
         border: 1px solid #cbd5e1;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.84rem;
       }
 
       .score-input:focus {
@@ -549,67 +567,67 @@
       .section-weight-badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.05rem 0.38rem;
-        margin-left: 0.4rem;
+        padding: 0.03rem 0.3rem;
+        margin-left: 0.22rem;
         border-radius: 9999px;
         background: #ecfeff;
         color: #0ea5e9;
         font-weight: 700;
-        font-size: 0.7rem;
+        font-size: 0.64rem;
         border: 1px solid #bae6fd;
       }
 
       .criteria-weighted-score {
         display: inline-flex;
         align-items: center;
-        padding: 0.05rem 0.38rem;
-        margin-left: 0.35rem;
+        padding: 0.03rem 0.3rem;
+        margin-left: 0.2rem;
         border-radius: 9999px;
         background: #fef3c7;
         color: #b45309;
         font-weight: 700;
-        font-size: 0.7rem;
+        font-size: 0.64rem;
         border: 1px solid #fde68a;
       }
 
       .section-weight-badge {
-        margin-left: 0.6rem;
+        margin-left: 0.45rem;
       }
 
       .criteria-row {
         display: flex;
         align-items: flex-start;
-        gap: 0.45rem;
+        gap: 0.34rem;
         flex-wrap: wrap;
       }
 
       .criteria-row__label {
-        flex: 1 1 250px;
+        flex: 1 1 220px;
         min-width: 0;
       }
 
       .criteria-row__input {
-        flex: 0 0 90px;
+        flex: 0 0 74px;
         display: flex;
         align-items: center;
         justify-content: flex-end;
       }
 
       .criteria-row__weight {
-        flex: 1 1 170px;
+        flex: 1 1 150px;
         display: flex;
         align-items: center;
-        gap: 0.25rem;
+        gap: 0.18rem;
         flex-wrap: wrap;
       }
 
       .criteria-label {
         display: inline-flex;
         align-items: flex-start;
-        gap: 0.3rem;
+        gap: 0.2rem;
         margin: 0;
-        line-height: 1.25;
-        font-size: 0.86rem;
+        line-height: 1.18;
+        font-size: 0.8rem;
       }
 
       .criteria-info-toggle {
@@ -617,9 +635,9 @@
         color: #0369a1;
         border: 1px solid #bae6fd;
         border-radius: 0.4rem;
-        padding: 0.24rem 0.5rem;
+        padding: 0.18rem 0.42rem;
         font-weight: 700;
-        font-size: 0.74rem;
+        font-size: 0.68rem;
         cursor: pointer;
       }
 
@@ -631,28 +649,14 @@
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 0.5rem;
-        padding: 0.45rem 0.58rem;
-        font-size: 0.82rem;
+        padding: 0.34rem 0.48rem;
+        font-size: 0.75rem;
         color: #0f172a;
-        margin-top: 0.3rem;
+        margin-top: 0.22rem;
       }
 
       .criteria-info-text ul {
-        margin: 0.22rem 0 0.15rem 1rem;
-      }
-
-      .section-max-note {
-        margin: 0.2rem 0 0.38rem;
-        padding: 0.12rem 0.52rem;
-        background: #fff7ed;
-        border: 1px dashed #fed7aa;
-        color: #9a3412;
-        border-radius: 9999px;
-        font-size: 0.77rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
+        margin: 0.15rem 0 0.1rem 0.9rem;
       }
 
       .evaluation-step h3:focus {
@@ -664,7 +668,7 @@
       @media (max-width: 1000px) {
         .evaluation-layout {
           grid-template-columns: 1fr;
-          gap: 0.55rem;
+          gap: 0.35rem;
           overflow: visible;
         }
 
@@ -677,7 +681,7 @@
         }
 
         .evaluation-content {
-          max-height: calc(100vh - 13rem);
+          max-height: calc(100vh - 11.8rem);
           overflow-y: auto;
           padding-right: 0.08rem;
         }
@@ -695,13 +699,18 @@
         }
 
         .evaluation-content {
-          max-height: calc(100vh - 8.5rem);
+          max-height: calc(100vh - 6.9rem);
         }
       }
 
       @media (max-width: 768px) {
         .contact-form-container.evaluation-page {
-          padding: 0.3rem 0.55rem 0.35rem;
+          padding: 0.2rem 0.45rem 0.24rem;
+        }
+
+        .evaluation-subject-name {
+          width: 100%;
+          border-radius: 0.5rem;
         }
 
         .total-score-overlay {
@@ -726,15 +735,15 @@
         }
 
         .total-score-overlay__value {
-          font-size: 1.1rem;
+          font-size: 1rem;
         }
 
         .total-score-overlay__max {
-          font-size: 0.95rem;
+          font-size: 0.9rem;
         }
 
         .evaluation-content {
-          max-height: calc(100vh - 13.6rem);
+          max-height: calc(100vh - 12.8rem);
         }
       }
     </style>
@@ -755,8 +764,9 @@
             <input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>">
           <?php endif; ?>
           <div class="evaluation-header">
-            <div>
-              <h2>Valutazione <?php echo htmlspecialchars($entity_name); ?></h2>
+            <div class="evaluation-header__main">
+              <h2>Valutazione progetto</h2>
+              <p class="evaluation-subject-name">Soggetto proponente: <strong><?php echo htmlspecialchars($entity_name); ?></strong></p>
               <p class="form-note">Tutte le valutazioni utilizzano una scala da 0 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
             </div>
             <div class="evaluation-status-panel evaluation-status-panel--<?php echo htmlspecialchars($displayStatusClass); ?>">
@@ -770,9 +780,8 @@
 
           <div class="evaluation-layout">
             <div class="evaluation-content">
-          <div class="evaluation-step active" data-step-index="0">
+          <div class="evaluation-step evaluation-step--proponent active" data-step-index="0">
             <h3>Soggetto Proponente</h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'proposing_entity'); ?>
           <div class="form-group">
             <label class="form-label required">Informazioni Generali <?php renderCriterionWeightBadge($criterionWeights, 'proposing_entity', 'general_information_score'); ?></label>
             <?php renderScoreInput('proposing_entity[general_information_score]', 'Informazioni Generali', $evaluationData['proposing_entity']['general_information_score']); ?>
@@ -864,7 +873,6 @@
 
           <div class="evaluation-step" data-step-index="1">
             <h3>Progetto</h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'project'); ?>
           <div class="form-group">
             <label class="form-label required">Identificazione dei bisogni e analisi dei problemi <?php renderCriterionWeightBadge($criterionWeights, 'project', 'needs_identification_and_problem_analysis_score'); ?></label>
             <?php renderScoreInput('project[needs_identification_and_problem_analysis_score]', 'Identificazione dei bisogni e analisi dei problemi', $evaluationData['project']['needs_identification_and_problem_analysis_score']); ?>
@@ -977,7 +985,6 @@
 
           <div class="evaluation-step" data-step-index="2">
             <h3>Piano Finanziario</h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'financial_plan'); ?>
           <div class="form-group">
             <label class="form-label required">Completezza e chiarezza del budget <?php renderCriterionWeightBadge($criterionWeights, 'financial_plan', 'completeness_and_clarity_of_budget_score'); ?></label>
             <?php renderScoreInput('financial_plan[completeness_and_clarity_of_budget_score]', 'Completezza e chiarezza del budget', $evaluationData['financial_plan']['completeness_and_clarity_of_budget_score']); ?>
@@ -1021,7 +1028,6 @@
 
           <div class="evaluation-step" data-step-index="3">
             <h3>Elementi Qualitativi</h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'qualitative_elements'); ?>
           <div class="form-group">
             <label class="form-label required">L'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento <?php renderCriterionWeightBadge($criterionWeights, 'qualitative_elements', 'impact_score'); ?></label>
             <?php renderScoreInput('qualitative_elements[impact_score]', 'L\'impatto e gli effetti di più ampio e lungo termine prodotti dall’iniziativa in ragione del contesto di intervento', $evaluationData['qualitative_elements']['impact_score']); ?>
@@ -1105,7 +1111,6 @@
 
           <div class="evaluation-step" data-step-index="4">
             <h3>Criteri Tematici - Ripopolamento <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_repopulation'); ?></h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_repopulation'); ?>
           <div class="form-group">
             <label class="form-label required">Habitat dell'intervento</label>
             <?php renderScoreInput('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
@@ -1147,7 +1152,6 @@
 
           <div class="evaluation-step" data-step-index="5">
             <h3>Criteri Tematici - Salvaguardia <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_safeguard'); ?></h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_safeguard'); ?>
             <div class="form-group">
               <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
               <?php renderScoreInput('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
@@ -1215,7 +1219,6 @@
 
           <div class="evaluation-step" data-step-index="6">
             <h3>Criteri Tematici - Coabitazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_cohabitation'); ?></h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_cohabitation'); ?>
             <div class="form-group">
               <label class="form-label required">Strategia di riduzione dei rischi</label>
               <?php renderScoreInput('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
@@ -1264,7 +1267,6 @@
           </div>
           <div class="evaluation-step" data-step-index="7">
             <h3>Criteri Tematici - Supporto di comunità <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_community_support'); ?></h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_community_support'); ?>
             <div class="form-group">
               <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
               <?php renderScoreInput('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
@@ -1313,7 +1315,6 @@
           </div>
           <div class="evaluation-step" data-step-index="8">
             <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_culture_education'); ?></h3>
-            <?php renderSectionMaxNote($sectionMaxScores, 'thematic_culture_education'); ?>
             <div class="form-group">
               <label class="form-label required">Strumenti di disseminazione</label>
               <?php renderScoreInput('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
@@ -1364,31 +1365,28 @@
           <div class="evaluation-sidebar" aria-label="Punteggi e azioni di navigazione">
           <div class="total-score-overlay" role="status" aria-live="polite">
             <div class="total-score-overlay__group">
-              <span class="total-score-overlay__label">Totale punteggio</span>
+              <span class="total-score-overlay__label">Totale punteggio / Totale max</span>
               <span class="total-score-overlay__value-row">
                 <span class="total-score-overlay__value" id="total-score-value">0</span>
                 <span class="total-score-overlay__separator">/</span>
                 <span class="total-score-overlay__max" id="total-score-max-value">0</span>
               </span>
-              <p class="total-score-overlay__note">Punteggio massimo pesato</p>
             </div>
             <div class="total-score-overlay__group">
-              <span class="total-score-overlay__label">Totale sezione corrente</span>
+              <span class="total-score-overlay__label">Totale sezione corrente / Max sezione corrente</span>
               <span class="total-score-overlay__value-row">
                 <span class="total-score-overlay__value" id="section-score-value">0</span>
                 <span class="total-score-overlay__separator">/</span>
                 <span class="total-score-overlay__max" id="section-score-max-value">0</span>
               </span>
-              <p class="total-score-overlay__note">Massimo pesato sezione</p>
             </div>
             <div class="total-score-overlay__group total-score-overlay__group--thematic" id="thematic-score-group" hidden>
-              <span class="total-score-overlay__label">Totale criteri tematici</span>
+              <span class="total-score-overlay__label">Totale criteri tematici / Max criteri tematici</span>
               <span class="total-score-overlay__value-row">
                 <span class="total-score-overlay__value" id="thematic-score-value">0</span>
                 <span class="total-score-overlay__separator">/</span>
                 <span class="total-score-overlay__max" id="thematic-score-max-value">0</span>
               </span>
-              <p class="total-score-overlay__note">Massimo pesato criteri tematici</p>
             </div>
           </div>
           <div class="evaluation-actions" aria-label="Navigazione e azioni di salvataggio">
@@ -1497,22 +1495,28 @@
             return;
           }
 
-          const rawValue = Number.parseInt(input.value, 10);
-
-          if (Number.isNaN(rawValue)) {
+          const rawValue = (input.value || '').trim();
+          if (rawValue === '') {
             input.value = '';
             return;
           }
 
-          const clampedValue = clampScore(rawValue);
+          if (!/^\d+$/.test(rawValue)) {
+            input.value = '';
+            return;
+          }
+
+          const parsedValue = Number.parseInt(rawValue, 10);
+          const clampedValue = clampScore(parsedValue);
 
           if (clampedValue === null) {
             input.value = '';
             return;
           }
 
-          if (clampedValue !== rawValue) {
-            input.value = clampedValue;
+          const normalizedValue = clampedValue.toString();
+          if (input.value !== normalizedValue) {
+            input.value = normalizedValue;
           }
         };
 

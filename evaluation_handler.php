@@ -278,6 +278,10 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
         }
 
         $rawValue = $rawSection[$fieldName];
+        if (is_string($rawValue)) {
+            $rawValue = trim($rawValue);
+        }
+
         if ($rawValue === '' || $rawValue === null) {
             if ($isSubmitAction) {
                 $sectionIsIncomplete = true;
@@ -287,7 +291,8 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
             continue;
         }
 
-        if (!ctype_digit((string) $rawValue)) {
+        $rawValueString = (string) $rawValue;
+        if (!preg_match('/^(0|[1-9][0-9]*)$/', $rawValueString)) {
             if ($isSubmitAction) {
                 sendResponseAndExit(
                     $isAjaxRequest,
@@ -300,7 +305,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
             continue;
         }
 
-        $score = (int) $rawValue;
+        $score = (int) $rawValueString;
         if ($score < 0 || $score > 10) {
             if ($isSubmitAction) {
                 sendResponseAndExit(
@@ -340,7 +345,13 @@ try {
     // Use transaction for consistency
     $pdo->beginTransaction();
 
-    $statusToApply = $isSubmitAction ? 'SUBMITTED' : 'DRAFT';
+    if ($existingEvaluation !== null) {
+        $existingStatus = strtoupper((string) ($existingEvaluation['status'] ?? ''));
+        $isPreviouslySent = in_array($existingStatus, ['SUBMITTED', 'REVISED'], true);
+        $statusToApply = $isPreviouslySent ? 'REVISED' : ($isSubmitAction ? 'SUBMITTED' : 'DRAFT');
+    } else {
+        $statusToApply = $isSubmitAction ? 'SUBMITTED' : 'DRAFT';
+    }
 
     if ($existingEvaluation !== null) {
         $evaluation_id = (int) $existingEvaluation['id'];
@@ -447,9 +458,13 @@ try {
 
     $pdo->commit();
 
-    $successMessage = $isSubmitAction
-        ? 'Valutazione inviata con successo.'
-        : 'Valutazione salvata come bozza.';
+    if ($statusToApply === 'REVISED') {
+        $successMessage = 'Valutazione revisionata con successo.';
+    } elseif ($isSubmitAction) {
+        $successMessage = 'Valutazione inviata con successo.';
+    } else {
+        $successMessage = 'Valutazione salvata come bozza.';
+    }
     sendResponseAndExit($isAjaxRequest, true, $successMessage, 'evaluations.php');
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {

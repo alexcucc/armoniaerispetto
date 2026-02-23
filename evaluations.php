@@ -32,6 +32,7 @@ if ($selectedEnte !== '' && $selectedEnteLength > 255) {
 $selectedStatus = isset($_GET['filter_status']) ? strtoupper(trim($_GET['filter_status'])) : '';
 $statusLabels = [
     'SUBMITTED' => 'Inviata',
+    'REVISED' => 'Revisionata',
     'DRAFT' => 'In bozza',
     'PENDING' => 'Da iniziare',
 ];
@@ -136,6 +137,40 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
     $stmt->execute($submittedParams);
     foreach ($stmt->fetchAll() as $row) {
         $evaluations[] = $row + ['status' => 'SUBMITTED'];
+    }
+}
+
+if ($selectedStatus === '' || $selectedStatus === 'REVISED') {
+    $revisedQuery = "
+      SELECT
+        a.id AS application_id,
+        c.id AS call_id,
+        c.title AS call_title,
+        COALESCE(o.name, 'Soggetto proponente') AS ente,
+        e.updated_at AS reference_date,
+        a.application_pdf_path,
+        a.budget_pdf_path,
+        a.checklist_path
+      FROM evaluation e
+      JOIN application a ON e.application_id = a.id
+      JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+      LEFT JOIN organization o ON a.organization_id = o.id
+      WHERE e.evaluator_id = :uid AND e.status = 'REVISED' AND c.status = 'OPEN'
+    ";
+    $revisedParams = [':uid' => $_SESSION['user_id']];
+    if ($selectedCall !== '') {
+        $revisedQuery .= " AND c.id = :call_filter";
+        $revisedParams[':call_filter'] = (int) $selectedCall;
+    }
+    if ($selectedEnte !== '') {
+        $revisedQuery .= " AND COALESCE(o.name, 'Soggetto proponente') = :ente_filter";
+        $revisedParams[':ente_filter'] = $selectedEnte;
+    }
+    $revisedQuery .= " ORDER BY e.updated_at DESC";
+    $stmt = $pdo->prepare($revisedQuery);
+    $stmt->execute($revisedParams);
+    foreach ($stmt->fetchAll() as $row) {
+        $evaluations[] = $row + ['status' => 'REVISED'];
     }
 }
 
@@ -333,11 +368,12 @@ usort($evaluations, function (array $a, array $b) {
                         $statusKey = $row['status'];
                         $statusLabel = $statusLabels[$statusKey] ?? $statusKey;
                         $statusClass = 'evaluation-status-badge';
-                        if (in_array($statusKey, ['SUBMITTED', 'DRAFT', 'PENDING'], true)) {
+                        if (in_array($statusKey, ['SUBMITTED', 'REVISED', 'DRAFT', 'PENDING'], true)) {
                             $statusClass .= ' evaluation-status-badge--' . strtolower($statusKey);
                         }
                         $isDraft = $statusKey === 'DRAFT';
                         $isSubmitted = $statusKey === 'SUBMITTED';
+                        $isRevised = $statusKey === 'REVISED';
                         $isPending = $statusKey === 'PENDING';
                         $hasApplicationPdf = !empty($row['application_pdf_path']);
                         $hasBudgetPdf = !empty($row['budget_pdf_path']);
@@ -400,12 +436,12 @@ usort($evaluations, function (array $a, array $b) {
                             <?php else: ?>
                               <?php if ($isDraft): ?>
                                 <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Continua</a>
-                              <?php elseif ($isSubmitted): ?>
+                              <?php elseif ($isSubmitted || $isRevised): ?>
                                 <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Modifica</a>
                               <?php else: ?>
                                 <span class="text-muted">-</span>
                               <?php endif; ?>
-                              <?php if ($isDraft || $isSubmitted): ?>
+                              <?php if ($isDraft || $isSubmitted || $isRevised): ?>
                                 <a class="page-button secondary-button" href="evaluation_summary.php?application_id=<?php echo $row['application_id']; ?>">Sintesi</a>
                               <?php endif; ?>
                             <?php endif; ?>

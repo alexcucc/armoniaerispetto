@@ -1926,6 +1926,12 @@ p {
     border-color: #86efac;
 }
 
+.evaluation-status-badge--revised {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fcd34d;
+}
+
 .evaluation-status-badge--draft {
     background: #fff7ed;
     color: #9a3412;
@@ -1967,6 +1973,11 @@ p {
 .evaluation-status-panel--submitted {
     border-left-color: #22c55e;
     background: #f0fdf4;
+}
+
+.evaluation-status-panel--revised {
+    border-left-color: #f59e0b;
+    background: #fffbeb;
 }
 
 .evaluation-status-panel--draft {

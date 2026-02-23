@@ -52,7 +52,7 @@ if ($totalEvaluators > 0) {
             COALESCE(SUM(es.total_overall_score), 0) AS total_score
         FROM application a
         JOIN organization o ON a.organization_id = o.id
-        LEFT JOIN evaluation e ON e.application_id = a.id AND e.status = \'SUBMITTED\'
+        LEFT JOIN evaluation e ON e.application_id = a.id AND e.status IN (\'SUBMITTED\', \'REVISED\')
         LEFT JOIN (
             SELECT
                 ev.id AS evaluation_id,
@@ -153,7 +153,7 @@ if ($totalEvaluators > 0) {
                 FROM evaluation_thematic_criteria_safeguard
                 GROUP BY evaluation_id
             ) etc_safeguard ON etc_safeguard.evaluation_id = ev.id
-            WHERE ev.status = \'SUBMITTED\'
+            WHERE ev.status IN (\'SUBMITTED\', \'REVISED\')
         ) es ON es.evaluation_id = e.id
         WHERE a.call_for_proposal_id = :call_id
         GROUP BY o.id, o.name
