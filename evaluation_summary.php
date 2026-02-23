@@ -22,7 +22,7 @@ if (!$applicationId) {
 
 $stmt = $pdo->prepare(
     "SELECT e.id AS evaluation_id, e.status AS evaluation_status, e.updated_at, "
-    . "a.project_name, c.title AS call_title, COALESCE(o.name, 'Soggetto proponente') AS organization_name, "
+    . "c.title AS call_title, COALESCE(o.name, 'Soggetto proponente') AS organization_name, "
     . "eg.proposing_entity_score, eg.general_project_score, eg.financial_plan_score, "
     . "eg.qualitative_elements_score, eg.thematic_criteria_score, eg.overall_score, "
     . "etr.overall_score AS thematic_repopulation_score, "
@@ -70,8 +70,34 @@ $thematicMaxScores = [
     'thematic_culture_education' => 5 * 10,
 ];
 
-$maxThematic = array_sum($thematicMaxScores);
-$maxOverall = array_sum($sectionMaxScores) + $maxThematic;
+$thematicRawMax = array_sum($thematicMaxScores);
+$thematicDisplayMax = 70;
+$maxOverall = array_sum($sectionMaxScores) + $thematicDisplayMax;
+
+$thematicDisplayScore = null;
+$thematicRawScore = is_numeric($evaluation['thematic_criteria_score']) ? (float) $evaluation['thematic_criteria_score'] : null;
+if ($thematicRawScore !== null && $thematicRawMax > 0) {
+    $thematicDisplayScore = ($thematicRawScore / $thematicRawMax) * $thematicDisplayMax;
+    $thematicDisplayScore = max(0, min($thematicDisplayMax, $thematicDisplayScore));
+}
+
+$nonThematicScores = [
+    is_numeric($evaluation['proposing_entity_score']) ? (float) $evaluation['proposing_entity_score'] : null,
+    is_numeric($evaluation['general_project_score']) ? (float) $evaluation['general_project_score'] : null,
+    is_numeric($evaluation['financial_plan_score']) ? (float) $evaluation['financial_plan_score'] : null,
+    is_numeric($evaluation['qualitative_elements_score']) ? (float) $evaluation['qualitative_elements_score'] : null,
+];
+$filteredNonThematicScores = array_filter($nonThematicScores, static fn ($value) => $value !== null);
+$nonThematicOverallScore = $filteredNonThematicScores === [] ? null : array_sum($filteredNonThematicScores);
+
+$overallDisplayScore = null;
+$overallDisplayParts = array_filter(
+    [$nonThematicOverallScore, $thematicDisplayScore],
+    static fn ($value) => $value !== null
+);
+if ($overallDisplayParts !== []) {
+    $overallDisplayScore = array_sum($overallDisplayParts);
+}
 
 $mainSectionRows = [
     [
@@ -96,8 +122,8 @@ $mainSectionRows = [
     ],
     [
         'label' => 'Criteri tematici',
-        'score' => $evaluation['thematic_criteria_score'],
-        'max' => $maxThematic,
+        'score' => $thematicDisplayScore,
+        'max' => $thematicDisplayMax,
         'is_thematic' => true,
     ],
 ];
@@ -154,7 +180,7 @@ function formatScore($value): string
     <title>Sintesi Valutazione</title>
     <link rel="stylesheet" href="styles.css">
   </head>
-  <body class="management-page management-page--scroll">
+  <body class="management-page management-page--scroll evaluation-summary-page">
     <?php include 'header.php'; ?>
     <main>
       <div class="hero">
@@ -168,31 +194,18 @@ function formatScore($value): string
             </div>
 
             <div class="evaluation-summary">
-              <section class="summary-card">
-                <div class="summary-card__header">
-                  <h2>Dati principali</h2>
-                </div>
-                <dl class="summary-metadata">
-                  <div class="summary-metadata__row">
-                    <dt>Bando</dt>
-                    <dd><?php echo htmlspecialchars($evaluation['call_title']); ?></dd>
-                  </div>
-                  <div class="summary-metadata__row">
-                    <dt>Ente</dt>
-                    <dd><?php echo htmlspecialchars($evaluation['organization_name']); ?></dd>
-                  </div>
-                  <div class="summary-metadata__row">
-                    <dt>Titolo del progetto</dt>
-                    <dd><?php echo htmlspecialchars($evaluation['project_name']); ?></dd>
-                  </div>
-                </dl>
-              </section>
+              <div class="summary-context" aria-label="Dati principali">
+                <p class="summary-context__item">
+                  <span class="summary-context__label">Bando:</span>
+                  <span class="summary-context__value"><?php echo htmlspecialchars($evaluation['call_title']); ?></span>
+                </p>
+                <p class="summary-context__item">
+                  <span class="summary-context__label">Ente:</span>
+                  <span class="summary-context__value"><?php echo htmlspecialchars($evaluation['organization_name']); ?></span>
+                </p>
+              </div>
 
-              <section class="summary-card">
-                <div class="summary-card__header">
-                  <h2>Punteggi</h2>
-                  <p class="summary-card__hint">I valori massimi sono calcolati sulla base del numero di criteri per sezione.</p>
-                </div>
+              <section class="summary-card summary-card--primary">
                 <div class="summary-table-wrap">
                   <table class="summary-table">
                     <thead>
@@ -224,7 +237,7 @@ function formatScore($value): string
                       <?php endforeach; ?>
                       <tr class="summary-total">
                         <td>Totale</td>
-                        <td><?php echo htmlspecialchars(formatScore($evaluation['overall_score'])); ?></td>
+                        <td><?php echo htmlspecialchars(formatScore($overallDisplayScore)); ?></td>
                         <td class="summary-max"><?php echo htmlspecialchars(formatScore($maxOverall)); ?></td>
                       </tr>
                     </tbody>
