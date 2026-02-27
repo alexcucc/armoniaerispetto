@@ -1492,6 +1492,16 @@
           thematic_culture_education: 'Criteri Tematici - Cultura - Educazione - Sensibilizzazione',
         };
         const thematicDisplayMaxScore = 70;
+        const thematicWeightTotal = sectionKeys.reduce((total, sectionKey) => {
+          if (typeof sectionKey !== 'string' || !sectionKey.startsWith('thematic_')) {
+            return total;
+          }
+
+          return total + (sectionWeightMultipliers[sectionKey] ?? 0);
+        }, 0);
+        const thematicSectionScaleFactor = thematicWeightTotal > 0
+          ? thematicDisplayMaxScore / thematicWeightTotal
+          : 0;
         const incompleteMessage = 'valutazione incompleta: valutazione non inviabile';
         let activeStepIndex = 0;
         let hasUnsavedChanges = false;
@@ -1655,14 +1665,25 @@
 
           const inputs = Array.from(sectionElement.querySelectorAll('input.score-input'));
           const sectionKey = getSectionKey(sectionIndex);
-          const multiplier = sectionWeightMultipliers[sectionKey] ?? 1;
           const scoreScale = 10;
+          const multiplier = sectionWeightMultipliers[sectionKey] ?? 1;
+          const thematicScaledSectionWeight = isThematicStep(sectionIndex)
+            ? multiplier * thematicSectionScaleFactor
+            : null;
+          const thematicCriterionWeight = thematicScaledSectionWeight !== null && inputs.length > 0
+            ? thematicScaledSectionWeight / inputs.length
+            : null;
 
           let sectionTotal = 0;
 
           inputs.forEach((input) => {
             const value = clampScore(Number.parseInt(input.value, 10));
             if (value === null) {
+              return;
+            }
+
+            if (thematicCriterionWeight !== null) {
+              sectionTotal += (value * thematicCriterionWeight) / scoreScale;
               return;
             }
 
@@ -1673,6 +1694,10 @@
 
             sectionTotal += (value * weight) / scoreScale;
           });
+
+          if (thematicScaledSectionWeight !== null) {
+            return sectionTotal;
+          }
 
           return sectionTotal * multiplier;
         };
@@ -1687,6 +1712,10 @@
           const inputs = Array.from(sectionElement.querySelectorAll('input.score-input'));
           const sectionKey = getSectionKey(sectionIndex);
           const multiplier = sectionWeightMultipliers[sectionKey] ?? 1;
+          if (isThematicStep(sectionIndex)) {
+            const thematicScaledSectionWeight = multiplier * thematicSectionScaleFactor;
+            return inputs.length > 0 ? thematicScaledSectionWeight : 0;
+          }
 
           let sectionMax = 0;
 
@@ -1744,12 +1773,9 @@
 
           const thematicRawScore = calculateThematicTotalScore();
           const thematicRawMax = calculateThematicMaxScore();
-          const normalizedThematicScore = thematicRawMax > 0
-            ? (thematicRawScore / thematicRawMax) * thematicDisplayMaxScore
-            : 0;
 
-          thematicScoreElement.textContent = formatScore(normalizedThematicScore);
-          thematicScoreMaxElement.textContent = formatScore(thematicDisplayMaxScore);
+          thematicScoreElement.textContent = formatScore(thematicRawScore);
+          thematicScoreMaxElement.textContent = formatScore(thematicRawMax);
         };
 
         const updateThematicCounterVisibility = () => {
