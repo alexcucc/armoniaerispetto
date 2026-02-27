@@ -382,18 +382,25 @@
       }
 
       .evaluation-header {
-        display: flex;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
         align-items: center;
-        justify-content: space-between;
         gap: 0.45rem;
-        flex-wrap: wrap;
         margin-bottom: 0.12rem;
       }
 
       .evaluation-header__main {
-        flex: 1 1 320px;
+        grid-column: 2;
         min-width: 0;
         text-align: center;
+      }
+
+      .evaluation-header__title-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        flex-wrap: wrap;
       }
 
       .evaluation-header h2 {
@@ -404,7 +411,7 @@
       }
 
       .evaluation-subject-name {
-        margin: 0.2rem auto 0;
+        margin: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -417,6 +424,11 @@
         font-size: 0.84rem;
         font-weight: 700;
         line-height: 1.2;
+      }
+
+      .evaluation-status-panel {
+        grid-column: 3;
+        justify-self: end;
       }
 
       .evaluation-subject-name strong {
@@ -437,9 +449,11 @@
       }
 
       .evaluation-layout {
+        --evaluation-sidebar-width: 200px;
+        --evaluation-layout-gap: 0.75rem;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(188px, 200px);
-        gap: 0.75rem;
+        grid-template-columns: minmax(0, 1fr) minmax(188px, var(--evaluation-sidebar-width));
+        gap: var(--evaluation-layout-gap);
         align-items: start;
         flex: 1 1 auto;
         overflow: hidden;
@@ -449,6 +463,7 @@
         min-width: 0;
         max-height: calc(100vh - 7.6rem);
         overflow-y: auto;
+        overflow-x: hidden;
         padding-right: 0.18rem;
       }
 
@@ -477,7 +492,8 @@
 
       .evaluation-step h3 {
         margin: 0 0 0.22rem;
-        text-align: left;
+        transform: translateX(calc((var(--evaluation-sidebar-width) + var(--evaluation-layout-gap)) / 2));
+        text-align: center;
         line-height: 1.2;
         font-size: 0.95rem;
       }
@@ -666,10 +682,27 @@
       }
 
       @media (max-width: 1000px) {
+        .evaluation-header {
+          grid-template-columns: 1fr;
+        }
+
+        .evaluation-header__main,
+        .evaluation-status-panel {
+          grid-column: 1;
+        }
+
+        .evaluation-status-panel {
+          justify-self: stretch;
+        }
+
         .evaluation-layout {
           grid-template-columns: 1fr;
           gap: 0.35rem;
           overflow: visible;
+        }
+
+        .evaluation-step h3 {
+          transform: none;
         }
 
         .evaluation-sidebar {
@@ -709,8 +742,7 @@
         }
 
         .evaluation-subject-name {
-          width: 100%;
-          border-radius: 0.5rem;
+          max-width: 100%;
         }
 
         .total-score-overlay {
@@ -765,8 +797,10 @@
           <?php endif; ?>
           <div class="evaluation-header">
             <div class="evaluation-header__main">
-              <h2>Valutazione progetto</h2>
-              <p class="evaluation-subject-name">Soggetto proponente: <strong><?php echo htmlspecialchars($entity_name); ?></strong></p>
+              <div class="evaluation-header__title-row">
+                <h2>Valutazione progetto</h2>
+                <p class="evaluation-subject-name">Ente: <strong><?php echo htmlspecialchars($entity_name); ?></strong></p>
+              </div>
               <p class="form-note">Tutte le valutazioni utilizzano una scala da 0 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
             </div>
             <div class="evaluation-status-panel evaluation-status-panel--<?php echo htmlspecialchars($displayStatusClass); ?>">
