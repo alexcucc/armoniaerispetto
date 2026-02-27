@@ -217,17 +217,18 @@ function formatScore($value): string
                     </thead>
                     <tbody>
                       <?php foreach ($mainSectionRows as $row): ?>
-                        <tr>
+                        <tr class="<?php echo !empty($row['is_thematic']) ? 'summary-section-row summary-section-row--thematic' : 'summary-section-row'; ?>">
                           <td class="summary-section"><?php echo htmlspecialchars($row['label']); ?></td>
                           <td><?php echo htmlspecialchars(formatScore($row['score'])); ?></td>
                           <td class="summary-max"><?php echo htmlspecialchars(formatScore($row['max'])); ?></td>
                         </tr>
                         <?php if (!empty($row['is_thematic'])): ?>
-                          <?php foreach ($thematicSectionRows as $subRow): ?>
-                            <tr class="summary-subsection-row">
+                          <?php $thematicLastIndex = count($thematicSectionRows) - 1; ?>
+                          <?php foreach ($thematicSectionRows as $index => $subRow): ?>
+                            <tr class="summary-subsection-row<?php echo $index === 0 ? ' summary-subsection-row--first' : ''; ?><?php echo $index === $thematicLastIndex ? ' summary-subsection-row--last' : ''; ?>">
                               <td class="summary-subsection">
-                                <span class="summary-subsection__bullet">&bull;</span>
-                                <?php echo htmlspecialchars($subRow['label']); ?>
+                                <span class="summary-subsection__branch" aria-hidden="true"></span>
+                                <span class="summary-subsection__label"><?php echo htmlspecialchars($subRow['label']); ?></span>
                               </td>
                               <td><?php echo htmlspecialchars(formatScore($subRow['score'])); ?></td>
                               <td class="summary-max"><?php echo htmlspecialchars(formatScore($subRow['max'])); ?></td>

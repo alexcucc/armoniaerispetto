@@ -1990,61 +1990,80 @@ p {
     background: #f0f9ff;
 }
 
+body.evaluation-summary-page .hero {
+  margin: 0.12em;
+}
+
+body.evaluation-summary-page .content-container {
+  margin: 0;
+  padding: 0 0.15rem;
+}
+
 body.evaluation-summary-page .content {
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 body.evaluation-summary-page .title h1 {
-  margin: 0.05rem 0;
-  font-size: clamp(1.2rem, 1.9vw, 1.6rem);
+  margin: 0;
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  line-height: 1.15;
 }
 
 body.evaluation-summary-page .button-container {
-  margin: 0.05rem 0 0.2rem;
+  margin: 0 0 0.12rem;
 }
 
 .evaluation-summary {
   display: grid;
-  gap: 0.6rem;
-  width: min(100%, 980px);
+  gap: 0.35rem;
+  width: min(100%, 940px);
   margin: 0 auto;
 }
 
 .summary-context {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem 0.85rem;
+  gap: 0.2rem 0.6rem;
   align-items: center;
   justify-content: center;
 }
 
 .summary-context__item {
   margin: 0;
-  padding: 0.22rem 0.6rem;
+  padding: 0.14rem 0.48rem;
   border-radius: 999px;
   border: 1px solid #dbe7f2;
   background: #f8fbff;
   color: #1e293b;
-  font-size: 0.82rem;
-  line-height: 1.2;
+  font-size: 0.74rem;
+  line-height: 1.1;
 }
 
 .summary-context__label {
   font-weight: 700;
   color: #334155;
-  margin-right: 0.25rem;
+  margin-right: 0.22rem;
+}
+
+.summary-context__value {
+  display: inline-block;
+  max-width: min(42vw, 360px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
 }
 
 .summary-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 0.75rem 0.9rem;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+  border-radius: 10px;
+  padding: 0.42rem 0.58rem;
+  box-shadow: 0 5px 12px rgba(15, 23, 42, 0.05);
 }
 
 .summary-card--primary {
-  padding-top: 0.65rem;
+  padding-top: 0.42rem;
 }
 
 .summary-card__header {
@@ -2104,23 +2123,38 @@ body.evaluation-summary-page .button-container {
   width: 100%;
   border-collapse: collapse;
   margin: 0;
+  table-layout: fixed;
+}
+
+.summary-table th:first-child,
+.summary-table td:first-child {
+  width: 52%;
+}
+
+.summary-table th:nth-child(2),
+.summary-table td:nth-child(2),
+.summary-table th:nth-child(3),
+.summary-table td:nth-child(3) {
+  width: 24%;
 }
 
 .summary-table th {
   text-align: left;
-  font-size: 0.73rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   color: #1f2937;
-  padding: 0.45rem 0.55rem;
+  padding: 0.32rem 0.45rem;
   border-bottom: 1px solid #dbe3ef;
+  line-height: 1.1;
 }
 
 .summary-table td {
-  padding: 0.42rem 0.55rem;
+  padding: 0.3rem 0.45rem;
   border-bottom: 1px solid #eef2f7;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: 1.15;
+  font-size: 0.86rem;
 }
 
 .summary-table td:nth-child(2),
@@ -2135,18 +2169,62 @@ body.evaluation-summary-page .button-container {
   color: #1e293b;
 }
 
+.summary-section-row--thematic td {
+  background: #f4f8ff;
+  border-bottom-color: #cfdced;
+}
+
+.summary-section-row--thematic .summary-section {
+  color: #0f3b66;
+  padding-left: 0.2rem;
+}
+
 .summary-subsection-row td {
-  background: #f8fafc;
+  background: #eef5ff;
+  border-bottom-color: #dbe8f6;
+}
+
+.summary-subsection-row td:first-child {
+  border-left: 4px solid #9bb8d8;
+  box-shadow: inset 0 0 0 1px #e0ebf8;
+}
+
+.summary-subsection-row--first td {
+  border-top: 1px solid #cadcf0;
+}
+
+.summary-subsection-row--last td {
+  border-bottom: 2px solid #bfd5ec;
 }
 
 .summary-subsection {
-  padding-left: 1.1rem;
-  color: #475569;
+  position: relative;
+  padding-left: 2.12rem;
+  color: #334155;
+  font-size: 0.8rem;
 }
 
-.summary-subsection__bullet {
-  margin-right: 0.25rem;
-  color: #94a3b8;
+.summary-subsection::before {
+  content: none;
+}
+
+.summary-subsection__branch {
+  position: absolute;
+  left: 1.08rem;
+  top: 50%;
+  width: 0.62rem;
+  border-bottom: 2px solid #8eaecd;
+  transform: translateY(-50%);
+}
+
+.summary-subsection__label {
+  font-weight: 500;
+}
+
+.summary-subsection-row td:nth-child(2),
+.summary-subsection-row td:nth-child(3) {
+  font-size: 0.79rem;
+  color: #3f5165;
 }
 
 .summary-max {
@@ -2158,26 +2236,99 @@ body.evaluation-summary-page .button-container {
   background: #eef2ff;
   font-weight: 700;
   border-top: 2px solid #c7d2fe;
+  padding-top: 0.34rem;
+  padding-bottom: 0.34rem;
 }
 
 @media (max-width: 900px) {
   .summary-table th,
   .summary-table td {
-    padding: 0.4rem 0.45rem;
+    padding: 0.26rem 0.38rem;
+  }
+
+  .summary-context__item {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 700px) {
   .summary-context {
     justify-content: flex-start;
+    gap: 0.16rem 0.4rem;
   }
 
   .summary-metadata__row {
     grid-template-columns: 1fr;
   }
 
+  .summary-context__value {
+    max-width: 72vw;
+  }
+
+  .summary-table th {
+    font-size: 0.62rem;
+  }
+
   .summary-table th,
   .summary-table td {
-    padding: 0.38rem 0.4rem;
+    padding: 0.23rem 0.33rem;
+  }
+
+  .summary-table td {
+    font-size: 0.78rem;
+  }
+
+  .summary-subsection {
+    padding-left: 1.78rem;
+    font-size: 0.72rem;
+  }
+
+  .summary-subsection__branch {
+    left: 0.82rem;
+    width: 0.52rem;
+  }
+}
+
+@media (max-height: 760px) {
+  body.evaluation-summary-page .title h1 {
+    font-size: clamp(0.98rem, 2.1vh, 1.2rem);
+  }
+
+  .evaluation-summary {
+    gap: 0.24rem;
+  }
+
+  .summary-context {
+    gap: 0.12rem 0.32rem;
+  }
+
+  .summary-context__item {
+    padding: 0.08rem 0.32rem;
+    font-size: 0.64rem;
+  }
+
+  .summary-card {
+    padding: 0.26rem 0.42rem;
+  }
+
+  .summary-table th {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.58rem;
+  }
+
+  .summary-table td {
+    padding: 0.16rem 0.3rem;
+    font-size: 0.72rem;
+    line-height: 1.1;
+  }
+
+  .summary-subsection {
+    padding-left: 1.5rem;
+    font-size: 0.67rem;
+  }
+
+  .summary-subsection__branch {
+    left: 0.66rem;
+    width: 0.44rem;
   }
 }
