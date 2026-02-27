@@ -102,52 +102,31 @@
       'thematic_repopulation' => [
           'table'  => 'evaluation_thematic_criteria_repopulation',
           'fields' => [
-              'habitat_score',
-              'threat_mitigation_strategy_score',
-              'local_community_involvement_score',
-              'multidisciplinary_sustainability_score',
+              'overall_score',
           ],
       ],
       'thematic_safeguard' => [
           'table'  => 'evaluation_thematic_criteria_safeguard',
           'fields' => [
-              'systemic_approach_score',
-              'advocacy_and_legal_strengthening_score',
-              'habitat_safeguard_score',
-              'reservers_development_participation_score',
-              'crucial_species_activities_score',
-              'multistakeholder_involvement_score',
-              'multidisciplinary_sustainability_score',
+              'overall_score',
           ],
       ],
       'thematic_cohabitation' => [
           'table'  => 'evaluation_thematic_criteria_cohabitation',
           'fields' => [
-              'risk_reduction_strategy_score',
-              'biodiversity_protection_and_animal_integrity_score',
-              'local_community_involvement_score',
-              'circular_economy_development_score',
-              'multidisciplinary_sustainability_score',
+              'overall_score',
           ],
       ],
       'thematic_community_support' => [
           'table'  => 'evaluation_thematic_criteria_community_support',
           'fields' => [
-              'systemic_development_score',
-              'social_discrimination_fighting_score',
-              'habitat_protection_score',
-              'multistakeholder_involvement_score',
-              'multidisciplinary_sustainability_score',
+              'overall_score',
           ],
       ],
       'thematic_culture_education' => [
           'table'  => 'evaluation_thematic_criteria_culture_education_awareness',
           'fields' => [
-              'dissemination_tools_score',
-              'advocacy_and_legal_strengthening_score',
-              'innovation_score',
-              'multistakeholder_involvement_score',
-              'multidisciplinary_sustainability_score',
+              'overall_score',
           ],
       ],
   ];
@@ -240,6 +219,8 @@
                       if ($score < 0) {
                           continue;
                       }
+
+                      $score = max(0, min(10, $score));
 
                       $evaluationData[$sectionKey][$fieldName] = $score;
                   }
@@ -1145,254 +1126,100 @@
 
           <div class="evaluation-step" data-step-index="4">
             <h3>Criteri Tematici - Ripopolamento <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_repopulation'); ?></h3>
-          <div class="form-group">
-            <label class="form-label required">Habitat dell'intervento</label>
-            <?php renderScoreInput('thematic_repopulation[habitat_score]', 'Habitat dell\'intervento', $evaluationData['thematic_repopulation']['habitat_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto considera le caratteristiche ecologiche dell'habitat?</li>
-              </ul>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Strategia di mitigazione delle minacce</label>
-            <?php renderScoreInput('thematic_repopulation[threat_mitigation_strategy_score]', 'Strategia di mitigazione delle minacce', $evaluationData['thematic_repopulation']['threat_mitigation_strategy_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto prevede misure per mitigare le minacce all'habitat?</li>
-              </ul>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Coinvolgimento comunità locale</label>
-            <?php renderScoreInput('thematic_repopulation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_repopulation']['local_community_involvement_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto coinvolge attivamente la comunità locale?</li>
-              </ul>
-            </small>
-          </div>
-          <div class="form-group">
-            <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-            <?php renderScoreInput('thematic_repopulation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_repopulation']['multidisciplinary_sustainability_score']); ?>
-            <small>
-              <ul>
-                <li>Il progetto considera le interconnessioni tra diversi ambiti (sociale, economico, ambientale)?</li>
-              </ul>
-            </small>
-          </div>
-
+            <div class="form-group">
+              <label class="form-label">Voci della sottosezione</label>
+              <small>
+                <ul>
+                  <li>Habitat dell'intervento</li>
+                  <li>Strategia di mitigazione delle minacce</li>
+                  <li>Coinvolgimento comunità locale</li>
+                  <li>Sostenibilità multidisciplinare</li>
+                </ul>
+              </small>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Valutazione complessiva della sottosezione</label>
+              <?php renderScoreInput('thematic_repopulation[overall_score]', 'Valutazione complessiva - Ripopolamento', $evaluationData['thematic_repopulation']['overall_score'] ?? null); ?>
+            </div>
           </div>
 
           <div class="evaluation-step" data-step-index="5">
             <h3>Criteri Tematici - Salvaguardia <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_safeguard'); ?></h3>
             <div class="form-group">
-              <label class="form-label required">Approccio sistemico (prevenzione, contrasto, riabilitazione)</label>
-              <?php renderScoreInput('thematic_safeguard[systemic_approach_score]', 'Approccio sistemico (prevenzione, contrasto, riabilitazione)', $evaluationData['thematic_safeguard']['systemic_approach_score']); ?>
+              <label class="form-label">Voci della sottosezione</label>
               <small>
                 <ul>
-                  <li>Il progetto adotta un approccio sistemico per affrontare le problematiche ambientali?</li>
+                  <li>Approccio sistemico (prevenzione, contrasto, riabilitazione)</li>
+                  <li>Advocacy e rafforzamento giuridico</li>
+                  <li>Salvaguardia dell'habitat (flora e fauna)</li>
+                  <li>Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.</li>
+                  <li>Attività dedicate a specie cruciali e/o a rischio estinzione</li>
+                  <li>Coinvolgimento multistakeholder</li>
+                  <li>Sostenibilità multidisciplinare</li>
                 </ul>
               </small>
             </div>
             <div class="form-group">
-              <label class="form-label required">Advocacy e rafforzamento giuridico</label>
-              <?php renderScoreInput('thematic_safeguard[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_safeguard']['advocacy_and_legal_strengthening_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto promuove l'advocacy e il rafforzamento giuridico per la tutela dell'ambiente?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Salvaguardia dell'habitat (flora e fauna)</label>
-              <?php renderScoreInput('thematic_safeguard[habitat_safeguard_score]', 'Salvaguardia dell\'habitat (flora e fauna)', $evaluationData['thematic_safeguard']['habitat_safeguard_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto contribuisce alla salvaguardia degli habitat naturali (flora e fauna)?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.</label>
-              <?php renderScoreInput('thematic_safeguard[reservers_development_participation_score]', 'Compartecipazione a sviluppo di riserve, oasi, CRAS ecc.', $evaluationData['thematic_safeguard']['reservers_development_participation_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede la compartecipazione allo sviluppo di riserve, oasi, CRAS, ecc.?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Attività dedicate a specie cruciali e/o a rischio estinzione</label>
-              <?php renderScoreInput('thematic_safeguard[crucial_species_activities_score]', 'Attività dedicate a specie cruciali e/o a rischio estinzione', $evaluationData['thematic_safeguard']['crucial_species_activities_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
-              <?php renderScoreInput('thematic_safeguard[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_safeguard']['multistakeholder_involvement_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede il coinvolgimento di più attori (comunità locale, istituzioni, privato sociale)?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreInput('thematic_safeguard[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_safeguard']['multidisciplinary_sustainability_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede un approccio multidisciplinare per garantire la sostenibilità (istituzionale, ambientale, culturale, economica)?</li>
-                </ul>
-              </small>
+              <label class="form-label required">Valutazione complessiva della sottosezione</label>
+              <?php renderScoreInput('thematic_safeguard[overall_score]', 'Valutazione complessiva - Salvaguardia', $evaluationData['thematic_safeguard']['overall_score'] ?? null); ?>
             </div>
           </div>
 
           <div class="evaluation-step" data-step-index="6">
             <h3>Criteri Tematici - Coabitazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_cohabitation'); ?></h3>
             <div class="form-group">
-              <label class="form-label required">Strategia di riduzione dei rischi</label>
-              <?php renderScoreInput('thematic_cohabitation[risk_reduction_strategy_score]', 'Strategia di riduzione dei rischi', $evaluationData['thematic_cohabitation']['risk_reduction_strategy_score']); ?>
+              <label class="form-label">Voci della sottosezione</label>
               <small>
                 <ul>
-                  <li>Il progetto prevede una strategia di riduzione dei rischi?</li>
+                  <li>Strategia di riduzione dei rischi</li>
+                  <li>Tutela della biodiversità e integrazione della presenza animale alle attività umane</li>
+                  <li>Coinvolgimento comunità locale</li>
+                  <li>Sostegno allo sviluppo di un'economia circolare per il sostentamento locale</li>
+                  <li>Sostenibilità multidisciplinare</li>
                 </ul>
               </small>
             </div>
             <div class="form-group">
-              <label class="form-label required">Tutela della biodiversità e integrazione della presenza animale  alle attività umane (es Rwanda)</label>
-              <?php renderScoreInput('thematic_cohabitation[biodiversity_protection_and_animal_integrity_score]', 'Tutela della biodiversità e integrazione della presenza animale alle attività umane (es Rwanda)', $evaluationData['thematic_cohabitation']['biodiversity_protection_and_animal_integrity_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede attività dedicate a specie cruciali e/o a rischio estinzione?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Coinvolgimento comunità locale</label>
-              <?php renderScoreInput('thematic_cohabitation[local_community_involvement_score]', 'Coinvolgimento comunità locale', $evaluationData['thematic_cohabitation']['local_community_involvement_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede il coinvolgimento della comunità locale?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Sostegno allo sviluppo di un'economia circolare per il sostentamento locale</label>
-              <?php renderScoreInput('thematic_cohabitation[circular_economy_development_score]', 'Sostegno allo sviluppo di un\'economia circolare per il sostentamento locale', $evaluationData['thematic_cohabitation']['circular_economy_development_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede il sostegno allo sviluppo di un'economia circolare per il sostentamento locale?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreInput('thematic_cohabitation[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_cohabitation']['multidisciplinary_sustainability_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
-                </ul>
-              </small>
+              <label class="form-label required">Valutazione complessiva della sottosezione</label>
+              <?php renderScoreInput('thematic_cohabitation[overall_score]', 'Valutazione complessiva - Coabitazione', $evaluationData['thematic_cohabitation']['overall_score'] ?? null); ?>
             </div>
           </div>
           <div class="evaluation-step" data-step-index="7">
             <h3>Criteri Tematici - Supporto di comunità <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_community_support'); ?></h3>
             <div class="form-group">
-              <label class="form-label required">Sviluppo sistemico  (educativo, economico, produttivo) di capacity buliding</label>
-              <?php renderScoreInput('thematic_community_support[systemic_development_score]', 'Sviluppo sistemico (educativo, economico, produttivo) di capacity buliding', $evaluationData['thematic_community_support']['systemic_development_score']); ?>
+              <label class="form-label">Voci della sottosezione</label>
               <small>
                 <ul>
-                  <li>Il progetto prevede un approccio sistemico per lo sviluppo della comunità?</li>
+                  <li>Sviluppo sistemico (educativo, economico, produttivo) di capacity building</li>
+                  <li>Contrasto alle discriminazioni sociali</li>
+                  <li>Salvaguardia dell'habitat</li>
+                  <li>Coinvolgimento multistakeholder</li>
+                  <li>Sostenibilità multidisciplinare</li>
                 </ul>
               </small>
             </div>
             <div class="form-group">
-              <label class="form-label required">Contrasto alle discriminazione sociali</label>
-              <?php renderScoreInput('thematic_community_support[social_discrimination_fighting_score]', 'Contrasto alle discriminazione sociali', $evaluationData['thematic_community_support']['social_discrimination_fighting_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede misure per contrastare le discriminazioni sociali?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Salvaguardia dell'habitat</label>
-              <?php renderScoreInput('thematic_community_support[habitat_protection_score]', 'Salvaguardia dell\'habitat', $evaluationData['thematic_community_support']['habitat_protection_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede misure per la salvaguardia dell'habitat?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)</label>
-              <?php renderScoreInput('thematic_community_support[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (comunità locale, istituzioni, privato sociale)', $evaluationData['thematic_community_support']['multistakeholder_involvement_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreInput('thematic_community_support[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_community_support']['multidisciplinary_sustainability_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
-                </ul>
-              </small>
+              <label class="form-label required">Valutazione complessiva della sottosezione</label>
+              <?php renderScoreInput('thematic_community_support[overall_score]', 'Valutazione complessiva - Supporto di comunità', $evaluationData['thematic_community_support']['overall_score'] ?? null); ?>
             </div>
           </div>
           <div class="evaluation-step" data-step-index="8">
             <h3>Criteri Tematici - Cultura - Educazione - Sensibilizzazione <?php renderSectionWeightBadge($sectionWeightMultipliers, 'thematic_culture_education'); ?></h3>
             <div class="form-group">
-              <label class="form-label required">Strumenti di disseminazione</label>
-              <?php renderScoreInput('thematic_culture_education[dissemination_tools_score]', 'Strumenti di disseminazione', $evaluationData['thematic_culture_education']['dissemination_tools_score']); ?>
+              <label class="form-label">Voci della sottosezione</label>
               <small>
                 <ul>
-                  <li>Il progetto prevede strumenti di disseminazione efficaci?</li>
+                  <li>Strumenti di disseminazione</li>
+                  <li>Advocacy e rafforzamento giuridico</li>
+                  <li>Grado di innovazione</li>
+                  <li>Coinvolgimento multistakeholder</li>
+                  <li>Sostenibilità multidisciplinare</li>
                 </ul>
               </small>
             </div>
             <div class="form-group">
-              <label class="form-label required">Advocacy e rafforzamento giuridico</label>
-              <?php renderScoreInput('thematic_culture_education[advocacy_and_legal_strengthening_score]', 'Advocacy e rafforzamento giuridico', $evaluationData['thematic_culture_education']['advocacy_and_legal_strengthening_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede attività di advocacy e rafforzamento giuridico?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Grado di innovazione</label>
-              <?php renderScoreInput('thematic_culture_education[innovation_score]', 'Grado di innovazione', $evaluationData['thematic_culture_education']['innovation_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede elementi innovativi?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)</label>
-              <?php renderScoreInput('thematic_culture_education[multistakeholder_involvement_score]', 'Coinvolgimento multistakeholder (cittadinanza, istituzioni, centri di ricerca, agenzie educative)', $evaluationData['thematic_culture_education']['multistakeholder_involvement_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede un coinvolgimento attivo dei diversi attori sociali?</li>
-                </ul>
-              </small>
-            </div>
-            <div class="form-group">
-              <label class="form-label required">Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)</label>
-              <?php renderScoreInput('thematic_culture_education[multidisciplinary_sustainability_score]', 'Sostenibilità multidisciplinare (istituzionale, ambientale, culturale, economica)', $evaluationData['thematic_culture_education']['multidisciplinary_sustainability_score']); ?>
-              <small>
-                <ul>
-                  <li>Il progetto prevede un approccio multidisciplinare per la sostenibilità?</li>
-                </ul>
-              </small>
+              <label class="form-label required">Valutazione complessiva della sottosezione</label>
+              <?php renderScoreInput('thematic_culture_education[overall_score]', 'Valutazione complessiva - Cultura - Educazione - Sensibilizzazione', $evaluationData['thematic_culture_education']['overall_score'] ?? null); ?>
             </div>
           </div>
         </div>

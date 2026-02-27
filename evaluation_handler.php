@@ -181,57 +181,41 @@ $sectionDefinitions = [
         'label' => 'Criteri tematici - Ripopolamento',
         'table'  => 'evaluation_thematic_criteria_repopulation',
         'fields' => [
-            'habitat_score',
-            'threat_mitigation_strategy_score',
-            'local_community_involvement_score',
-            'multidisciplinary_sustainability_score',
+            'overall_score',
         ],
+        'single_overall' => true,
     ],
     'thematic_safeguard' => [
         'label' => 'Criteri tematici - Tutela',
         'table'  => 'evaluation_thematic_criteria_safeguard',
         'fields' => [
-            'systemic_approach_score',
-            'advocacy_and_legal_strengthening_score',
-            'habitat_safeguard_score',
-            'reservers_development_participation_score',
-            'crucial_species_activities_score',
-            'multistakeholder_involvement_score',
-            'multidisciplinary_sustainability_score',
+            'overall_score',
         ],
+        'single_overall' => true,
     ],
     'thematic_cohabitation' => [
         'label' => 'Criteri tematici - Convivenza',
         'table'  => 'evaluation_thematic_criteria_cohabitation',
         'fields' => [
-            'risk_reduction_strategy_score',
-            'biodiversity_protection_and_animal_integrity_score',
-            'local_community_involvement_score',
-            'circular_economy_development_score',
-            'multidisciplinary_sustainability_score',
+            'overall_score',
         ],
+        'single_overall' => true,
     ],
     'thematic_community_support' => [
         'label' => 'Criteri tematici - Supporto alla comunità',
         'table'  => 'evaluation_thematic_criteria_community_support',
         'fields' => [
-            'systemic_development_score',
-            'social_discrimination_fighting_score',
-            'habitat_protection_score',
-            'multistakeholder_involvement_score',
-            'multidisciplinary_sustainability_score',
+            'overall_score',
         ],
+        'single_overall' => true,
     ],
     'thematic_culture_education' => [
         'label' => 'Criteri tematici - Cultura ed educazione',
         'table'  => 'evaluation_thematic_criteria_culture_education_awareness',
         'fields' => [
-            'dissemination_tools_score',
-            'advocacy_and_legal_strengthening_score',
-            'innovation_score',
-            'multistakeholder_involvement_score',
-            'multidisciplinary_sustainability_score',
+            'overall_score',
         ],
+        'single_overall' => true,
     ],
 ];
 
@@ -389,6 +373,20 @@ try {
         $hasSectionScores = $sectionScores[$sectionKey]['has_scores'];
 
         if (!$isSubmitAction && !$hasSectionScores) {
+            continue;
+        }
+
+        if (!empty($definition['single_overall'])) {
+            $stmt = $pdo->prepare(
+                sprintf(
+                    'INSERT INTO %s (evaluation_id, overall_score) VALUES (:evaluation_id, :overall_score)',
+                    $definition['table']
+                )
+            );
+            $stmt->execute([
+                ':evaluation_id' => $evaluation_id,
+                ':overall_score' => $sectionScores[$sectionKey]['overall'],
+            ]);
             continue;
         }
 

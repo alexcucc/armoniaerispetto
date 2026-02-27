@@ -137,31 +137,26 @@ $thematicSectionDefinitions = [
     'thematic_repopulation' => [
         'label' => 'Ripopolamento',
         'overall_key' => 'thematic_repopulation_score',
-        'criteria_count' => 4,
         'section_weight' => 35,
     ],
     'thematic_safeguard' => [
         'label' => 'Tutela',
         'overall_key' => 'thematic_safeguard_score',
-        'criteria_count' => 7,
         'section_weight' => 35,
     ],
     'thematic_cohabitation' => [
         'label' => 'Convivenza',
         'overall_key' => 'thematic_cohabitation_score',
-        'criteria_count' => 5,
         'section_weight' => 20,
     ],
     'thematic_community_support' => [
         'label' => 'Supporto alla comunità',
         'overall_key' => 'thematic_community_support_score',
-        'criteria_count' => 5,
         'section_weight' => 9,
     ],
     'thematic_culture_education' => [
         'label' => 'Cultura ed educazione',
         'overall_key' => 'thematic_culture_education_score',
-        'criteria_count' => 5,
         'section_weight' => 10,
     ],
 ];
@@ -221,13 +216,8 @@ foreach ($thematicSectionDefinitions as $sectionKey => $definition) {
         continue;
     }
 
-    $criteriaCount = (int) $definition['criteria_count'];
-    if ($criteriaCount <= 0) {
-        $weightedThematicScores[$sectionKey] = null;
-        continue;
-    }
-
-    $weightedThematicScores[$sectionKey] = (((float) $rawScore) / ($criteriaCount * 10)) * $scaledSectionMax;
+    $normalizedScore = max(0.0, min(10.0, (float) $rawScore));
+    $weightedThematicScores[$sectionKey] = ($normalizedScore / 10) * $scaledSectionMax;
 }
 
 $thematicDisplayScore = $sumNullableScores(array_values($weightedThematicScores));
