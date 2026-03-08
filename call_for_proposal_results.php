@@ -2,17 +2,8 @@
 session_start();
 
 require_once 'db/common-db.php';
-require_once 'RolePermissionManager.php';
 
-$rolePermissionManager = new RolePermissionManager($pdo);
-
-if (
-    !isset($_SESSION['user_id'])
-    || !$rolePermissionManager->userHasPermission(
-        $_SESSION['user_id'],
-        RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']
-    )
-) {
+if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
 }

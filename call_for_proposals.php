@@ -32,11 +32,6 @@ $canDelete = $rolePermissionManager->userHasPermission(
     $_SESSION['user_id'],
     RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_DELETE']
 );
-$canViewResults = $rolePermissionManager->userHasPermission(
-    $_SESSION['user_id'],
-    RolePermissionManager::$PERMISSIONS['EVALUATION_VIEW']
-);
-
 // Fetch all call for proposals with associated application counts
 $stmt = $pdo->prepare(
     "SELECT cfp.id,
@@ -110,9 +105,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                     <td>
                                         <div class="actions-cell role-actions">
-                                            <?php if ($canViewResults): ?>
-                                                <a class="page-button" href="call_for_proposal_results.php?id=<?php echo $cfp['id']; ?>">Graduatoria</a>
-                                            <?php endif; ?>
+                                            <a class="page-button" href="call_for_proposal_results.php?id=<?php echo $cfp['id']; ?>">Graduatoria</a>
                                             <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
                                             <?php if ($canUpdate): ?>
                                                 <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?php echo $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
