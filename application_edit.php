@@ -155,7 +155,7 @@ if (!empty($formData)) {
                 <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
             </div>
             <div class="button-container">
-                <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>
+                <a href="applications.php" class="page-button back-button" data-back-target="applications.php">Indietro</a>
                 <button type="submit" class="page-button">Salva</button>
             </div>
         </form>
