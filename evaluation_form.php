@@ -479,16 +479,6 @@
         font-size: 0.95rem;
       }
 
-      .evaluation-step--proponent h3 {
-        text-align: center;
-        font-size: 1.02rem;
-        color: #0f172a;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.45rem;
-        padding: 0.25rem 0.45rem;
-      }
-
       .evaluation-step .form-group + .form-group {
         margin-top: 0.3rem;
       }
@@ -1758,27 +1748,6 @@
           });
         };
 
-        const focusStepHeading = (stepElement) => {
-          if (!stepElement) {
-            return;
-          }
-
-          const heading = stepElement.querySelector('h3');
-          if (!heading) {
-            return;
-          }
-
-          if (!heading.hasAttribute('tabindex')) {
-            heading.setAttribute('tabindex', '-1');
-          }
-
-          try {
-            heading.focus({ preventScroll: true });
-          } catch (error) {
-            heading.focus();
-          }
-        };
-
         const getStepScoreInputs = (stepElement) => {
           if (!stepElement) {
             return [];
@@ -1854,8 +1823,6 @@
           calculateSectionScore();
 
           if (forceScroll) {
-            const activeStepElement = stepElements[activeStepIndex];
-            focusStepHeading(activeStepElement);
             scrollToPageTop();
           }
         };
