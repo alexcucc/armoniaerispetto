@@ -564,26 +564,26 @@
       .section-weight-badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.03rem 0.3rem;
+        padding: 0.08rem 0.4rem;
         margin-left: 0.22rem;
         border-radius: 9999px;
         background: #ecfeff;
         color: #0ea5e9;
         font-weight: 700;
-        font-size: 0.64rem;
+        font-size: 0.78rem;
         border: 1px solid #bae6fd;
       }
 
       .criteria-weighted-score {
         display: inline-flex;
         align-items: center;
-        padding: 0.03rem 0.3rem;
+        padding: 0.08rem 0.4rem;
         margin-left: 0.2rem;
         border-radius: 9999px;
         background: #fef3c7;
         color: #b45309;
         font-weight: 700;
-        font-size: 0.64rem;
+        font-size: 0.78rem;
         border: 1px solid #fde68a;
       }
 
