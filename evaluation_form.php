@@ -757,7 +757,7 @@
       <div class="contact-form-container evaluation-page">
         <div class="evaluation-shell">
         <div class="button-container">
-          <a href="evaluations.php" class="page-button back-button evaluation-actions__back-link">Indietro</a>
+          <button type="button" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php">Indietro</button>
         </div>
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
@@ -1322,14 +1322,24 @@
         };
 
         const handleBackNavigation = (event) => {
+          if (!event || !event.currentTarget) {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          const destination = event.currentTarget.getAttribute('data-destination')
+            || event.currentTarget.getAttribute('href')
+            || 'evaluations.php';
           if (!hasUnsavedChanges) {
+            window.location.assign(destination);
             return;
           }
 
           const shouldLeave = window.confirm('Hai modificato la valutazione. Uscendo senza salvare perderai le modifiche. Vuoi continuare?');
-
-          if (!shouldLeave) {
-            event.preventDefault();
+          if (shouldLeave) {
+            window.location.assign(destination);
           }
         };
 
