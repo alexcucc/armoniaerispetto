@@ -757,7 +757,7 @@
       <div class="contact-form-container evaluation-page">
         <div class="evaluation-shell">
         <div class="button-container">
-          <button type="button" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php">Indietro</button>
+          <button type="button" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php" data-back-target="evaluations.php">Indietro</button>
         </div>
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
@@ -1326,6 +1326,7 @@
             return;
           }
 
+          event.stopImmediatePropagation();
           event.preventDefault();
           event.stopPropagation();
 
