@@ -1319,16 +1319,6 @@
           thematic_culture_education: 'Criteri Tematici - Cultura - Educazione - Sensibilizzazione',
         };
         const thematicDisplayMaxScore = 70;
-        const thematicWeightTotal = sectionKeys.reduce((total, sectionKey) => {
-          if (typeof sectionKey !== 'string' || !sectionKey.startsWith('thematic_')) {
-            return total;
-          }
-
-          return total + (sectionWeightMultipliers[sectionKey] ?? 0);
-        }, 0);
-        const thematicSectionScaleFactor = thematicWeightTotal > 0
-          ? thematicDisplayMaxScore / thematicWeightTotal
-          : 0;
         const incompleteMessage = 'valutazione incompleta: valutazione non inviabile';
         let activeStepIndex = 0;
         let hasUnsavedChanges = false;
@@ -1494,11 +1484,8 @@
           const sectionKey = getSectionKey(sectionIndex);
           const scoreScale = 10;
           const multiplier = sectionWeightMultipliers[sectionKey] ?? 1;
-          const thematicScaledSectionWeight = isThematicStep(sectionIndex)
-            ? multiplier * thematicSectionScaleFactor
-            : null;
-          const thematicCriterionWeight = thematicScaledSectionWeight !== null && inputs.length > 0
-            ? thematicScaledSectionWeight / inputs.length
+          const thematicCriterionWeight = isThematicStep(sectionIndex) && inputs.length > 0
+            ? multiplier / inputs.length
             : null;
 
           let sectionTotal = 0;
@@ -1522,7 +1509,7 @@
             sectionTotal += (value * weight) / scoreScale;
           });
 
-          if (thematicScaledSectionWeight !== null) {
+          if (isThematicStep(sectionIndex)) {
             return sectionTotal;
           }
 
@@ -1540,8 +1527,7 @@
           const sectionKey = getSectionKey(sectionIndex);
           const multiplier = sectionWeightMultipliers[sectionKey] ?? 1;
           if (isThematicStep(sectionIndex)) {
-            const thematicScaledSectionWeight = multiplier * thematicSectionScaleFactor;
-            return inputs.length > 0 ? thematicScaledSectionWeight : 0;
+            return inputs.length > 0 ? multiplier : 0;
           }
 
           let sectionMax = 0;
@@ -1558,16 +1544,33 @@
           return sectionMax * multiplier;
         };
 
-        const calculateTotalMaxScore = () => {
+        const calculateNonThematicTotalScore = () => {
+          let total = 0;
+          stepElements.forEach((_, index) => {
+            if (isThematicStep(index)) {
+              return;
+            }
+
+            total += calculateWeightedSectionScore(index);
+          });
+
+          return total;
+        };
+
+        const calculateNonThematicMaxScore = () => {
           let totalMax = 0;
           stepElements.forEach((_, index) => {
+            if (isThematicStep(index)) {
+              return;
+            }
+
             totalMax += calculateWeightedSectionMaxScore(index);
           });
 
           return totalMax;
         };
 
-        const calculateThematicTotalScore = () => {
+        const calculateThematicRawTotalScore = () => {
           let total = 0;
           stepElements.forEach((_, index) => {
             if (!isThematicStep(index)) {
@@ -1580,7 +1583,7 @@
           return total;
         };
 
-        const calculateThematicMaxScore = () => {
+        const calculateThematicRawMaxScore = () => {
           let totalMax = 0;
           stepElements.forEach((_, index) => {
             if (!isThematicStep(index)) {
@@ -1593,16 +1596,21 @@
           return totalMax;
         };
 
+        const calculateThematicTotalScore = () => Math.min(calculateThematicRawTotalScore(), thematicDisplayMaxScore);
+        const calculateThematicMaxScore = () => Math.min(calculateThematicRawMaxScore(), thematicDisplayMaxScore);
+
+        const calculateTotalMaxScore = () => calculateNonThematicMaxScore() + calculateThematicMaxScore();
+
         const calculateThematicScore = () => {
           if (!thematicScoreElement || !thematicScoreMaxElement) {
             return;
           }
 
-          const thematicRawScore = calculateThematicTotalScore();
-          const thematicRawMax = calculateThematicMaxScore();
+          const thematicScore = calculateThematicTotalScore();
+          const thematicMax = calculateThematicMaxScore();
 
-          thematicScoreElement.textContent = formatScore(thematicRawScore);
-          thematicScoreMaxElement.textContent = formatScore(thematicRawMax);
+          thematicScoreElement.textContent = formatScore(thematicScore);
+          thematicScoreMaxElement.textContent = formatScore(thematicMax);
         };
 
         const updateThematicCounterVisibility = () => {
@@ -1618,10 +1626,7 @@
             return;
           }
 
-          let total = 0;
-          stepElements.forEach((_, index) => {
-            total += calculateWeightedSectionScore(index);
-          });
+          const total = calculateNonThematicTotalScore() + calculateThematicTotalScore();
 
           totalScoreElement.textContent = formatScore(total);
 
