@@ -18,6 +18,18 @@ $errorMessage = $_SESSION['evaluation_error'] ?? null;
 unset($_SESSION['evaluation_error']);
 
 // ----------------------------
+// Sorting
+// ----------------------------
+$allowedSortFields = ['call_title', 'ente', 'reference_date'];
+$allowedSortOrders = ['asc', 'desc'];
+
+$sortFieldParam = filter_input(INPUT_GET, 'sort', FILTER_UNSAFE_RAW) ?? '';
+$sortField = in_array($sortFieldParam, $allowedSortFields, true) ? $sortFieldParam : 'reference_date';
+
+$sortOrderParam = strtolower(filter_input(INPUT_GET, 'order', FILTER_UNSAFE_RAW) ?? '');
+$sortOrder = in_array($sortOrderParam, $allowedSortOrders, true) ? strtoupper($sortOrderParam) : 'DESC';
+
+// ----------------------------
 // Filters
 // ----------------------------
 $selectedCall = isset($_GET['filter_call']) ? trim($_GET['filter_call']) : '';
@@ -100,6 +112,32 @@ if ($selectedCall !== '') {
     }
 }
 $filtersApplied = ($selectedCall !== '' || $selectedEnte !== '' || $selectedStatus !== '');
+$currentFilters = [
+    'filter_call' => $selectedCall !== '' ? $selectedCall : null,
+    'filter_ente' => $selectedEnte !== '' ? $selectedEnte : null,
+    'filter_status' => $selectedStatus !== '' ? $selectedStatus : null,
+];
+
+function buildEvaluationsSortLink(string $field, string $sortField, string $sortOrder, array $currentFilters): string
+{
+    $nextOrder = ($sortField === $field && $sortOrder === 'ASC') ? 'desc' : 'asc';
+    $query = array_filter(
+        array_merge($currentFilters, [
+            'sort' => $field,
+            'order' => $nextOrder,
+        ]),
+        static function ($value) {
+            return $value !== null && $value !== '';
+        }
+    );
+
+    return '?' . http_build_query($query);
+}
+
+$resetUrl = 'evaluations.php?' . http_build_query([
+    'sort' => $sortField,
+    'order' => strtolower($sortOrder),
+]);
 
 // ----------------------------
 // Evaluations
@@ -245,10 +283,24 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
     }
 }
 
-usort($evaluations, function (array $a, array $b) {
-    $aTime = strtotime($a['reference_date'] ?? '') ?: 0;
-    $bTime = strtotime($b['reference_date'] ?? '') ?: 0;
-    return $bTime <=> $aTime;
+usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
+    if ($sortField === 'reference_date') {
+        $aValue = strtotime($a['reference_date'] ?? '') ?: 0;
+        $bValue = strtotime($b['reference_date'] ?? '') ?: 0;
+        $comparison = $aValue <=> $bValue;
+    } else {
+        $aValue = (string) ($a[$sortField] ?? '');
+        $bValue = (string) ($b[$sortField] ?? '');
+        $comparison = strcasecmp($aValue, $bValue);
+    }
+
+    if ($comparison === 0) {
+        $aTime = strtotime($a['reference_date'] ?? '') ?: 0;
+        $bTime = strtotime($b['reference_date'] ?? '') ?: 0;
+        $comparison = $aTime <=> $bTime;
+    }
+
+    return $sortOrder === 'ASC' ? $comparison : -$comparison;
 });
 ?>
 <!DOCTYPE html>
@@ -285,6 +337,8 @@ usort($evaluations, function (array $a, array $b) {
             <?php endif; ?>
 
             <form method="get" class="filters-form">
+              <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sortField); ?>">
+              <input type="hidden" name="order" value="<?php echo htmlspecialchars(strtolower($sortOrder)); ?>">
               <div class="form-group">
                 <select name="filter_call" id="filter_call" class="form-input">
                   <option value="">Tutti i bandi</option>
@@ -317,7 +371,7 @@ usort($evaluations, function (array $a, array $b) {
               </div>
               <div class="filters-actions">
                 <button type="submit" class="page-button">Applica filtri</button>
-                <a class="page-button secondary-button" href="evaluations.php">Reset</a>
+                <a class="page-button secondary-button" href="<?php echo htmlspecialchars($resetUrl); ?>">Reset</a>
               </div>
             </form>
 
@@ -345,15 +399,39 @@ usort($evaluations, function (array $a, array $b) {
                   <?php endif; ?>
                   "<strong><?php echo htmlspecialchars($statusLabels[$selectedStatus]); ?></strong>"
                 <?php endif; ?>.
-                <a href="evaluations.php">Mostra tutte le valutazioni</a>
+                <a href="<?php echo htmlspecialchars($resetUrl); ?>">Mostra tutte le valutazioni</a>
               </p>
             <?php endif; ?>
             <div class="users-table-container">
               <table class="users-table">
                 <thead>
                   <tr>
-                    <th>Bando</th>
-                    <th>Ente</th>
+                    <?php
+                      $columns = [
+                          'call_title' => 'Bando',
+                          'ente' => 'Ente',
+                      ];
+                      foreach ($columns as $field => $label) {
+                          $link = buildEvaluationsSortLink($field, $sortField, $sortOrder, $currentFilters);
+                          $isActive = $sortField === $field;
+                          $ariaSort = $isActive
+                              ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
+                              : 'none';
+
+                          echo '<th'
+                              . ' scope="col"'
+                              . ' class="sortable"'
+                              . ' data-sort-url="' . htmlspecialchars($link) . '"'
+                              . ' aria-sort="' . $ariaSort . '"'
+                              . ' tabindex="0"'
+                              . '>'
+                              . '<span class="sortable-header">'
+                              . htmlspecialchars($label)
+                              . '<span class="sort-indicator" aria-hidden="true"></span>'
+                              . '</span>'
+                              . '</th>';
+                      }
+                    ?>
                     <th>Stato</th>
                     <th>Risposta al bando</th>
                     <th>Modulo budget</th>
