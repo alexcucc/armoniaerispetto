@@ -40,6 +40,7 @@ if ($totalEvaluators > 0) {
             o.name AS organization_name,
             COUNT(DISTINCT a.id) AS applications_count,
             COUNT(e.id) AS total_evaluations,
+            SUM(CASE WHEN e.forced_weighted_total_score IS NOT NULL THEN 1 ELSE 0 END) AS forced_evaluations,
             COALESCE(SUM(es.total_overall_score), 0) AS total_score
         FROM application a
         JOIN organization o ON a.organization_id = o.id
@@ -47,15 +48,18 @@ if ($totalEvaluators > 0) {
         LEFT JOIN (
             SELECT
                 ev.id AS evaluation_id,
-                COALESCE(efp.weighted_score, 0)
-                + COALESCE(ep.weighted_score, 0)
-                + COALESCE(epe.weighted_score, 0)
-                + COALESCE(eq.weighted_score, 0)
-                + COALESCE(etc_cohab.weighted_score, 0)
-                + COALESCE(etc_community.weighted_score, 0)
-                + COALESCE(etc_culture.weighted_score, 0)
-                + COALESCE(etc_repopulation.weighted_score, 0)
-                + COALESCE(etc_safeguard.weighted_score, 0) AS total_overall_score
+                CASE
+                    WHEN ev.forced_weighted_total_score IS NOT NULL THEN ev.forced_weighted_total_score
+                    ELSE COALESCE(efp.weighted_score, 0)
+                        + COALESCE(ep.weighted_score, 0)
+                        + COALESCE(epe.weighted_score, 0)
+                        + COALESCE(eq.weighted_score, 0)
+                        + COALESCE(etc_cohab.weighted_score, 0)
+                        + COALESCE(etc_community.weighted_score, 0)
+                        + COALESCE(etc_culture.weighted_score, 0)
+                        + COALESCE(etc_repopulation.weighted_score, 0)
+                        + COALESCE(etc_safeguard.weighted_score, 0)
+                END AS total_overall_score
             FROM evaluation ev
             LEFT JOIN (
                 SELECT evaluation_id,
@@ -193,6 +197,7 @@ if ($totalEvaluators > 0) {
                                         <th>Ente</th>
                                         <th>Risposte al bando presentate</th>
                                         <th>Valutazioni ricevute</th>
+                                        <th>Valutazioni forzate</th>
                                         <th>Punteggio totale</th>
                                     </tr>
                                 </thead>
@@ -204,7 +209,8 @@ if ($totalEvaluators > 0) {
                                             <td><?php echo htmlspecialchars($organization['organization_name']); ?></td>
                                             <td><?php echo htmlspecialchars((string) $organization['applications_count']); ?></td>
                                             <td><?php echo htmlspecialchars((string) $organization['total_evaluations']); ?></td>
-                                            <td><?php echo htmlspecialchars(number_format((float) $organization['total_score'], 0, ',', '.')); ?></td>
+                                            <td><?php echo htmlspecialchars((string) $organization['forced_evaluations']); ?></td>
+                                            <td><?php echo htmlspecialchars(number_format((float) $organization['total_score'], 2, ',', '.')); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

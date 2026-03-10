@@ -21,7 +21,7 @@ if (!$applicationId) {
 }
 
 $stmt = $pdo->prepare(
-    "SELECT e.id AS evaluation_id, e.status AS evaluation_status, e.updated_at, "
+    "SELECT e.id AS evaluation_id, e.status AS evaluation_status, e.updated_at, e.forced_weighted_total_score, "
     . "c.title AS call_title, COALESCE(o.name, 'Soggetto proponente') AS organization_name, "
     . "eg.proposing_entity_score, eg.general_project_score, eg.financial_plan_score, "
     . "eg.qualitative_elements_score, eg.thematic_criteria_score, eg.overall_score, "
@@ -162,6 +162,9 @@ $thematicSectionDefinitions = [
 ];
 
 $evaluationId = (int) $evaluation['evaluation_id'];
+$forcedWeightedTotalScore = isset($evaluation['forced_weighted_total_score']) && is_numeric($evaluation['forced_weighted_total_score'])
+    ? (float) $evaluation['forced_weighted_total_score']
+    : null;
 $thematicDisplayMax = 70;
 $sectionMaxScores = [];
 $weightedNonThematicScores = [];
@@ -246,6 +249,19 @@ foreach ($thematicSectionDefinitions as $sectionKey => $definition) {
         'score' => $weightedThematicScores[$sectionKey] ?? null,
         'max' => $thematicMaxScores[$sectionKey],
     ];
+}
+
+if ($forcedWeightedTotalScore !== null) {
+    $mainSectionRows = [
+        [
+            'label' => 'Valutazione forzata (Admin)',
+            'score' => $forcedWeightedTotalScore,
+            'max' => null,
+        ],
+    ];
+    $thematicSectionRows = [];
+    $overallDisplayScore = $forcedWeightedTotalScore;
+    $maxOverall = null;
 }
 
 function formatScore($value): string

@@ -50,29 +50,49 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 include_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
 $rolePermissionManager = new RolePermissionManager($pdo);
-if (!$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE'])) {
+$currentUserId = (int) $_SESSION['user_id'];
+if (!$rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE'])) {
     sendResponseAndExit($isAjaxRequest, false, 'Accesso non consentito.');
 }
+$adminCheckStmt = $pdo->prepare(
+    "SELECT 1 FROM user_role ur JOIN role r ON r.id = ur.role_id WHERE ur.user_id = :user_id AND r.name = 'Admin' LIMIT 1"
+);
+$adminCheckStmt->execute([':user_id' => $currentUserId]);
+$isAdminUser = (bool) $adminCheckStmt->fetchColumn();
 
 $applicationId = $_POST['application_id'] ?? null;
-$evaluatorId   = $_POST['evaluator_id'] ?? null;
 
-if ($applicationId === null || $evaluatorId === null) {
+if ($applicationId === null) {
     sendResponseAndExit($isAjaxRequest, false, 'Dati della valutazione mancanti.');
 }
 
-if (!ctype_digit((string) $applicationId) || !ctype_digit((string) $evaluatorId)) {
-    sendResponseAndExit($isAjaxRequest, false, 'Identificativi non validi.');
+if (!ctype_digit((string) $applicationId)) {
+    sendResponseAndExit($isAjaxRequest, false, 'Identificativo risposta al bando non valido.');
 }
 
 $applicationId = (int) $applicationId;
-$evaluatorId   = (int) $evaluatorId;
 
 $action = strtolower($_POST['action'] ?? 'save');
-if (!in_array($action, ['save', 'submit'], true)) {
+if (!in_array($action, ['save', 'submit', 'submit_force'], true)) {
     sendResponseAndExit($isAjaxRequest, false, 'Azione non valida.');
 }
-$isSubmitAction = $action === 'submit';
+$isForcedWeightedOnlyAction = $action === 'submit_force';
+$isSubmitAction = in_array($action, ['submit', 'submit_force'], true);
+$validateSectionsForSubmit = $isSubmitAction && !$isForcedWeightedOnlyAction;
+
+$evaluatorId = $currentUserId;
+if ($isForcedWeightedOnlyAction) {
+    $targetEvaluatorId = $_POST['evaluator_id'] ?? null;
+    if ($targetEvaluatorId === null || !ctype_digit((string) $targetEvaluatorId)) {
+        sendResponseAndExit($isAjaxRequest, false, 'Valutatore selezionato non valido.');
+    }
+
+    $evaluatorId = (int) $targetEvaluatorId;
+}
+
+if ($isForcedWeightedOnlyAction && !$isAdminUser) {
+    sendResponseAndExit($isAjaxRequest, false, 'Solo un Admin può inviare una valutazione forzata.');
+}
 
 $applicationStatusStmt = $pdo->prepare(
     'SELECT a.status, c.status AS call_status '
@@ -120,6 +140,59 @@ if ($existingEvaluation !== null) {
     }
 } elseif ($providedEvaluationId !== null) {
     sendResponseAndExit($isAjaxRequest, false, 'Identificativo valutazione non valido.');
+}
+
+$forcedWeightedTotalScore = null;
+$forcedWeightedTotalRaw = $_POST['forced_weighted_total_score'] ?? null;
+$maxForcedWeightedTotalScore = 2090.0;
+
+if ($isForcedWeightedOnlyAction) {
+    $evaluatorExistsStmt = $pdo->prepare('SELECT 1 FROM evaluator WHERE user_id = :evaluator_id LIMIT 1');
+    $evaluatorExistsStmt->execute([':evaluator_id' => $evaluatorId]);
+    $evaluatorExists = (bool) $evaluatorExistsStmt->fetchColumn();
+    if (!$evaluatorExists) {
+        sendResponseAndExit($isAjaxRequest, false, 'Il valutatore selezionato non è valido.');
+    }
+
+    if ($existingEvaluation !== null) {
+        sendResponseAndExit($isAjaxRequest, false, 'La valutazione forzata è consentita solo in creazione.');
+    }
+
+    if (is_string($forcedWeightedTotalRaw)) {
+        $forcedWeightedTotalRaw = trim($forcedWeightedTotalRaw);
+    }
+
+    if ($forcedWeightedTotalRaw === null || $forcedWeightedTotalRaw === '') {
+        sendResponseAndExit($isAjaxRequest, false, 'Inserisci il voto totale pesato da caricare.');
+    }
+
+    $forcedWeightedTotalString = (string) $forcedWeightedTotalRaw;
+    if (!preg_match('/^(?:0|[1-9][0-9]*)(?:[.,][0-9]{1,2})?$/', $forcedWeightedTotalString)) {
+        sendResponseAndExit($isAjaxRequest, false, 'Il voto totale pesato non è valido.');
+    }
+
+    $normalizedForcedWeightedTotal = str_replace(',', '.', $forcedWeightedTotalString);
+    $forcedWeightedTotalScore = (float) $normalizedForcedWeightedTotal;
+    if ($forcedWeightedTotalScore < 0 || $forcedWeightedTotalScore > $maxForcedWeightedTotalScore) {
+        sendResponseAndExit($isAjaxRequest, false, 'Il voto totale pesato deve essere compreso tra 0 e 2090.');
+    }
+
+    $totalEvaluatorsStmt = $pdo->query('SELECT COUNT(*) FROM evaluator');
+    $totalEvaluators = (int) $totalEvaluatorsStmt->fetchColumn();
+
+    $completedEvaluationsStmt = $pdo->prepare(
+        "SELECT COUNT(*) FROM evaluation WHERE application_id = :application_id AND status IN ('SUBMITTED', 'REVISED')"
+    );
+    $completedEvaluationsStmt->execute([':application_id' => $applicationId]);
+    $completedEvaluations = (int) $completedEvaluationsStmt->fetchColumn();
+
+    if ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators) {
+        sendResponseAndExit(
+            $isAjaxRequest,
+            false,
+            'Valutazione forzata non consentita: per questa domanda risultano già presenti tutte le valutazioni complete.'
+        );
+    }
 }
 
 // Section definitions reused from the evaluation form to validate and persist scores consistently
@@ -243,7 +316,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
     $sectionIsIncomplete = false;
     $rawSection = $_POST[$sectionKey] ?? null;
     if (!is_array($rawSection)) {
-        if ($isSubmitAction) {
+        if ($validateSectionsForSubmit) {
             $sectionIsIncomplete = true;
         }
 
@@ -253,7 +326,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
     $scores = [];
     foreach ($definition['fields'] as $fieldName) {
         if (!array_key_exists($fieldName, $rawSection)) {
-            if ($isSubmitAction) {
+            if ($validateSectionsForSubmit) {
                 $sectionIsIncomplete = true;
             }
 
@@ -267,7 +340,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
         }
 
         if ($rawValue === '' || $rawValue === null) {
-            if ($isSubmitAction) {
+            if ($validateSectionsForSubmit) {
                 $sectionIsIncomplete = true;
             }
 
@@ -277,7 +350,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
 
         $rawValueString = (string) $rawValue;
         if (!preg_match('/^(0|[1-9][0-9]*)$/', $rawValueString)) {
-            if ($isSubmitAction) {
+            if ($validateSectionsForSubmit) {
                 sendResponseAndExit(
                     $isAjaxRequest,
                     false,
@@ -291,7 +364,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
 
         $score = (int) $rawValueString;
         if ($score < 0 || $score > 10) {
-            if ($isSubmitAction) {
+            if ($validateSectionsForSubmit) {
                 sendResponseAndExit(
                     $isAjaxRequest,
                     false,
@@ -306,7 +379,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
         $scores[$fieldName] = $score;
     }
 
-    if ($isSubmitAction && $sectionIsIncomplete) {
+    if ($validateSectionsForSubmit && $sectionIsIncomplete) {
         $incompleteSections[$sectionKey] = $definition['label'];
     }
 
@@ -317,7 +390,7 @@ foreach ($sectionDefinitions as $sectionKey => $definition) {
     ];
 }
 
-if ($isSubmitAction && $incompleteSections !== []) {
+if ($validateSectionsForSubmit && $incompleteSections !== []) {
     sendResponseAndExit(
         $isAjaxRequest,
         false,
@@ -359,111 +432,124 @@ try {
         }
     } else {
         $insertEvaluationStmt = $pdo->prepare(
-            'INSERT INTO evaluation (application_id, evaluator_id, status) VALUES (:application_id, :evaluator_id, :status)'
+            'INSERT INTO evaluation (application_id, evaluator_id, status, forced_weighted_total_score) '
+            . 'VALUES (:application_id, :evaluator_id, :status, :forced_weighted_total_score)'
         );
         $insertEvaluationStmt->execute([
             ':application_id' => $applicationId,
             ':evaluator_id'   => $evaluatorId,
             ':status'         => $statusToApply,
+            ':forced_weighted_total_score' => $isForcedWeightedOnlyAction ? $forcedWeightedTotalScore : null,
         ]);
         $evaluation_id = (int) $pdo->lastInsertId();
     }
 
-    foreach ($sectionDefinitions as $sectionKey => $definition) {
-        $hasSectionScores = $sectionScores[$sectionKey]['has_scores'];
+    if (!$isForcedWeightedOnlyAction) {
+        foreach ($sectionDefinitions as $sectionKey => $definition) {
+            $hasSectionScores = $sectionScores[$sectionKey]['has_scores'];
 
-        if (!$isSubmitAction && !$hasSectionScores) {
-            continue;
-        }
+            if (!$isSubmitAction && !$hasSectionScores) {
+                continue;
+            }
 
-        if (!empty($definition['single_overall'])) {
-            $stmt = $pdo->prepare(
-                sprintf(
-                    'INSERT INTO %s (evaluation_id, overall_score) VALUES (:evaluation_id, :overall_score)',
-                    $definition['table']
-                )
+            if (!empty($definition['single_overall'])) {
+                $stmt = $pdo->prepare(
+                    sprintf(
+                        'INSERT INTO %s (evaluation_id, overall_score) VALUES (:evaluation_id, :overall_score)',
+                        $definition['table']
+                    )
+                );
+                $stmt->execute([
+                    ':evaluation_id' => $evaluation_id,
+                    ':overall_score' => $sectionScores[$sectionKey]['overall'],
+                ]);
+                continue;
+            }
+
+            $columnList = implode(', ', $definition['fields']);
+            $placeholders = ':' . implode(', :', $definition['fields']);
+            $sql = sprintf(
+                'INSERT INTO %s (evaluation_id, %s, overall_score) VALUES (:evaluation_id, %s, :overall_score)',
+                $definition['table'],
+                $columnList,
+                $placeholders
             );
-            $stmt->execute([
+
+            $stmt = $pdo->prepare($sql);
+            $params = [
                 ':evaluation_id' => $evaluation_id,
                 ':overall_score' => $sectionScores[$sectionKey]['overall'],
-            ]);
-            continue;
+            ];
+
+            foreach ($sectionScores[$sectionKey]['scores'] as $fieldName => $score) {
+                $params[':' . $fieldName] = $score;
+            }
+
+            $stmt->execute($params);
         }
 
-        $columnList = implode(', ', $definition['fields']);
-        $placeholders = ':' . implode(', :', $definition['fields']);
-        $sql = sprintf(
-            'INSERT INTO %s (evaluation_id, %s, overall_score) VALUES (:evaluation_id, %s, :overall_score)',
-            $definition['table'],
-            $columnList,
-            $placeholders
-        );
-
-        $stmt = $pdo->prepare($sql);
-        $params = [
-            ':evaluation_id' => $evaluation_id,
-            ':overall_score' => $sectionScores[$sectionKey]['overall'],
-        ];
-
-        foreach ($sectionScores[$sectionKey]['scores'] as $fieldName => $score) {
-            $params[':' . $fieldName] = $score;
-        }
-
-        $stmt->execute($params);
-    }
-
-    $thematicOverall = $sumNullable([
-        $sectionScores['thematic_repopulation']['overall'],
-        $sectionScores['thematic_safeguard']['overall'],
-        $sectionScores['thematic_cohabitation']['overall'],
-        $sectionScores['thematic_community_support']['overall'],
-        $sectionScores['thematic_culture_education']['overall'],
-    ]);
-
-    $generalOverall  = $sumNullable([
-        $sectionScores['proposing_entity']['overall'],
-        $sectionScores['project']['overall'],
-        $sectionScores['financial_plan']['overall'],
-        $sectionScores['qualitative_elements']['overall'],
-        $thematicOverall,
-    ]);
-
-    if ($isSubmitAction || $generalOverall !== null) {
-        $stmt = $pdo->prepare(
-            'INSERT INTO evaluation_general '
-            . '(evaluation_id, proposing_entity_score, general_project_score, financial_plan_score, qualitative_elements_score, '
-            . 'thematic_criteria_score, overall_score) '
-            . 'VALUES (:evaluation_id, :proposing_entity_score, :general_project_score, :financial_plan_score, '
-            . ':qualitative_elements_score, :thematic_criteria_score, :overall_score)'
-        );
-
-        $stmt->execute([
-            ':evaluation_id'              => $evaluation_id,
-            ':proposing_entity_score'     => $sectionScores['proposing_entity']['overall'],
-            ':general_project_score'      => $sectionScores['project']['overall'],
-            ':financial_plan_score'       => $sectionScores['financial_plan']['overall'],
-            ':qualitative_elements_score' => $sectionScores['qualitative_elements']['overall'],
-            ':thematic_criteria_score'    => $thematicOverall,
-            ':overall_score'              => $generalOverall,
+        $thematicOverall = $sumNullable([
+            $sectionScores['thematic_repopulation']['overall'],
+            $sectionScores['thematic_safeguard']['overall'],
+            $sectionScores['thematic_cohabitation']['overall'],
+            $sectionScores['thematic_community_support']['overall'],
+            $sectionScores['thematic_culture_education']['overall'],
         ]);
+
+        $generalOverall  = $sumNullable([
+            $sectionScores['proposing_entity']['overall'],
+            $sectionScores['project']['overall'],
+            $sectionScores['financial_plan']['overall'],
+            $sectionScores['qualitative_elements']['overall'],
+            $thematicOverall,
+        ]);
+
+        if ($isSubmitAction || $generalOverall !== null) {
+            $stmt = $pdo->prepare(
+                'INSERT INTO evaluation_general '
+                . '(evaluation_id, proposing_entity_score, general_project_score, financial_plan_score, qualitative_elements_score, '
+                . 'thematic_criteria_score, overall_score) '
+                . 'VALUES (:evaluation_id, :proposing_entity_score, :general_project_score, :financial_plan_score, '
+                . ':qualitative_elements_score, :thematic_criteria_score, :overall_score)'
+            );
+
+            $stmt->execute([
+                ':evaluation_id'              => $evaluation_id,
+                ':proposing_entity_score'     => $sectionScores['proposing_entity']['overall'],
+                ':general_project_score'      => $sectionScores['project']['overall'],
+                ':financial_plan_score'       => $sectionScores['financial_plan']['overall'],
+                ':qualitative_elements_score' => $sectionScores['qualitative_elements']['overall'],
+                ':thematic_criteria_score'    => $thematicOverall,
+                ':overall_score'              => $generalOverall,
+            ]);
+        }
+    } else {
+        $clearGeneralStmt = $pdo->prepare('DELETE FROM evaluation_general WHERE evaluation_id = :evaluation_id');
+        $clearGeneralStmt->execute([':evaluation_id' => $evaluation_id]);
     }
 
-    $statusUpdateStmt = $pdo->prepare('UPDATE evaluation SET status = :status WHERE id = :id');
+    $statusUpdateStmt = $pdo->prepare(
+        'UPDATE evaluation SET status = :status, forced_weighted_total_score = :forced_weighted_total_score WHERE id = :id'
+    );
     $statusUpdateStmt->execute([
         ':status' => $statusToApply,
+        ':forced_weighted_total_score' => $isForcedWeightedOnlyAction ? $forcedWeightedTotalScore : null,
         ':id'     => $evaluation_id,
     ]);
 
     $pdo->commit();
 
-    if ($statusToApply === 'REVISED') {
+    if ($isForcedWeightedOnlyAction) {
+        $successMessage = 'Valutazione forzata inviata con successo.';
+    } elseif ($statusToApply === 'REVISED') {
         $successMessage = 'Valutazione revisionata con successo.';
     } elseif ($isSubmitAction) {
         $successMessage = 'Valutazione inviata con successo.';
     } else {
         $successMessage = 'Valutazione salvata come bozza.';
     }
-    sendResponseAndExit($isAjaxRequest, true, $successMessage, 'evaluations.php');
+    $successRedirect = $isForcedWeightedOnlyAction ? 'evaluator_evaluation_overview.php' : 'evaluations.php';
+    sendResponseAndExit($isAjaxRequest, true, $successMessage, $successRedirect);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();

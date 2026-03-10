@@ -7,7 +7,8 @@ if (!isset($_SESSION['user_id'])) {
 include_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
 $rolePermissionManager = new RolePermissionManager($pdo);
-if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']) === false) {
+$currentUserId = (int) $_SESSION['user_id'];
+if ($rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']) === false) {
     header("Location: index.php");
     exit;
 }
@@ -70,7 +71,7 @@ $stmt = $pdo->prepare("
   LEFT JOIN organization o ON a.organization_id = o.id
   WHERE e.evaluator_id = :uid AND c.status = 'OPEN'
 ");
-$stmt->execute([':uid' => $_SESSION['user_id']]);
+$stmt->execute([':uid' => $currentUserId]);
 foreach ($stmt->fetchAll() as $row) {
     $callOptions[$row['call_id']] = $row['call_title'];
     $enteOptions[$row['ente']] = true;
@@ -92,7 +93,7 @@ $stmt = $pdo->prepare("
     AND a.status = 'FINAL_VALIDATION'
     AND c.status = 'OPEN'
 ");
-$stmt->execute([':uid' => $_SESSION['user_id']]);
+$stmt->execute([':uid' => $currentUserId]);
 foreach ($stmt->fetchAll() as $row) {
     $callOptions[$row['call_id']] = $row['call_title'];
     $enteOptions[$row['ente']] = true;
@@ -161,7 +162,7 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
       LEFT JOIN organization o ON a.organization_id = o.id
       WHERE e.evaluator_id = :uid AND e.status = 'SUBMITTED' AND c.status = 'OPEN'
     ";
-    $submittedParams = [':uid' => $_SESSION['user_id']];
+    $submittedParams = [':uid' => $currentUserId];
     if ($selectedCall !== '') {
         $submittedQuery .= " AND c.id = :call_filter";
         $submittedParams[':call_filter'] = (int) $selectedCall;
@@ -195,7 +196,7 @@ if ($selectedStatus === '' || $selectedStatus === 'REVISED') {
       LEFT JOIN organization o ON a.organization_id = o.id
       WHERE e.evaluator_id = :uid AND e.status = 'REVISED' AND c.status = 'OPEN'
     ";
-    $revisedParams = [':uid' => $_SESSION['user_id']];
+    $revisedParams = [':uid' => $currentUserId];
     if ($selectedCall !== '') {
         $revisedQuery .= " AND c.id = :call_filter";
         $revisedParams[':call_filter'] = (int) $selectedCall;
@@ -229,7 +230,7 @@ if ($selectedStatus === '' || $selectedStatus === 'DRAFT') {
       LEFT JOIN organization o ON a.organization_id = o.id
       WHERE e.evaluator_id = :uid AND e.status = 'DRAFT' AND c.status = 'OPEN'
     ";
-    $draftsParams = [':uid' => $_SESSION['user_id']];
+    $draftsParams = [':uid' => $currentUserId];
     if ($selectedCall !== '') {
         $draftsQuery .= " AND c.id = :call_filter";
         $draftsParams[':call_filter'] = (int) $selectedCall;
@@ -266,7 +267,7 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
           AND e.evaluator_id = :uid
       ) AND a.status = 'FINAL_VALIDATION' AND c.status = 'OPEN'
     ";
-    $pendingParams = [':uid' => $_SESSION['user_id']];
+    $pendingParams = [':uid' => $currentUserId];
     if ($selectedCall !== '') {
         $pendingQuery .= " AND c.id = :call_filter";
         $pendingParams[':call_filter'] = (int) $selectedCall;

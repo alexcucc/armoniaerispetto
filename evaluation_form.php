@@ -12,7 +12,8 @@
   include_once 'db/common-db.php';
   include_once 'RolePermissionManager.php';
   $rolePermissionManager = new RolePermissionManager($pdo);
-  if ($rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']) === false) {
+  $currentUserId = (int) $_SESSION['user_id'];
+  if ($rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']) === false) {
       header("Location: index.php");
       exit;
   }
@@ -194,7 +195,7 @@
   );
   $existingEvaluationStmt->execute([
       ':application_id' => $application_id,
-      ':evaluator_id' => $_SESSION['user_id'],
+      ':evaluator_id' => $currentUserId,
   ]);
   $existingEvaluation = $existingEvaluationStmt->fetch(PDO::FETCH_ASSOC) ?: null;
 
@@ -762,7 +763,7 @@
         <form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post">
           <!-- Hidden fields -->
           <input type="hidden" name="application_id" value="<?php echo $application_id; ?>">
-          <input type="hidden" name="evaluator_id" value="<?php echo $_SESSION['user_id']; ?>">
+          <input type="hidden" name="evaluator_id" value="<?php echo $currentUserId; ?>">
           <?php if ($existingEvaluationId !== null): ?>
             <input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>">
           <?php endif; ?>
