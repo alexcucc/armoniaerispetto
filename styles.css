@@ -2028,6 +2028,37 @@ body.evaluation-summary-page .button-container {
   justify-content: center;
 }
 
+body.document-page main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+body.document-page .hero {
+  flex: 1;
+  min-height: 0;
+}
+
+body.document-page .content-container {
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
+}
+
+body.document-page .content {
+  flex: 1;
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  min-height: 0;
+}
+
+body.document-page .pdf-viewer {
+  flex: 1;
+  width: 100%;
+  min-height: 70vh;
+}
+
 .summary-context__item {
   margin: 0;
   padding: 0.14rem 0.48rem;

@@ -4,7 +4,7 @@
     <?php include 'common-head.php';?>
     <title>Statuto</title>
   </head>
-  <body>
+  <body class="document-page">
     <?php include 'header.php';?>
     <main>
       <div class="hero">

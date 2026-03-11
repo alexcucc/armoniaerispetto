@@ -4,14 +4,14 @@
     <?php include 'common-head.php';?>
     <title>Testo del Bando</title>
   </head>
-  <body>
+  <body class="document-page">
     <?php include 'header.php';?>
     <main>
       <div class="hero">
         <div class="content-container">
           <div class="content">
             <object 
-              data="documents/bando.pdf#toolbar=0&navpanes=0&scrollbar=1&view=FitH&page=1" 
+              data="documents/bando.pdf#toolbar=0&navpanes=0&scrollbar=1&page=1" 
               type="application/pdf" 
               class="pdf-viewer"
               loading="lazy">
