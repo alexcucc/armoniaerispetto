@@ -512,6 +512,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                           <div class="actions-cell">
                             <?php if ($isPending): ?>
                               <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Inizia valutazione</a>
+                              <a class="page-button secondary-button" href="evaluation_force.php?application_id=<?php echo $row['application_id']; ?>&evaluator_id=<?php echo $currentUserId; ?>&source=evaluations">Forza voto</a>
                             <?php else: ?>
                               <?php if ($isDraft): ?>
                                 <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Continua</a>

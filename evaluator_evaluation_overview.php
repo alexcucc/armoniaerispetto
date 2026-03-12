@@ -297,7 +297,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                                     </button>
                                                 <?php endif; ?>
                                                 <?php if ($canForceVote): ?>
-                                                    <a class="page-button secondary-button" href="evaluation_force.php?application_id=<?php echo $applicationId; ?>&evaluator_id=<?php echo $selectedEvaluatorUserId; ?>">Forza voto</a>
+                                                    <a class="page-button secondary-button" href="evaluation_force.php?application_id=<?php echo $applicationId; ?>&evaluator_id=<?php echo $selectedEvaluatorUserId; ?>&source=overview">Forza voto</a>
                                                 <?php else: ?>
                                                     <?php if (!$canDelete): ?>
                                                         <span class="text-muted">-</span>

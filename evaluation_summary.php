@@ -254,7 +254,7 @@ foreach ($thematicSectionDefinitions as $sectionKey => $definition) {
 if ($forcedWeightedTotalScore !== null) {
     $mainSectionRows = [
         [
-            'label' => 'Valutazione forzata (Admin)',
+            'label' => 'Valutazione forzata',
             'score' => $forcedWeightedTotalScore,
             'max' => null,
         ],

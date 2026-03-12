@@ -49,11 +49,25 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 include_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
+
+$action = strtolower($_POST['action'] ?? 'save');
+if (!in_array($action, ['save', 'submit', 'submit_force'], true)) {
+    sendResponseAndExit($isAjaxRequest, false, 'Azione non valida.');
+}
+
 $rolePermissionManager = new RolePermissionManager($pdo);
 $currentUserId = (int) $_SESSION['user_id'];
-if (!$rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE'])) {
+$canCreateEvaluation = $rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']);
+$canMonitorEvaluators = $rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATOR_MONITOR']);
+$isForcedWeightedOnlyAction = $action === 'submit_force';
+if ($isForcedWeightedOnlyAction) {
+    if (!$canCreateEvaluation && !$canMonitorEvaluators) {
+        sendResponseAndExit($isAjaxRequest, false, 'Accesso non consentito.');
+    }
+} elseif (!$canCreateEvaluation) {
     sendResponseAndExit($isAjaxRequest, false, 'Accesso non consentito.');
 }
+
 $adminCheckStmt = $pdo->prepare(
     "SELECT 1 FROM user_role ur JOIN role r ON r.id = ur.role_id WHERE ur.user_id = :user_id AND r.name = 'Admin' LIMIT 1"
 );
@@ -72,13 +86,10 @@ if (!ctype_digit((string) $applicationId)) {
 
 $applicationId = (int) $applicationId;
 
-$action = strtolower($_POST['action'] ?? 'save');
-if (!in_array($action, ['save', 'submit', 'submit_force'], true)) {
-    sendResponseAndExit($isAjaxRequest, false, 'Azione non valida.');
-}
-$isForcedWeightedOnlyAction = $action === 'submit_force';
 $isSubmitAction = in_array($action, ['submit', 'submit_force'], true);
 $validateSectionsForSubmit = $isSubmitAction && !$isForcedWeightedOnlyAction;
+$redirectTargetParam = $_POST['redirect_target'] ?? '';
+$redirectTarget = in_array($redirectTargetParam, ['evaluations', 'overview'], true) ? $redirectTargetParam : '';
 
 $evaluatorId = $currentUserId;
 if ($isForcedWeightedOnlyAction) {
@@ -90,8 +101,20 @@ if ($isForcedWeightedOnlyAction) {
     $evaluatorId = (int) $targetEvaluatorId;
 }
 
-if ($isForcedWeightedOnlyAction && !$isAdminUser) {
-    sendResponseAndExit($isAjaxRequest, false, 'Solo un Admin può inviare una valutazione forzata.');
+$forcedActionRedirect = 'evaluations.php';
+if ($isForcedWeightedOnlyAction) {
+    $isSelfForce = $evaluatorId === $currentUserId;
+    if (!$isAdminUser && !$isSelfForce) {
+        sendResponseAndExit($isAjaxRequest, false, 'Puoi inviare una valutazione forzata solo per una tua valutazione non ancora compilata.');
+    }
+
+    if ($redirectTarget === 'overview') {
+        $forcedActionRedirect = 'evaluator_evaluation_overview.php';
+    } elseif ($redirectTarget === 'evaluations') {
+        $forcedActionRedirect = 'evaluations.php';
+    } else {
+        $forcedActionRedirect = $isSelfForce ? 'evaluations.php' : 'evaluator_evaluation_overview.php';
+    }
 }
 
 $applicationStatusStmt = $pdo->prepare(
@@ -548,7 +571,7 @@ try {
     } else {
         $successMessage = 'Valutazione salvata come bozza.';
     }
-    $successRedirect = $isForcedWeightedOnlyAction ? 'evaluator_evaluation_overview.php' : 'evaluations.php';
+    $successRedirect = $isForcedWeightedOnlyAction ? $forcedActionRedirect : 'evaluations.php';
     sendResponseAndExit($isAjaxRequest, true, $successMessage, $successRedirect);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {

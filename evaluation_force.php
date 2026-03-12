@@ -10,33 +10,47 @@ include_once 'RolePermissionManager.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
 $currentUserId = (int) $_SESSION['user_id'];
-if ($rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']) === false) {
+$canCreateEvaluation = $rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']);
+$canMonitorEvaluators = $rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATOR_MONITOR']);
+if (!$canCreateEvaluation && !$canMonitorEvaluators) {
     header('Location: index.php');
     exit;
 }
+
+$sourceParam = filter_input(INPUT_GET, 'source', FILTER_UNSAFE_RAW) ?? '';
+$source = in_array($sourceParam, ['evaluations', 'overview'], true) ? $sourceParam : 'evaluations';
+$buildReturnUrl = static function (string $target): string {
+    return $target === 'overview' ? 'evaluator_evaluation_overview.php' : 'evaluations.php';
+};
+$returnUrl = $buildReturnUrl($source);
 
 $adminCheckStmt = $pdo->prepare(
     "SELECT 1 FROM user_role ur JOIN role r ON r.id = ur.role_id WHERE ur.user_id = :user_id AND r.name = 'Admin' LIMIT 1"
 );
 $adminCheckStmt->execute([':user_id' => $currentUserId]);
 $isAdminUser = (bool) $adminCheckStmt->fetchColumn();
-if (!$isAdminUser) {
-    $_SESSION['evaluation_error'] = 'Solo un Admin può forzare il voto finale.';
-    header('Location: evaluations.php');
-    exit;
-}
 
 $applicationId = filter_input(INPUT_GET, 'application_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 if (!$applicationId) {
     $_SESSION['evaluation_error'] = 'Risposta al bando non valida.';
-    header('Location: evaluations.php');
+    header('Location: ' . $returnUrl);
     exit;
 }
 $selectedEvaluatorId = filter_input(INPUT_GET, 'evaluator_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 if (!$selectedEvaluatorId) {
     $_SESSION['evaluation_error'] = 'Valutatore selezionato non valido.';
-    header('Location: evaluator_evaluation_overview.php');
+    header('Location: ' . $returnUrl);
     exit;
+}
+$isSelfForce = $selectedEvaluatorId === $currentUserId;
+if (!$isAdminUser && !$isSelfForce) {
+    $_SESSION['evaluation_error'] = 'Puoi forzare il voto finale solo per una tua valutazione non ancora compilata.';
+    header('Location: ' . $returnUrl);
+    exit;
+}
+if ($sourceParam === '') {
+    $source = $isSelfForce ? 'evaluations' : 'overview';
+    $returnUrl = $buildReturnUrl($source);
 }
 
 $applicationStmt = $pdo->prepare(
@@ -51,18 +65,18 @@ $applicationStmt->execute([':application_id' => $applicationId]);
 $applicationInfo = $applicationStmt->fetch(PDO::FETCH_ASSOC);
 if (!$applicationInfo) {
     $_SESSION['evaluation_error'] = 'Risposta al bando non trovata.';
-    header('Location: evaluations.php');
+    header('Location: ' . $returnUrl);
     exit;
 }
 
 if (($applicationInfo['call_status'] ?? null) === 'CLOSED') {
     $_SESSION['evaluation_error'] = 'Il bando è chiuso e non è più possibile valutare.';
-    header('Location: evaluations.php');
+    header('Location: ' . $returnUrl);
     exit;
 }
 if (($applicationInfo['status'] ?? '') !== 'FINAL_VALIDATION') {
     $_SESSION['evaluation_error'] = 'È possibile forzare il voto solo per risposte in stato "Convalida in definitiva".';
-    header('Location: evaluations.php');
+    header('Location: ' . $returnUrl);
     exit;
 }
 
@@ -77,7 +91,7 @@ $selectedEvaluatorStmt->execute([':evaluator_id' => $selectedEvaluatorId]);
 $selectedEvaluator = $selectedEvaluatorStmt->fetch(PDO::FETCH_ASSOC);
 if (!$selectedEvaluator) {
     $_SESSION['evaluation_error'] = 'Il valutatore selezionato non esiste.';
-    header('Location: evaluator_evaluation_overview.php');
+    header('Location: ' . $returnUrl);
     exit;
 }
 
@@ -91,7 +105,7 @@ $existingEvaluationStmt->execute([
 $existingEvaluation = $existingEvaluationStmt->fetch(PDO::FETCH_ASSOC);
 if ($existingEvaluation) {
     $_SESSION['evaluation_error'] = 'Esiste già una valutazione per il bando e il valutatore selezionato.';
-    header('Location: evaluator_evaluation_overview.php');
+    header('Location: ' . $returnUrl);
     exit;
 }
 
@@ -104,7 +118,7 @@ $completedEvaluationsStmt->execute([':application_id' => $applicationId]);
 $completedEvaluations = (int) $completedEvaluationsStmt->fetchColumn();
 if ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators) {
     $_SESSION['evaluation_error'] = 'Non è possibile forzare il voto: le valutazioni risultano già complete.';
-    header('Location: evaluator_evaluation_overview.php');
+    header('Location: ' . $returnUrl);
     exit;
 }
 
@@ -122,12 +136,12 @@ $maxForcedWeightedTotalScore = 2090;
     <main>
       <div class="hero">
         <div class="title">
-          <h1>Forza voto finale (Admin)</h1>
+          <h1>Forza voto finale</h1>
         </div>
         <div class="content-container">
           <div class="content">
             <div class="button-container">
-              <a href="evaluator_evaluation_overview.php" class="page-button back-button">Indietro</a>
+              <a href="<?php echo htmlspecialchars($returnUrl); ?>" class="page-button back-button">Indietro</a>
             </div>
 
             <div class="evaluation-summary">
@@ -139,6 +153,7 @@ $maxForcedWeightedTotalScore = 2090;
               <form class="contact-form" action="evaluation_handler.php" method="post">
                 <input type="hidden" name="application_id" value="<?php echo (int) $applicationId; ?>">
                 <input type="hidden" name="evaluator_id" value="<?php echo (int) $selectedEvaluatorId; ?>">
+                <input type="hidden" name="redirect_target" value="<?php echo htmlspecialchars($source); ?>">
 
                 <div class="form-group">
                   <label class="form-label required" for="forced_weighted_total_score">Voto totale pesato</label>
