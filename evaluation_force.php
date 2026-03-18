@@ -96,15 +96,20 @@ if (!$selectedEvaluator) {
 }
 
 $existingEvaluationStmt = $pdo->prepare(
-    'SELECT id FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1'
+    'SELECT id, forced_weighted_total_score '
+    . 'FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1'
 );
 $existingEvaluationStmt->execute([
     ':application_id' => $applicationId,
     ':evaluator_id' => $selectedEvaluatorId,
 ]);
 $existingEvaluation = $existingEvaluationStmt->fetch(PDO::FETCH_ASSOC);
-if ($existingEvaluation) {
-    $_SESSION['evaluation_error'] = 'Esiste già una valutazione per il bando e il valutatore selezionato.';
+$existingForcedWeightedTotalScore = null;
+if ($existingEvaluation && is_numeric($existingEvaluation['forced_weighted_total_score'] ?? null)) {
+    $existingForcedWeightedTotalScore = (float) $existingEvaluation['forced_weighted_total_score'];
+}
+if ($existingEvaluation && $existingForcedWeightedTotalScore === null) {
+    $_SESSION['evaluation_error'] = 'Esiste già una valutazione standard per il bando e il valutatore selezionato.';
     header('Location: ' . $returnUrl);
     exit;
 }
@@ -116,7 +121,7 @@ $completedEvaluationsStmt = $pdo->prepare(
 );
 $completedEvaluationsStmt->execute([':application_id' => $applicationId]);
 $completedEvaluations = (int) $completedEvaluationsStmt->fetchColumn();
-if ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators) {
+if (!$existingEvaluation && ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators)) {
     $_SESSION['evaluation_error'] = 'Non è possibile forzare il voto: le valutazioni risultano già complete.';
     header('Location: ' . $returnUrl);
     exit;
@@ -149,6 +154,9 @@ $maxForcedWeightedTotalScore = 2090;
               <p><strong>Ente:</strong> <?php echo htmlspecialchars($applicationInfo['organization_name']); ?></p>
               <p><strong>Valutatore:</strong> <?php echo htmlspecialchars($selectedEvaluator['evaluator_name']); ?></p>
               <p><strong>Valutazioni complete:</strong> <?php echo htmlspecialchars((string) $completedEvaluations); ?>/<?php echo htmlspecialchars((string) $totalEvaluators); ?></p>
+              <?php if ($existingEvaluation): ?>
+                <p><strong>Valutazione forzata esistente:</strong> puoi aggiornare il voto totale pesato salvato.</p>
+              <?php endif; ?>
 
               <form class="contact-form" action="evaluation_handler.php" method="post">
                 <input type="hidden" name="application_id" value="<?php echo (int) $applicationId; ?>">
@@ -165,13 +173,14 @@ $maxForcedWeightedTotalScore = 2090;
                     min="0"
                     max="<?php echo (int) $maxForcedWeightedTotalScore; ?>"
                     step="0.01"
+                    value="<?php echo $existingForcedWeightedTotalScore !== null ? htmlspecialchars(number_format($existingForcedWeightedTotalScore, 2, '.', '')) : ''; ?>"
                     required
                   >
                   <small class="form-text">Inserisci solo il punteggio totale pesato (0-<?php echo (int) $maxForcedWeightedTotalScore; ?>).</small>
                 </div>
 
                 <div class="button-container">
-                  <button class="page-button" type="submit" name="action" value="submit_force">Invia voto finale</button>
+                  <button class="page-button" type="submit" name="action" value="submit_force"><?php echo $existingEvaluation ? 'Aggiorna voto finale' : 'Invia voto finale'; ?></button>
                 </div>
               </form>
             </div>

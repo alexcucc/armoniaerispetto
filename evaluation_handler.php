@@ -145,7 +145,8 @@ if (isset($_POST['evaluation_id'])) {
 }
 
 $existingEvaluationStmt = $pdo->prepare(
-    'SELECT id, status FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1'
+    'SELECT id, status, forced_weighted_total_score '
+    . 'FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1'
 );
 $existingEvaluationStmt->execute([
     ':application_id' => $applicationId,
@@ -177,8 +178,13 @@ if ($isForcedWeightedOnlyAction) {
         sendResponseAndExit($isAjaxRequest, false, 'Il valutatore selezionato non è valido.');
     }
 
-    if ($existingEvaluation !== null) {
-        sendResponseAndExit($isAjaxRequest, false, 'La valutazione forzata è consentita solo in creazione.');
+    $existingForcedWeightedTotalScore = null;
+    if ($existingEvaluation !== null && is_numeric($existingEvaluation['forced_weighted_total_score'] ?? null)) {
+        $existingForcedWeightedTotalScore = (float) $existingEvaluation['forced_weighted_total_score'];
+    }
+
+    if ($existingEvaluation !== null && $existingForcedWeightedTotalScore === null) {
+        sendResponseAndExit($isAjaxRequest, false, 'Esiste già una valutazione standard per il bando e il valutatore selezionato.');
     }
 
     if (is_string($forcedWeightedTotalRaw)) {
@@ -209,7 +215,7 @@ if ($isForcedWeightedOnlyAction) {
     $completedEvaluationsStmt->execute([':application_id' => $applicationId]);
     $completedEvaluations = (int) $completedEvaluationsStmt->fetchColumn();
 
-    if ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators) {
+    if ($existingEvaluation === null && ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators)) {
         sendResponseAndExit(
             $isAjaxRequest,
             false,
@@ -425,7 +431,9 @@ try {
     // Use transaction for consistency
     $pdo->beginTransaction();
 
-    if ($existingEvaluation !== null) {
+    if ($isForcedWeightedOnlyAction) {
+        $statusToApply = 'REVISED';
+    } elseif ($existingEvaluation !== null) {
         $existingStatus = strtoupper((string) ($existingEvaluation['status'] ?? ''));
         $isPreviouslySent = in_array($existingStatus, ['SUBMITTED', 'REVISED'], true);
         $statusToApply = $isPreviouslySent ? 'REVISED' : ($isSubmitAction ? 'SUBMITTED' : 'DRAFT');
@@ -563,7 +571,7 @@ try {
     $pdo->commit();
 
     if ($isForcedWeightedOnlyAction) {
-        $successMessage = 'Valutazione forzata inviata con successo.';
+        $successMessage = 'Valutazione forzata revisionata con successo.';
     } elseif ($statusToApply === 'REVISED') {
         $successMessage = 'Valutazione revisionata con successo.';
     } elseif ($isSubmitAction) {

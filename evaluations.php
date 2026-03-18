@@ -153,6 +153,7 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
         c.title AS call_title,
         COALESCE(o.name, 'Soggetto proponente') AS ente,
         e.updated_at AS reference_date,
+        e.forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
         a.checklist_path
@@ -187,6 +188,7 @@ if ($selectedStatus === '' || $selectedStatus === 'REVISED') {
         c.title AS call_title,
         COALESCE(o.name, 'Soggetto proponente') AS ente,
         e.updated_at AS reference_date,
+        e.forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
         a.checklist_path
@@ -221,6 +223,7 @@ if ($selectedStatus === '' || $selectedStatus === 'DRAFT') {
         c.title AS call_title,
         COALESCE(o.name, 'Soggetto proponente') AS ente,
         e.updated_at AS reference_date,
+        e.forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
         a.checklist_path
@@ -255,6 +258,7 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
         c.title AS call_title,
         COALESCE(o.name, 'Soggetto proponente') AS ente,
         a.created_at AS reference_date,
+        NULL AS forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
         a.checklist_path
@@ -454,6 +458,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                         $isSubmitted = $statusKey === 'SUBMITTED';
                         $isRevised = $statusKey === 'REVISED';
                         $isPending = $statusKey === 'PENDING';
+                        $isForcedEvaluation = is_numeric($row['forced_weighted_total_score'] ?? null);
                         $hasApplicationPdf = !empty($row['application_pdf_path']);
                         $hasBudgetPdf = !empty($row['budget_pdf_path']);
                         $hasChecklist = !empty($row['checklist_path']);
@@ -517,7 +522,11 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                               <?php if ($isDraft): ?>
                                 <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Continua</a>
                               <?php elseif ($isSubmitted || $isRevised): ?>
-                                <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Modifica</a>
+                                <?php if ($isForcedEvaluation): ?>
+                                  <a class="page-button" href="evaluation_force.php?application_id=<?php echo $row['application_id']; ?>&evaluator_id=<?php echo $currentUserId; ?>&source=evaluations">Modifica voto forzato</a>
+                                <?php else: ?>
+                                  <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Modifica</a>
+                                <?php endif; ?>
                               <?php else: ?>
                                 <span class="text-muted">-</span>
                               <?php endif; ?>

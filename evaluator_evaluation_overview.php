@@ -67,6 +67,7 @@ $completedFilterClause = $filterClause === ''
     : $filterClause . " AND e.status IN ('SUBMITTED', 'REVISED')";
 
 $completedQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, o.name AS organization_name, "
+    . "e.forced_weighted_total_score, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
     . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
     . "e.status AS status, COALESCE(e.updated_at, a.updated_at) AS updated_at "
@@ -81,6 +82,7 @@ $completedQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user
     . $completedFilterClause;
 
 $pendingQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, o.name AS organization_name, "
+    . "e.forced_weighted_total_score, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
     . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
     . "COALESCE(e.status, 'NOT_STARTED') AS status, COALESCE(e.updated_at, a.updated_at) AS updated_at "
@@ -273,10 +275,11 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                         $canDelete = $evaluationId > 0;
                                         $applicationId = isset($evaluation['application_id']) ? (int) $evaluation['application_id'] : 0;
                                         $selectedEvaluatorUserId = isset($evaluation['evaluator_user_id']) ? (int) $evaluation['evaluator_user_id'] : 0;
+                                        $isForcedEvaluation = is_numeric($evaluation['forced_weighted_total_score'] ?? null);
                                         $canForceVote = $isAdminUser
                                             && $applicationId > 0
                                             && $selectedEvaluatorUserId > 0
-                                            && (($evaluation['status'] ?? '') === 'NOT_STARTED');
+                                            && ((($evaluation['status'] ?? '') === 'NOT_STARTED') || $isForcedEvaluation);
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($evaluation['call_title']); ?></td>
@@ -297,7 +300,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                                     </button>
                                                 <?php endif; ?>
                                                 <?php if ($canForceVote): ?>
-                                                    <a class="page-button secondary-button" href="evaluation_force.php?application_id=<?php echo $applicationId; ?>&evaluator_id=<?php echo $selectedEvaluatorUserId; ?>&source=overview">Forza voto</a>
+                                                    <a class="page-button secondary-button" href="evaluation_force.php?application_id=<?php echo $applicationId; ?>&evaluator_id=<?php echo $selectedEvaluatorUserId; ?>&source=overview"><?php echo $isForcedEvaluation ? 'Modifica voto forzato' : 'Forza voto'; ?></a>
                                                 <?php else: ?>
                                                     <?php if (!$canDelete): ?>
                                                         <span class="text-muted">-</span>
