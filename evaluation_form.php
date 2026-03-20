@@ -20,12 +20,19 @@
   
   // Query to fetch the organization name of the proponent
   $stmt = $pdo->prepare(
-      "SELECT o.name AS organization_name, a.status, c.status AS call_status FROM application a "
+      "SELECT o.name AS organization_name, a.status, c.status AS call_status, "
+      . "CASE WHEN cfe.evaluator_user_id IS NULL THEN 0 ELSE 1 END AS evaluator_assigned "
+      . "FROM application a "
       . "LEFT JOIN organization o ON a.organization_id = o.id "
       . "JOIN call_for_proposal c ON a.call_for_proposal_id = c.id "
+      . "LEFT JOIN call_for_proposal_evaluator cfe "
+      . "ON cfe.call_for_proposal_id = c.id AND cfe.evaluator_user_id = :evaluator_user_id "
       . "WHERE a.id = :application_id"
   );
-  $stmt->execute([':application_id' => $application_id]);
+  $stmt->execute([
+      ':application_id' => $application_id,
+      ':evaluator_user_id' => $currentUserId,
+  ]);
   $applicationInfo = $stmt->fetch(PDO::FETCH_ASSOC);
   if (!$applicationInfo) {
       $_SESSION['evaluation_error'] = 'Risposta al bando non trovata.';
@@ -41,6 +48,11 @@
 
   if (($applicationInfo['status'] ?? '') !== 'FINAL_VALIDATION') {
       $_SESSION['evaluation_error'] = 'È possibile valutare solo le risposte in stato "Convalida in definitiva".';
+      header('Location: evaluations.php');
+      exit;
+  }
+  if ((int) ($applicationInfo['evaluator_assigned'] ?? 0) !== 1) {
+      $_SESSION['evaluation_error'] = 'Non sei abilitato a valutare il bando della domanda selezionata.';
       header('Location: evaluations.php');
       exit;
   }

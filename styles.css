@@ -1704,6 +1704,137 @@ p {
   background-color: #f5f5f5;
 }
 
+.evaluator-assignment-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.evaluator-assignment-count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #4a5568;
+}
+
+.evaluator-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+}
+
+.evaluator-badges--extra {
+  margin-top: 0.1rem;
+}
+
+.evaluator-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background-color: #eaf6ef;
+  color: #1f5133;
+  border: 1px solid #cbe8d5;
+  font-size: 0.78rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.evaluator-badge--empty {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+
+.evaluator-badge--more {
+  cursor: pointer;
+  background-color: #e0ecff;
+  color: #1e40af;
+  border-color: #bfd4ff;
+  font-weight: 700;
+}
+
+.evaluator-badge--more:hover {
+  background-color: #d2e3ff;
+}
+
+.evaluator-selector {
+  border: 1px solid #d8e1e8;
+  border-radius: 0.6rem;
+  background: #f8fafc;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.evaluator-selector__toolbar {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.evaluator-selector__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.evaluator-selector__action {
+  margin: 0;
+  min-width: 160px;
+}
+
+.evaluator-selector__stats {
+  margin: 0;
+}
+
+.evaluator-selector__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 0.5rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.evaluator-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #d7dee5;
+  border-radius: 0.5rem;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.evaluator-option:hover {
+  border-color: #8fc6a5;
+  background: #f7fcf9;
+}
+
+.evaluator-option.is-selected {
+  border-color: #2e8b57;
+  box-shadow: 0 0 0 1px rgba(46, 139, 87, 0.25);
+  background: #eef9f1;
+}
+
+.evaluator-option__checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #2e8b57;
+}
+
+.evaluator-option__name {
+  text-align: left;
+  font-weight: 600;
+  color: #2d3748;
+  line-height: 1.25;
+}
+
 .message.success {
   background-color: #d4edda;
   color: #155724;
@@ -1850,6 +1981,16 @@ p {
     .users-table td {
         padding: 8px 10px;
         font-size: 0.9rem;
+    }
+
+    .evaluator-selector__grid {
+        grid-template-columns: 1fr;
+        max-height: 320px;
+    }
+
+    .evaluator-selector__action {
+        min-width: 0;
+        width: 100%;
     }
 
     .users-table-container {

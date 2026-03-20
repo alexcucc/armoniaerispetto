@@ -29,7 +29,10 @@ if (!$call) {
     exit();
 }
 
-$totalEvaluatorsStmt = $pdo->query('SELECT COUNT(*) FROM evaluator');
+$totalEvaluatorsStmt = $pdo->prepare(
+    'SELECT COUNT(*) FROM call_for_proposal_evaluator WHERE call_for_proposal_id = :call_id'
+);
+$totalEvaluatorsStmt->execute([':call_id' => $callId]);
 $totalEvaluators = (int) $totalEvaluatorsStmt->fetchColumn();
 
 $organizations = [];
@@ -44,7 +47,15 @@ if ($totalEvaluators > 0) {
             COALESCE(SUM(es.total_overall_score), 0) AS total_score
         FROM application a
         JOIN organization o ON a.organization_id = o.id
-        LEFT JOIN evaluation e ON e.application_id = a.id AND e.status IN (\'SUBMITTED\', \'REVISED\')
+        LEFT JOIN evaluation e
+            ON e.application_id = a.id
+            AND e.status IN (\'SUBMITTED\', \'REVISED\')
+            AND EXISTS (
+                SELECT 1
+                FROM call_for_proposal_evaluator cfe
+                WHERE cfe.call_for_proposal_id = a.call_for_proposal_id
+                  AND cfe.evaluator_user_id = e.evaluator_id
+            )
         LEFT JOIN (
             SELECT
                 ev.id AS evaluation_id,
@@ -185,7 +196,7 @@ if ($totalEvaluators > 0) {
                     </div>
 
                     <?php if ($totalEvaluators === 0): ?>
-                        <p>Non ci sono valutatori registrati. Aggiungi almeno un valutatore per visualizzare i risultati.</p>
+                        <p>Non ci sono valutatori assegnati a questo bando. Aggiungi almeno un valutatore abilitato per visualizzare i risultati.</p>
                     <?php elseif (empty($organizations)): ?>
                         <p>Non sono ancora disponibili risultati per questo bando. Verifica che tutte le valutazioni siano state completate.</p>
                     <?php else: ?>

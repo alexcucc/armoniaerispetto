@@ -118,7 +118,7 @@ if ($isForcedWeightedOnlyAction) {
 }
 
 $applicationStatusStmt = $pdo->prepare(
-    'SELECT a.status, c.status AS call_status '
+    'SELECT a.status, c.status AS call_status, c.id AS call_for_proposal_id '
     . 'FROM application a '
     . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
     . 'WHERE a.id = :application_id'
@@ -133,6 +133,20 @@ if (($applicationStatus['call_status'] ?? null) === 'CLOSED') {
 }
 if (($applicationStatus['status'] ?? '') !== 'FINAL_VALIDATION') {
     sendResponseAndExit($isAjaxRequest, false, 'È possibile valutare solo le risposte in stato "Convalida in definitiva".');
+}
+
+$callForProposalId = (int) ($applicationStatus['call_for_proposal_id'] ?? 0);
+$evaluatorAssignmentStmt = $pdo->prepare(
+    'SELECT 1 FROM call_for_proposal_evaluator '
+    . 'WHERE call_for_proposal_id = :call_for_proposal_id AND evaluator_user_id = :evaluator_user_id LIMIT 1'
+);
+$evaluatorAssignmentStmt->execute([
+    ':call_for_proposal_id' => $callForProposalId,
+    ':evaluator_user_id' => $evaluatorId,
+]);
+$isEvaluatorAssigned = (bool) $evaluatorAssignmentStmt->fetchColumn();
+if (!$isEvaluatorAssigned) {
+    sendResponseAndExit($isAjaxRequest, false, 'Il valutatore selezionato non è abilitato per il bando della domanda.');
 }
 
 $providedEvaluationId = null;
@@ -206,13 +220,24 @@ if ($isForcedWeightedOnlyAction) {
         sendResponseAndExit($isAjaxRequest, false, 'Il voto totale pesato deve essere compreso tra 0 e 2090.');
     }
 
-    $totalEvaluatorsStmt = $pdo->query('SELECT COUNT(*) FROM evaluator');
+    $totalEvaluatorsStmt = $pdo->prepare(
+        'SELECT COUNT(*) FROM call_for_proposal_evaluator WHERE call_for_proposal_id = :call_for_proposal_id'
+    );
+    $totalEvaluatorsStmt->execute([':call_for_proposal_id' => $callForProposalId]);
     $totalEvaluators = (int) $totalEvaluatorsStmt->fetchColumn();
 
     $completedEvaluationsStmt = $pdo->prepare(
-        "SELECT COUNT(*) FROM evaluation WHERE application_id = :application_id AND status IN ('SUBMITTED', 'REVISED')"
+        "SELECT COUNT(*) "
+        . "FROM evaluation e "
+        . "JOIN call_for_proposal_evaluator cfe "
+        . "ON cfe.call_for_proposal_id = :call_for_proposal_id "
+        . "AND cfe.evaluator_user_id = e.evaluator_id "
+        . "WHERE e.application_id = :application_id AND e.status IN ('SUBMITTED', 'REVISED')"
     );
-    $completedEvaluationsStmt->execute([':application_id' => $applicationId]);
+    $completedEvaluationsStmt->execute([
+        ':application_id' => $applicationId,
+        ':call_for_proposal_id' => $callForProposalId,
+    ]);
     $completedEvaluations = (int) $completedEvaluationsStmt->fetchColumn();
 
     if ($existingEvaluation === null && ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators)) {

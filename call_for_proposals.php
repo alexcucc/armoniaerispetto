@@ -45,6 +45,12 @@ $stmt = $pdo->prepare(
             cfp.created_at,
             cfp.updated_at,
             (
+                SELECT GROUP_CONCAT(CONCAT(u.last_name, ' ', u.first_name) ORDER BY u.last_name, u.first_name SEPARATOR ', ')
+                FROM call_for_proposal_evaluator cfe
+                JOIN user u ON u.id = cfe.evaluator_user_id
+                WHERE cfe.call_for_proposal_id = cfp.id
+            ) AS assigned_evaluators,
+            (
                 SELECT COUNT(*)
                 FROM application a
                 WHERE a.call_for_proposal_id = cfp.id
@@ -86,6 +92,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th>Inizio</th>
                                 <th>Fine</th>
                                 <th>Stato</th>
+                                <th>Valutatori abilitati</th>
                                 <th>Creato il</th>
                                 <th>Aggiornato il</th>
                                 <th>Azioni</th>
@@ -93,6 +100,17 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </thead>
                         <tbody>
                             <?php foreach ($calls as $cfp): ?>
+                                <?php
+                                    $assignedEvaluatorsRaw = trim((string) ($cfp['assigned_evaluators'] ?? ''));
+                                    $assignedEvaluators = $assignedEvaluatorsRaw !== ''
+                                        ? array_values(array_filter(array_map('trim', explode(',', $assignedEvaluatorsRaw)), static fn ($name) => $name !== ''))
+                                        : [];
+                                    $assignedEvaluatorCount = count($assignedEvaluators);
+                                    $previewEvaluators = array_slice($assignedEvaluators, 0, 3);
+                                    $extraEvaluators = array_slice($assignedEvaluators, 3);
+                                    $extraCount = count($extraEvaluators);
+                                    $toggleTargetId = 'evaluator-extra-' . (int) $cfp['id'];
+                                ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($cfp['title']); ?></td>
                                     <td><?php echo htmlspecialchars($cfp['description']); ?></td>
@@ -101,6 +119,41 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td class="status-tag <?php echo $cfp['status'] === 'CLOSED' ? 'status-closed' : 'status-open'; ?>">
                 <?php echo $cfp['status'] === 'CLOSED' ? 'Chiuso' : 'Aperto'; ?>
             </td>
+                                    <td>
+                                        <div class="evaluator-assignment-cell">
+                                            <span class="evaluator-assignment-count">
+                                                <?php echo htmlspecialchars((string) $assignedEvaluatorCount); ?> valutatori
+                                            </span>
+                                            <?php if ($assignedEvaluatorCount === 0): ?>
+                                                <div class="evaluator-badges">
+                                                    <span class="evaluator-badge evaluator-badge--empty">Nessuno</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <div class="evaluator-badges">
+                                                    <?php foreach ($previewEvaluators as $evaluatorName): ?>
+                                                        <span class="evaluator-badge"><?php echo htmlspecialchars($evaluatorName); ?></span>
+                                                    <?php endforeach; ?>
+                                                    <?php if ($extraCount > 0): ?>
+                                                        <button
+                                                            type="button"
+                                                            class="evaluator-badge evaluator-badge--more js-evaluator-toggle"
+                                                            data-target-id="<?php echo htmlspecialchars($toggleTargetId); ?>"
+                                                            aria-expanded="false"
+                                                        >
+                                                            +<?php echo htmlspecialchars((string) $extraCount); ?>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <?php if ($extraCount > 0): ?>
+                                                    <div class="evaluator-badges evaluator-badges--extra" id="<?php echo htmlspecialchars($toggleTargetId); ?>" hidden>
+                                                        <?php foreach ($extraEvaluators as $evaluatorName): ?>
+                                                            <span class="evaluator-badge"><?php echo htmlspecialchars($evaluatorName); ?></span>
+                                                        <?php endforeach; ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['created_at']))); ?></td>
                                     <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($cfp['updated_at']))); ?></td>
                                     <td>
@@ -139,6 +192,7 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
         const deleteButtons = document.querySelectorAll('.delete-btn');
         const closeButtons = document.querySelectorAll('.close-btn');
         const reopenButtons = document.querySelectorAll('.reopen-btn');
+        const evaluatorToggleButtons = document.querySelectorAll('.js-evaluator-toggle');
         const messageDiv = document.getElementById('message');
 
         const showMessage = (data) => {
@@ -256,6 +310,24 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         closeButtons.forEach(button => attachCloseHandler(button));
         reopenButtons.forEach(button => attachReopenHandler(button));
+        evaluatorToggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.dataset.targetId;
+                if (!targetId) {
+                    return;
+                }
+                const target = document.getElementById(targetId);
+                if (!target) {
+                    return;
+                }
+
+                const isCurrentlyExpanded = this.getAttribute('aria-expanded') === 'true';
+                const shouldExpand = !isCurrentlyExpanded;
+                this.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+                target.hidden = !shouldExpand;
+                this.textContent = shouldExpand ? 'Riduci' : ('+' + target.children.length);
+            });
+        });
     });
 </script>
 </body>

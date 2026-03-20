@@ -68,6 +68,7 @@ $stmt = $pdo->prepare("
   FROM evaluation e
   JOIN application a ON e.application_id = a.id
   JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+  JOIN call_for_proposal_evaluator cfe ON cfe.call_for_proposal_id = c.id AND cfe.evaluator_user_id = e.evaluator_id
   LEFT JOIN organization o ON a.organization_id = o.id
   WHERE e.evaluator_id = :uid AND c.status = 'OPEN'
 ");
@@ -84,11 +85,12 @@ $stmt = $pdo->prepare("
     COALESCE(o.name, 'Soggetto proponente') AS ente
   FROM application a
   JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+  JOIN call_for_proposal_evaluator cfe ON cfe.call_for_proposal_id = c.id AND cfe.evaluator_user_id = :uid
   LEFT JOIN organization o ON a.organization_id = o.id
   WHERE NOT EXISTS (
     SELECT 1 FROM evaluation e
     WHERE e.application_id = a.id
-      AND e.evaluator_id = :uid
+      AND e.evaluator_id = cfe.evaluator_user_id
   )
     AND a.status = 'FINAL_VALIDATION'
     AND c.status = 'OPEN'
@@ -160,6 +162,7 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+      JOIN call_for_proposal_evaluator cfe ON cfe.call_for_proposal_id = c.id AND cfe.evaluator_user_id = e.evaluator_id
       LEFT JOIN organization o ON a.organization_id = o.id
       WHERE e.evaluator_id = :uid AND e.status = 'SUBMITTED' AND c.status = 'OPEN'
     ";
@@ -195,6 +198,7 @@ if ($selectedStatus === '' || $selectedStatus === 'REVISED') {
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+      JOIN call_for_proposal_evaluator cfe ON cfe.call_for_proposal_id = c.id AND cfe.evaluator_user_id = e.evaluator_id
       LEFT JOIN organization o ON a.organization_id = o.id
       WHERE e.evaluator_id = :uid AND e.status = 'REVISED' AND c.status = 'OPEN'
     ";
@@ -230,6 +234,7 @@ if ($selectedStatus === '' || $selectedStatus === 'DRAFT') {
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+      JOIN call_for_proposal_evaluator cfe ON cfe.call_for_proposal_id = c.id AND cfe.evaluator_user_id = e.evaluator_id
       LEFT JOIN organization o ON a.organization_id = o.id
       WHERE e.evaluator_id = :uid AND e.status = 'DRAFT' AND c.status = 'OPEN'
     ";
@@ -264,11 +269,12 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
         a.checklist_path
       FROM application a
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
+      JOIN call_for_proposal_evaluator cfe ON cfe.call_for_proposal_id = c.id AND cfe.evaluator_user_id = :uid
       LEFT JOIN organization o ON a.organization_id = o.id
       WHERE NOT EXISTS (
         SELECT 1 FROM evaluation e
         WHERE e.application_id = a.id
-          AND e.evaluator_id = :uid
+          AND e.evaluator_id = cfe.evaluator_user_id
       ) AND a.status = 'FINAL_VALIDATION' AND c.status = 'OPEN'
     ";
     $pendingParams = [':uid' => $currentUserId];

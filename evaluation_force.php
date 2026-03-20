@@ -54,7 +54,7 @@ if ($sourceParam === '') {
 }
 
 $applicationStmt = $pdo->prepare(
-    "SELECT a.id, a.status, c.status AS call_status, c.title AS call_title, COALESCE(o.name, 'Soggetto proponente') AS organization_name "
+    "SELECT a.id, a.status, c.id AS call_for_proposal_id, c.status AS call_status, c.title AS call_title, COALESCE(o.name, 'Soggetto proponente') AS organization_name "
     . 'FROM application a '
     . 'JOIN call_for_proposal c ON c.id = a.call_for_proposal_id '
     . 'LEFT JOIN organization o ON o.id = a.organization_id '
@@ -79,18 +79,24 @@ if (($applicationInfo['status'] ?? '') !== 'FINAL_VALIDATION') {
     header('Location: ' . $returnUrl);
     exit;
 }
+$callForProposalId = (int) ($applicationInfo['call_for_proposal_id'] ?? 0);
 
 $selectedEvaluatorStmt = $pdo->prepare(
     "SELECT ev.user_id, CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name "
     . 'FROM evaluator ev '
     . 'JOIN user u ON u.id = ev.user_id '
+    . 'JOIN call_for_proposal_evaluator cfe '
+    . 'ON cfe.evaluator_user_id = ev.user_id AND cfe.call_for_proposal_id = :call_for_proposal_id '
     . 'WHERE ev.user_id = :evaluator_id '
     . 'LIMIT 1'
 );
-$selectedEvaluatorStmt->execute([':evaluator_id' => $selectedEvaluatorId]);
+$selectedEvaluatorStmt->execute([
+    ':evaluator_id' => $selectedEvaluatorId,
+    ':call_for_proposal_id' => $callForProposalId,
+]);
 $selectedEvaluator = $selectedEvaluatorStmt->fetch(PDO::FETCH_ASSOC);
 if (!$selectedEvaluator) {
-    $_SESSION['evaluation_error'] = 'Il valutatore selezionato non esiste.';
+    $_SESSION['evaluation_error'] = 'Il valutatore selezionato non è abilitato per il bando della domanda.';
     header('Location: ' . $returnUrl);
     exit;
 }
@@ -114,12 +120,23 @@ if ($existingEvaluation && $existingForcedWeightedTotalScore === null) {
     exit;
 }
 
-$totalEvaluatorsStmt = $pdo->query('SELECT COUNT(*) FROM evaluator');
+$totalEvaluatorsStmt = $pdo->prepare(
+    'SELECT COUNT(*) FROM call_for_proposal_evaluator WHERE call_for_proposal_id = :call_for_proposal_id'
+);
+$totalEvaluatorsStmt->execute([':call_for_proposal_id' => $callForProposalId]);
 $totalEvaluators = (int) $totalEvaluatorsStmt->fetchColumn();
 $completedEvaluationsStmt = $pdo->prepare(
-    "SELECT COUNT(*) FROM evaluation WHERE application_id = :application_id AND status IN ('SUBMITTED', 'REVISED')"
+    "SELECT COUNT(*) "
+    . "FROM evaluation e "
+    . "JOIN call_for_proposal_evaluator cfe "
+    . "ON cfe.call_for_proposal_id = :call_for_proposal_id "
+    . "AND cfe.evaluator_user_id = e.evaluator_id "
+    . "WHERE e.application_id = :application_id AND e.status IN ('SUBMITTED', 'REVISED')"
 );
-$completedEvaluationsStmt->execute([':application_id' => $applicationId]);
+$completedEvaluationsStmt->execute([
+    ':application_id' => $applicationId,
+    ':call_for_proposal_id' => $callForProposalId,
+]);
 $completedEvaluations = (int) $completedEvaluationsStmt->fetchColumn();
 if (!$existingEvaluation && ($totalEvaluators <= 0 || $completedEvaluations >= $totalEvaluators)) {
     $_SESSION['evaluation_error'] = 'Non è possibile forzare il voto: le valutazioni risultano già complete.';

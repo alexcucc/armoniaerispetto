@@ -15,16 +15,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+$_SESSION['call_for_proposal_form_evaluator_ids'] = $_POST['evaluator_user_ids'] ?? [];
+
 $title = trim(filter_input(INPUT_POST, 'title', FILTER_UNSAFE_RAW));
 $description = trim(filter_input(INPUT_POST, 'description', FILTER_UNSAFE_RAW));
 $start_date_input = trim(filter_input(INPUT_POST, 'start_date', FILTER_UNSAFE_RAW));
 $end_date_input = trim(filter_input(INPUT_POST, 'end_date', FILTER_UNSAFE_RAW));
+$rawEvaluatorUserIds = $_POST['evaluator_user_ids'] ?? [];
 
 $start_date = DateTime::createFromFormat('Y-m-d', $start_date_input);
 $end_date = DateTime::createFromFormat('Y-m-d', $end_date_input);
 
 $pdf_uploaded = isset($_FILES['pdf']) && $_FILES['pdf']['error'] === UPLOAD_ERR_OK;
 if (!$title || !$description || !$start_date || !$end_date || !$pdf_uploaded) {
+    $_SESSION['call_for_proposal_form_error'] = 'Compila tutti i campi obbligatori.';
     header('Location: call_for_proposal_add.php');
     exit();
 }
@@ -33,12 +37,49 @@ $pdf_tmp_path = $_FILES['pdf']['tmp_name'];
 $pdf_name = $_FILES['pdf']['name'];
 $pdf_extension = strtolower(pathinfo($pdf_name, PATHINFO_EXTENSION));
 if ($pdf_extension !== 'pdf') {
+    $_SESSION['call_for_proposal_form_error'] = 'Il file del bando deve essere in formato PDF.';
+    header('Location: call_for_proposal_add.php');
+    exit();
+}
+
+if (!is_array($rawEvaluatorUserIds)) {
+    $_SESSION['call_for_proposal_form_error'] = 'Seleziona almeno un valutatore abilitato.';
+    header('Location: call_for_proposal_add.php');
+    exit();
+}
+
+$evaluatorUserIds = [];
+foreach ($rawEvaluatorUserIds as $rawEvaluatorUserId) {
+    if (!ctype_digit((string) $rawEvaluatorUserId)) {
+        $_SESSION['call_for_proposal_form_error'] = 'Valutatori selezionati non validi.';
+        header('Location: call_for_proposal_add.php');
+        exit();
+    }
+    $evaluatorUserIds[] = (int) $rawEvaluatorUserId;
+}
+$evaluatorUserIds = array_values(array_unique($evaluatorUserIds));
+if ($evaluatorUserIds === []) {
+    $_SESSION['call_for_proposal_form_error'] = 'Seleziona almeno un valutatore abilitato.';
     header('Location: call_for_proposal_add.php');
     exit();
 }
 
 try {
     $pdo->beginTransaction();
+
+    $validEvaluatorsStmt = $pdo->prepare(
+        'SELECT user_id FROM evaluator WHERE user_id IN ('
+        . implode(',', array_fill(0, count($evaluatorUserIds), '?'))
+        . ')'
+    );
+    $validEvaluatorsStmt->execute($evaluatorUserIds);
+    $validEvaluatorIds = array_map('intval', $validEvaluatorsStmt->fetchAll(PDO::FETCH_COLUMN));
+    if (count($validEvaluatorIds) !== count($evaluatorUserIds)) {
+        $pdo->rollBack();
+        $_SESSION['call_for_proposal_form_error'] = 'Valutatori selezionati non validi.';
+        header('Location: call_for_proposal_add.php');
+        exit();
+    }
 
     $stmt = $pdo->prepare("INSERT INTO call_for_proposal (title, description, pdf_path, start_date, end_date) VALUES (:title, :description, '', :start_date, :end_date)");
     $stmt->execute([
@@ -67,7 +108,19 @@ try {
         ':id' => $call_for_proposal_id
     ]);
 
+    $insertAssignmentStmt = $pdo->prepare(
+        'INSERT INTO call_for_proposal_evaluator (call_for_proposal_id, evaluator_user_id) '
+        . 'VALUES (:call_for_proposal_id, :evaluator_user_id)'
+    );
+    foreach ($evaluatorUserIds as $evaluatorUserId) {
+        $insertAssignmentStmt->execute([
+            ':call_for_proposal_id' => $call_for_proposal_id,
+            ':evaluator_user_id' => $evaluatorUserId,
+        ]);
+    }
+
     $pdo->commit();
+    unset($_SESSION['call_for_proposal_form_evaluator_ids'], $_SESSION['call_for_proposal_form_error']);
 
     header('Location: call_for_proposals.php');
     exit();
@@ -75,6 +128,7 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
+    $_SESSION['call_for_proposal_form_error'] = 'Errore durante la creazione del bando.';
     header('Location: call_for_proposal_add.php');
     exit();
 }
