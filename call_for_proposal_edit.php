@@ -55,7 +55,7 @@ $evaluators = $evaluatorsStmt->fetchAll(PDO::FETCH_ASSOC);
     <?php include 'common-head.php'; ?>
     <title>Modifica Bando</title>
 </head>
-<body class="management-page">
+<body class="management-page management-page--scroll">
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">

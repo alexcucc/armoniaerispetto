@@ -1,3 +1,67 @@
+<?php
+require_once 'db/common-db.php';
+
+$today = (new DateTimeImmutable('today'))->format('Y-m-d');
+$activeCalls = [];
+$upcomingCalls = [];
+$pastCalls = [];
+$callsLoadError = null;
+
+try {
+    $stmt = $pdo->query('SELECT id, title, description, start_date, end_date FROM call_for_proposal');
+    $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($calls as $call) {
+        $startDate = (new DateTimeImmutable($call['start_date']))->format('Y-m-d');
+        $endDate = (new DateTimeImmutable($call['end_date']))->format('Y-m-d');
+
+        $call['start_date_only'] = $startDate;
+        $call['end_date_only'] = $endDate;
+
+        if ($startDate > $today) {
+            $upcomingCalls[] = $call;
+            continue;
+        }
+
+        if ($endDate < $today) {
+            $pastCalls[] = $call;
+            continue;
+        }
+
+        $activeCalls[] = $call;
+    }
+
+    usort($activeCalls, function (array $first, array $second): int {
+        $endDateComparison = strcmp($first['end_date_only'], $second['end_date_only']);
+        if ($endDateComparison !== 0) {
+            return $endDateComparison;
+        }
+
+        return strcasecmp($first['title'], $second['title']);
+    });
+
+    usort($upcomingCalls, function (array $first, array $second): int {
+        $startDateComparison = strcmp($first['start_date_only'], $second['start_date_only']);
+        if ($startDateComparison !== 0) {
+            return $startDateComparison;
+        }
+
+        return strcasecmp($first['title'], $second['title']);
+    });
+
+    usort($pastCalls, function (array $first, array $second): int {
+        $endDateComparison = strcmp($second['end_date_only'], $first['end_date_only']);
+        if ($endDateComparison !== 0) {
+            return $endDateComparison;
+        }
+
+        return strcasecmp($first['title'], $second['title']);
+    });
+} catch (Throwable $exception) {
+    $callsLoadError = 'Al momento non è possibile caricare i bandi. Riprova più tardi.';
+    error_log('Error loading calls for bandi.php: ' . $exception->getMessage());
+}
+?>
 <!DOCTYPE html>
 <html lang="it">
   <head>
@@ -12,8 +76,84 @@
           <h1>Bandi</h1>
         </div>
         <div class="content-container">
-          <div class="button-container">
-            <button onclick="window.location.href='testo_del_bando.php';" class="page-button">Bando Armonia e Rispetto I edizione</button>
+          <div class="content">
+            <?php if ($callsLoadError !== null): ?>
+              <p><?php echo htmlspecialchars($callsLoadError); ?></p>
+            <?php else: ?>
+              <div class="tab-container" role="region" aria-label="Elenco bandi">
+                <div class="tab-buttons" role="tablist" aria-label="Filtri bandi">
+                  <button class="tab-button active" type="button" role="tab" aria-controls="bandi-attivi" aria-selected="true">Attivi</button>
+                  <button class="tab-button" type="button" role="tab" aria-controls="bandi-prossimi" aria-selected="false">Prossimi</button>
+                  <button class="tab-button" type="button" role="tab" aria-controls="bandi-passati" aria-selected="false">Passati</button>
+                </div>
+
+                <section id="bandi-attivi" class="tab-panel active" role="tabpanel">
+                  <?php if ($activeCalls === []): ?>
+                    <p>Nessun bando attivo.</p>
+                  <?php else: ?>
+                    <?php foreach ($activeCalls as $call): ?>
+                      <article>
+                        <h2><?php echo htmlspecialchars($call['title']); ?></h2>
+                        <p>
+                          Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
+                          al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
+                        </p>
+                        <?php if (trim((string) $call['description']) !== ''): ?>
+                          <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
+                        <?php endif; ?>
+                        <div class="button-container">
+                          <a class="page-button" href="testo_del_bando.php">Apri bando</a>
+                        </div>
+                      </article>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </section>
+
+                <section id="bandi-prossimi" class="tab-panel" role="tabpanel" hidden>
+                  <?php if ($upcomingCalls === []): ?>
+                    <p>Nessun bando prossimo.</p>
+                  <?php else: ?>
+                    <?php foreach ($upcomingCalls as $call): ?>
+                      <article>
+                        <h2><?php echo htmlspecialchars($call['title']); ?></h2>
+                        <p>
+                          Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
+                          al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
+                        </p>
+                        <?php if (trim((string) $call['description']) !== ''): ?>
+                          <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
+                        <?php endif; ?>
+                        <div class="button-container">
+                          <a class="page-button" href="testo_del_bando.php">Apri bando</a>
+                        </div>
+                      </article>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </section>
+
+                <section id="bandi-passati" class="tab-panel" role="tabpanel" hidden>
+                  <?php if ($pastCalls === []): ?>
+                    <p>Nessun bando passato.</p>
+                  <?php else: ?>
+                    <?php foreach ($pastCalls as $call): ?>
+                      <article>
+                        <h2><?php echo htmlspecialchars($call['title']); ?></h2>
+                        <p>
+                          Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
+                          al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
+                        </p>
+                        <?php if (trim((string) $call['description']) !== ''): ?>
+                          <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
+                        <?php endif; ?>
+                        <div class="button-container">
+                          <a class="page-button" href="testo_del_bando.php">Apri bando</a>
+                        </div>
+                      </article>
+                    <?php endforeach; ?>
+                  <?php endif; ?>
+                </section>
+              </div>
+            <?php endif; ?>
           </div>
         </div>
       </div>
