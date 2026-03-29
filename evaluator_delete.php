@@ -51,6 +51,15 @@ try {
         exit();
     }
 
+    $assignmentStmt = $pdo->prepare("SELECT 1 FROM call_for_proposal_evaluator WHERE evaluator_user_id = ? LIMIT 1");
+    $assignmentStmt->execute([$userId]);
+
+    if ($assignmentStmt->fetchColumn()) {
+        $pdo->rollBack();
+        echo json_encode(['success' => false, 'message' => 'Non è possibile eliminare il valutatore perché è assegnato ad almeno un bando']);
+        exit();
+    }
+
     $stmt = $pdo->prepare("DELETE FROM evaluator WHERE id = ?");
     $stmt->execute([$evaluatorId]);
 

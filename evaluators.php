@@ -37,7 +37,8 @@ switch ($sortField) {
 $stmt = $pdo->prepare(
     "SELECT e.id, u.id AS user_id, u.first_name, u.last_name, u.email, "
     . "EXISTS (SELECT 1 FROM supervisor s WHERE s.user_id = u.id) AS is_supervisor, "
-    . "EXISTS (SELECT 1 FROM evaluation ev WHERE ev.evaluator_id = u.id) AS has_evaluations "
+    . "EXISTS (SELECT 1 FROM evaluation ev WHERE ev.evaluator_id = u.id) AS has_evaluations, "
+    . "EXISTS (SELECT 1 FROM call_for_proposal_evaluator cfe WHERE cfe.evaluator_user_id = u.id) AS has_call_assignments "
     . "FROM evaluator e "
     . "JOIN user u ON e.user_id = u.id "
     . "ORDER BY $orderByClause"
@@ -131,6 +132,7 @@ function buildEvaluatorsSortLink(string $field, string $sortField, string $sortO
                                             )
                                             && !(int) $evaluator['is_supervisor']
                                             && !(int) $evaluator['has_evaluations']
+                                            && !(int) $evaluator['has_call_assignments']
                                         ): ?>
                                             <button class="delete-btn" data-id="<?php echo $evaluator['id']; ?>">
                                                 <i class="fas fa-trash"></i> Elimina
