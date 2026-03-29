@@ -25,10 +25,10 @@ $allowedSortFields = ['call_title', 'ente', 'reference_date'];
 $allowedSortOrders = ['asc', 'desc'];
 
 $sortFieldParam = filter_input(INPUT_GET, 'sort', FILTER_UNSAFE_RAW) ?? '';
-$sortField = in_array($sortFieldParam, $allowedSortFields, true) ? $sortFieldParam : 'reference_date';
+$sortField = in_array($sortFieldParam, $allowedSortFields, true) ? $sortFieldParam : 'ente';
 
 $sortOrderParam = strtolower(filter_input(INPUT_GET, 'order', FILTER_UNSAFE_RAW) ?? '');
-$sortOrder = in_array($sortOrderParam, $allowedSortOrders, true) ? strtoupper($sortOrderParam) : 'DESC';
+$sortOrder = in_array($sortOrderParam, $allowedSortOrders, true) ? strtoupper($sortOrderParam) : 'ASC';
 
 // ----------------------------
 // Filters
@@ -295,6 +295,8 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
 }
 
 usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
+    $comparison = 0;
+
     if ($sortField === 'reference_date') {
         $aValue = strtotime($a['reference_date'] ?? '') ?: 0;
         $bValue = strtotime($b['reference_date'] ?? '') ?: 0;
@@ -305,11 +307,19 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
         $comparison = strcasecmp($aValue, $bValue);
     }
 
-    if ($comparison === 0) {
+    if ($comparison !== 0) {
+        return $sortOrder === 'ASC' ? $comparison : -$comparison;
+    }
+
+    if ($sortField === 'ente') {
         $aTime = strtotime($a['reference_date'] ?? '') ?: 0;
         $bTime = strtotime($b['reference_date'] ?? '') ?: 0;
-        $comparison = $aTime <=> $bTime;
+        return $bTime <=> $aTime;
     }
+
+    $aTime = strtotime($a['reference_date'] ?? '') ?: 0;
+    $bTime = strtotime($b['reference_date'] ?? '') ?: 0;
+    $comparison = $aTime <=> $bTime;
 
     return $sortOrder === 'ASC' ? $comparison : -$comparison;
 });
