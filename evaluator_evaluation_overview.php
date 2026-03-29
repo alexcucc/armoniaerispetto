@@ -35,7 +35,9 @@ $filters = [];
 $evaluatorId = filter_input(INPUT_GET, 'evaluator_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $organizationId = filter_input(INPUT_GET, 'organization_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $callId = filter_input(INPUT_GET, 'call_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
-$supervisorId = filter_input(INPUT_GET, 'supervisor_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
+$statusParam = filter_input(INPUT_GET, 'status', FILTER_UNSAFE_RAW) ?? '';
+$allowedStatuses = ['SUBMITTED', 'REVISED', 'DRAFT', 'NOT_STARTED'];
+$statusFilter = in_array($statusParam, $allowedStatuses, true) ? $statusParam : null;
 
 if ($evaluatorId) {
     $filters[] = 'ev.id = :evaluator_id';
@@ -52,19 +54,31 @@ if ($callId) {
     $params[':call_id'] = $callId;
 }
 
-if ($supervisorId) {
-    $filters[] = 'a.supervisor_id = :supervisor_id';
-    $params[':supervisor_id'] = $supervisorId;
-}
-
 $filterClause = '';
 if (!empty($filters)) {
     $filterClause = ' WHERE ' . implode(' AND ', $filters);
 }
 
-$completedFilterClause = $filterClause === ''
-    ? " WHERE e.status IN ('SUBMITTED', 'REVISED')"
-    : $filterClause . " AND e.status IN ('SUBMITTED', 'REVISED')";
+$includeCompleted = true;
+$includePending = true;
+$completedStatusClause = "e.status IN ('SUBMITTED', 'REVISED')";
+$pendingStatusClause = "(e.id IS NULL OR e.status = 'DRAFT')";
+
+if ($statusFilter !== null) {
+    if ($statusFilter === 'SUBMITTED') {
+        $includePending = false;
+        $completedStatusClause = "e.status = 'SUBMITTED'";
+    } elseif ($statusFilter === 'REVISED') {
+        $includePending = false;
+        $completedStatusClause = "e.status = 'REVISED'";
+    } elseif ($statusFilter === 'DRAFT') {
+        $includeCompleted = false;
+        $pendingStatusClause = "e.status = 'DRAFT'";
+    } elseif ($statusFilter === 'NOT_STARTED') {
+        $includeCompleted = false;
+        $pendingStatusClause = 'e.id IS NULL';
+    }
+}
 
 $completedQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, o.name AS organization_name, "
     . "e.forced_weighted_total_score, "
@@ -80,7 +94,8 @@ $completedQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user
     . "JOIN user u ON ev.user_id = u.id "
     . "JOIN supervisor s ON a.supervisor_id = s.id "
     . "JOIN user su ON s.user_id = su.id"
-    . $completedFilterClause;
+    . ($filterClause === '' ? ' WHERE ' : $filterClause . ' AND ')
+    . $completedStatusClause;
 
 $pendingQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, o.name AS organization_name, "
     . "e.forced_weighted_total_score, "
@@ -95,16 +110,24 @@ $pendingQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_i
     . "JOIN organization o ON a.organization_id = o.id "
     . "JOIN supervisor s ON a.supervisor_id = s.id "
     . "JOIN user su ON s.user_id = su.id "
-    . "LEFT JOIN evaluation e ON e.application_id = a.id AND e.evaluator_id = ev.user_id"
-    . $filterClause
-    . ($filterClause === '' ? ' WHERE' : ' AND')
-    . " (e.id IS NULL OR e.status = 'DRAFT')";
+    . "LEFT JOIN evaluation e ON e.application_id = a.id AND e.evaluator_id = ev.user_id "
+    . ($filterClause === '' ? ' WHERE ' : $filterClause . ' AND ')
+    . $pendingStatusClause;
 
-$evaluationsQuery = "(" . $completedQuery . ") UNION ALL (" . $pendingQuery . ") ORDER BY $sortField $sortOrder";
-
-$evaluationsStmt = $pdo->prepare($evaluationsQuery);
-$evaluationsStmt->execute($params);
-$evaluations = $evaluationsStmt->fetchAll(PDO::FETCH_ASSOC);
+$evaluations = [];
+$queryParts = [];
+if ($includeCompleted) {
+    $queryParts[] = '(' . $completedQuery . ')';
+}
+if ($includePending) {
+    $queryParts[] = '(' . $pendingQuery . ')';
+}
+if (!empty($queryParts)) {
+    $evaluationsQuery = implode(' UNION ALL ', $queryParts) . " ORDER BY $sortField $sortOrder";
+    $evaluationsStmt = $pdo->prepare($evaluationsQuery);
+    $evaluationsStmt->execute($params);
+    $evaluations = $evaluationsStmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 $evaluatorsStmt = $pdo->query(
     "SELECT ev.id, CONCAT(u.last_name, ' ', u.first_name) AS full_name "
@@ -124,14 +147,6 @@ $callsStmt = $pdo->query(
 );
 $calls = $callsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$supervisorsStmt = $pdo->query(
-    "SELECT s.id, CONCAT(u.last_name, ' ', u.first_name) AS full_name "
-    . "FROM supervisor s "
-    . "JOIN user u ON s.user_id = u.id "
-    . "ORDER BY u.last_name, u.first_name"
-);
-$supervisors = $supervisorsStmt->fetchAll(PDO::FETCH_ASSOC);
-
 $statusLabels = [
     'SUBMITTED' => 'Valutata',
     'REVISED' => 'Revisionata',
@@ -143,7 +158,7 @@ $currentFilters = [
     'evaluator_id' => $evaluatorId,
     'organization_id' => $organizationId,
     'call_id' => $callId,
-    'supervisor_id' => $supervisorId,
+    'status' => $statusFilter,
 ];
 
 function buildSortLink(string $field, string $sortField, string $sortOrder, array $currentFilters): string
@@ -213,13 +228,12 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                         </select>
                     </div>
                     <div class="form-group">
-                        <select id="supervisor_id" name="supervisor_id" class="form-input">
-                            <option value="">Tutti i convalidatori</option>
-                            <?php foreach ($supervisors as $supervisor): ?>
-                                <option value="<?php echo htmlspecialchars($supervisor['id']); ?>" <?php echo ($supervisorId === (int) $supervisor['id']) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($supervisor['full_name']); ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <select id="status" name="status" class="form-input">
+                            <option value="">Tutti gli stati</option>
+                            <option value="NOT_STARTED" <?php echo $statusFilter === 'NOT_STARTED' ? 'selected' : ''; ?>>In attesa di valutazione</option>
+                            <option value="DRAFT" <?php echo $statusFilter === 'DRAFT' ? 'selected' : ''; ?>>Valutazione in bozza</option>
+                            <option value="SUBMITTED" <?php echo $statusFilter === 'SUBMITTED' ? 'selected' : ''; ?>>Valutata</option>
+                            <option value="REVISED" <?php echo $statusFilter === 'REVISED' ? 'selected' : ''; ?>>Revisionata</option>
                         </select>
                     </div>
                     <div class="filters-actions">
