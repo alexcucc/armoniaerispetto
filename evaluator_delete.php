@@ -42,6 +42,15 @@ try {
         exit();
     }
 
+    $evaluationStmt = $pdo->prepare("SELECT 1 FROM evaluation WHERE evaluator_id = ? LIMIT 1");
+    $evaluationStmt->execute([$userId]);
+
+    if ($evaluationStmt->fetchColumn()) {
+        $pdo->rollBack();
+        echo json_encode(['success' => false, 'message' => 'Non è possibile eliminare il valutatore perché ha valutazioni associate']);
+        exit();
+    }
+
     $stmt = $pdo->prepare("DELETE FROM evaluator WHERE id = ?");
     $stmt->execute([$evaluatorId]);
 
