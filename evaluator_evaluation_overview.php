@@ -291,7 +291,7 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                         <td><?php echo htmlspecialchars($statusLabels[$evaluation['status']] ?? $evaluation['status']); ?></td>
                                         <td><?php echo htmlspecialchars($formattedDate); ?></td>
                                         <td>
-                                            <div class="actions-cell">
+                                            <div class="actions-cell actions-cell--single-row">
                                                 <?php if ($canDelete): ?>
                                                     <button
                                                         type="button"

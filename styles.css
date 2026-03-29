@@ -947,6 +947,15 @@ ul.nav-links {
   justify-content: center;
 }
 
+.actions-cell.actions-cell--single-row {
+  flex-wrap: nowrap;
+}
+
+.actions-cell.actions-cell--single-row .page-button,
+.actions-cell.actions-cell--single-row .delete-btn {
+  white-space: nowrap;
+}
+
 .actions-cell.role-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(160px, max-content));
