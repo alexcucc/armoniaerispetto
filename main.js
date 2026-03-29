@@ -112,12 +112,29 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab-container').forEach((container) => {
     const buttons = Array.from(container.querySelectorAll('.tab-button'));
     const panels = Array.from(container.querySelectorAll('.tab-panel'));
+    const queryParamName = container.dataset.syncQueryParam?.trim() ?? '';
 
     if (!buttons.length || !panels.length) {
       return;
     }
 
-    const activateTab = (targetId) => {
+    const updateUrlQueryParam = (button) => {
+      if (!queryParamName) {
+        return;
+      }
+
+      const queryValue = button.dataset.tabQueryValue ?? button.getAttribute('aria-controls');
+
+      if (!queryValue) {
+        return;
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set(queryParamName, queryValue);
+      window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    };
+
+    const activateTab = (targetId, sourceButton = null, shouldSyncQueryParam = false) => {
       buttons.forEach((button) => {
         const isActive = button.getAttribute('aria-controls') === targetId;
         button.classList.toggle('active', isActive);
@@ -130,9 +147,17 @@ document.addEventListener('DOMContentLoaded', () => {
         panel.classList.toggle('active', shouldShow);
         panel.hidden = !shouldShow;
       });
+
+      if (shouldSyncQueryParam && sourceButton) {
+        updateUrlQueryParam(sourceButton);
+      }
     };
 
-    const defaultButton = buttons.find((button) => button.classList.contains('active')) ?? buttons[0];
+    const requestedTabValue = queryParamName ? new URLSearchParams(window.location.search).get(queryParamName) : null;
+    const requestedButton = requestedTabValue
+      ? buttons.find((button) => (button.dataset.tabQueryValue ?? button.getAttribute('aria-controls')) === requestedTabValue)
+      : null;
+    const defaultButton = requestedButton ?? buttons.find((button) => button.classList.contains('active')) ?? buttons[0];
     activateTab(defaultButton.getAttribute('aria-controls'));
 
     buttons.forEach((button) => {
@@ -143,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        activateTab(targetId);
+        activateTab(targetId, button, true);
       });
 
       button.addEventListener('keydown', (event) => {
@@ -157,9 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const offset = event.key === 'ArrowRight' ? 1 : -1;
         const nextIndex = (currentIndex + offset + buttons.length) % buttons.length;
         const nextButton = buttons[nextIndex];
+        const nextTargetId = nextButton?.getAttribute('aria-controls');
+
+        if (!nextTargetId) {
+          return;
+        }
 
         nextButton.focus();
-        activateTab(nextButton.getAttribute('aria-controls'));
+        activateTab(nextTargetId, nextButton, true);
       });
     });
   });

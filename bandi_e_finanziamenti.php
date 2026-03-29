@@ -4,7 +4,7 @@
     <?php include 'common-head.php';?>
     <title>Bandi e Finanziamenti</title>
   </head>
-  <body>
+  <body class="bandi-finanziamenti-page">
     <?php include 'header.php';?>
     <main>
       <div class="hero">
@@ -12,10 +12,24 @@
           <h1>Bandi e Finanziamenti</h1>
         </div>
         <div class="content-container">
-          <div class="button-container">
-            <button onclick="window.location.href='bandi.php';" class="page-button">Bandi in Corso</button>
-            <button onclick="window.location.href='premi_e_riconoscimenti.php';" class="page-button">Premi e Riconoscimenti in Corso</button>
-            <button onclick="window.location.href='finanziamenti_e_sussidi.php';" class="page-button">Finanziamenti e Sussidi</button>
+          <div class="button-groups-container" aria-label="Sezioni bandi e finanziamenti">
+            <div class="button-group">
+              <a href="bandi.php?tab=attivi" class="page-button">Bandi</a>
+              <div class="sub-button-container">
+                <a href="bandi.php?tab=attivi" class="page-button secondary sub-page-button">Bandi attivi</a>
+                <a href="bandi.php?tab=passati" class="page-button secondary sub-page-button">Bandi passati</a>
+              </div>
+            </div>
+            <div class="button-group">
+              <a href="premi_e_riconoscimenti.php?tab=attivi" class="page-button">Premi e Riconoscimenti</a>
+              <div class="sub-button-container">
+                <a href="premi_e_riconoscimenti.php?tab=attivi" class="page-button secondary sub-page-button">Premi attivi</a>
+                <a href="premi_e_riconoscimenti.php?tab=passati" class="page-button secondary sub-page-button">Premi passati</a>
+              </div>
+            </div>
+            <div class="button-group">
+              <a href="finanziamenti_e_sussidi.php" class="page-button">Finanziamenti e Sussidi</a>
+            </div>
           </div>
         </div>
       </div>

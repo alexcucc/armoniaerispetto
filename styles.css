@@ -1562,6 +1562,11 @@ textarea:focus-visible {
   color: #ffffff;
 }
 
+.tab-button.tab-button-past.active {
+  background-color: #f4c430;
+  color: #2D3748;
+}
+
 .tab-panel {
   display: none;
 }
@@ -1623,6 +1628,65 @@ p {
 
 .page-button.secondary:active {
   background-color: #cbd5e1;
+}
+
+.button-groups-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin: 0.25em 0;
+  width: 100%;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.button-group > .page-button {
+  margin: 0;
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.sub-button-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sub-button-container .sub-page-button {
+  margin: 0;
+  min-width: 140px;
+  max-width: 190px;
+  font-size: 0.95rem;
+  padding: 0.1em 0.7em;
+}
+
+body.bandi-finanziamenti-page .content {
+  align-items: center;
+}
+
+body.bandi-finanziamenti-page .button-groups-container {
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.bandi-finanziamenti-page .button-group {
+  flex: 0 1 300px;
+  width: 100%;
+}
+
+body.bandi-finanziamenti-page .button-group > .page-button,
+body.bandi-finanziamenti-page .sub-button-container {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .users-table {
@@ -1921,6 +1985,27 @@ p {
   .button-container .page-button {
     margin: 0.25em 0;
     max-width: none;
+  }
+
+  .button-groups-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  body.bandi-finanziamenti-page .button-group {
+    max-width: 360px;
+  }
+
+  .sub-button-container {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .sub-button-container .sub-page-button,
+  .button-group > .page-button {
+    max-width: none;
+    width: 100%;
   }
   
   .content-container {
