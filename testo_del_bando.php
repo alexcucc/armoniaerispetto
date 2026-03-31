@@ -33,6 +33,11 @@ $backUrl = $isExpired ? 'bandi.php?tab=passati' : 'bandi.php?tab=attivi';
       <div class="hero">
         <div class="content-container">
           <div class="content">
+            <div class="button-container">
+              <a href="<?php echo htmlspecialchars($backUrl); ?>" class="page-button back-button">
+                Indietro
+              </a>
+            </div>
             <object 
               data="documents/bando.pdf#toolbar=0&navpanes=0&scrollbar=1&page=1" 
               type="application/pdf" 
@@ -40,16 +45,13 @@ $backUrl = $isExpired ? 'bandi.php?tab=passati' : 'bandi.php?tab=attivi';
               loading="lazy">
               <p>Il tuo browser non supporta la visualizzazione di PDF.</p>
             </object>
+            <?php if (!$isExpired): ?>
             <div class="button-container">
-              <a href="<?php echo htmlspecialchars($backUrl); ?>" class="page-button back-button">
-                Indietro
-              </a>
-              <?php if (!$isExpired): ?>
               <button onclick="window.location.href='presentazione_della_domanda.php';" class="page-button">
                 Presentazione della risposta al bando
               </button>
-              <?php endif; ?>
             </div>
+            <?php endif; ?>
           </div>
         </div>
       </div>
