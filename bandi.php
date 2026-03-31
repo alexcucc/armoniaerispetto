@@ -92,7 +92,7 @@ try {
                           <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
                         <?php endif; ?>
                         <div class="button-container">
-                          <a class="page-button" href="testo_del_bando.php">Apri bando</a>
+                          <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
                         </div>
                       </article>
                     <?php endforeach; ?>
@@ -114,7 +114,7 @@ try {
                           <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
                         <?php endif; ?>
                         <div class="button-container">
-                          <a class="page-button" href="testo_del_bando.php">Apri bando</a>
+                          <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
                         </div>
                       </article>
                     <?php endforeach; ?>

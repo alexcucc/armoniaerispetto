@@ -1,3 +1,25 @@
+<?php
+require_once 'db/common-db.php';
+
+$callId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$callId) {
+    header('Location: bandi.php');
+    exit();
+}
+
+$stmt = $pdo->prepare('SELECT id, end_date FROM call_for_proposal WHERE id = :id');
+$stmt->execute([':id' => $callId]);
+$call = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$call) {
+    header('Location: bandi.php');
+    exit();
+}
+
+$today = (new DateTimeImmutable('today'))->format('Y-m-d');
+$endDate = (new DateTimeImmutable($call['end_date']))->format('Y-m-d');
+$isExpired = $endDate < $today;
+?>
 <!DOCTYPE html>
 <html lang="it">
   <head>
@@ -21,9 +43,11 @@
               <a href="documents/bando.pdf" class="page-button" download>
                 Scarica il bando
               </a>
+              <?php if (!$isExpired): ?>
               <button onclick="window.location.href='presentazione_della_domanda.php';" class="page-button">
                 Presentazione della risposta al bando
               </button>
+              <?php endif; ?>
             </div>
           </div>
         </div>
