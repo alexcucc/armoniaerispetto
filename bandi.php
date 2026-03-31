@@ -85,16 +85,18 @@ try {
                     <p>Nessun bando passato.</p>
                   <?php else: ?>
                     <?php foreach ($pastCalls as $call): ?>
-                      <article>
-                        <h2><?php echo htmlspecialchars($call['title']); ?></h2>
-                        <p>
-                          Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
-                          al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
-                        </p>
-                        <?php if (trim((string) $call['description']) !== ''): ?>
-                          <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
-                        <?php endif; ?>
-                        <div class="button-container button-container--right">
+                      <article class="call-item">
+                        <div class="call-item__content">
+                          <h2><?php echo htmlspecialchars($call['title']); ?></h2>
+                          <p>
+                            Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
+                            al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
+                          </p>
+                          <?php if (trim((string) $call['description']) !== ''): ?>
+                            <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
+                          <?php endif; ?>
+                        </div>
+                        <div class="button-container button-container--right call-item__actions">
                           <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
                         </div>
                       </article>
@@ -107,16 +109,18 @@ try {
                     <p>Nessun bando attivo.</p>
                   <?php else: ?>
                     <?php foreach ($activeCalls as $call): ?>
-                      <article>
-                        <h2><?php echo htmlspecialchars($call['title']); ?></h2>
-                        <p>
-                          Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
-                          al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
-                        </p>
-                        <?php if (trim((string) $call['description']) !== ''): ?>
-                          <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
-                        <?php endif; ?>
-                        <div class="button-container button-container--right">
+                      <article class="call-item">
+                        <div class="call-item__content">
+                          <h2><?php echo htmlspecialchars($call['title']); ?></h2>
+                          <p>
+                            Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
+                            al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
+                          </p>
+                          <?php if (trim((string) $call['description']) !== ''): ?>
+                            <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
+                          <?php endif; ?>
+                        </div>
+                        <div class="button-container button-container--right call-item__actions">
                           <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
                         </div>
                       </article>

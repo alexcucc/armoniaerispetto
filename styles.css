@@ -1588,6 +1588,23 @@ textarea:focus-visible {
   display: block;
 }
 
+.call-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.call-item__content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.call-item__actions {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 .users-filters {
   display: grid;
   gap: 0.25rem;
@@ -2059,6 +2076,15 @@ body.bandi-finanziamenti-page .sub-button-container {
 
   .button-container--right {
     align-items: flex-end;
+  }
+
+  .call-item {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .call-item__actions {
+    width: 100%;
   }
 
   .button-container .page-button {
