@@ -68,6 +68,9 @@ try {
         </div>
         <div class="content-container">
           <div class="content">
+            <div class="button-container">
+              <a href="bandi_e_finanziamenti.php" class="page-button back-button">Indietro</a>
+            </div>
             <?php if ($callsLoadError !== null): ?>
               <p><?php echo htmlspecialchars($callsLoadError); ?></p>
             <?php else: ?>
@@ -91,7 +94,7 @@ try {
                         <?php if (trim((string) $call['description']) !== ''): ?>
                           <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
                         <?php endif; ?>
-                        <div class="button-container">
+                        <div class="button-container button-container--right">
                           <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
                         </div>
                       </article>
@@ -113,7 +116,7 @@ try {
                         <?php if (trim((string) $call['description']) !== ''): ?>
                           <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
                         <?php endif; ?>
-                        <div class="button-container">
+                        <div class="button-container button-container--right">
                           <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
                         </div>
                       </article>

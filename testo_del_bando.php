@@ -19,6 +19,7 @@ if (!$call) {
 $today = (new DateTimeImmutable('today'))->format('Y-m-d');
 $endDate = (new DateTimeImmutable($call['end_date']))->format('Y-m-d');
 $isExpired = $endDate < $today;
+$backUrl = $isExpired ? 'bandi.php?tab=passati' : 'bandi.php?tab=attivi';
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -37,11 +38,11 @@ $isExpired = $endDate < $today;
               type="application/pdf" 
               class="pdf-viewer"
               loading="lazy">
-              <p>Il tuo browser non supporta la visualizzazione di PDF. Puoi scaricare il file usando il pulsante qui sotto.</p>
+              <p>Il tuo browser non supporta la visualizzazione di PDF.</p>
             </object>
             <div class="button-container">
-              <a href="documents/bando.pdf" class="page-button" download>
-                Scarica il bando
+              <a href="<?php echo htmlspecialchars($backUrl); ?>" class="page-button back-button">
+                Indietro
               </a>
               <?php if (!$isExpired): ?>
               <button onclick="window.location.href='presentazione_della_domanda.php';" class="page-button">
