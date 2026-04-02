@@ -1,5 +1,5 @@
 ALTER TABLE `user`
-ADD COLUMN `default_call_for_proposal_id` INT NULL;
+ADD COLUMN `default_call_for_proposal_id` BIGINT NULL;
 
 ALTER TABLE `user`
 ADD CONSTRAINT `fk_user_default_call_for_proposal`
