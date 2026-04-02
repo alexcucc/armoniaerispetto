@@ -150,7 +150,11 @@ if ($totalEvaluators > 0) {
             o.name AS organization_name,
             COUNT(e.id) AS total_evaluations,
             SUM(CASE WHEN e.forced_weighted_total_score IS NOT NULL THEN 1 ELSE 0 END) AS forced_evaluations,
-            COALESCE(SUM(es.total_overall_score), 0) AS total_score
+            COALESCE(SUM(es.total_overall_score), 0) AS total_score,
+            COALESCE(
+                COALESCE(SUM(es.total_overall_score), 0) / NULLIF(COUNT(DISTINCT e.evaluator_id), 0),
+                0
+            ) AS average_score
         FROM application a
         JOIN organization o ON a.organization_id = o.id
         LEFT JOIN evaluation e
@@ -166,7 +170,7 @@ if ($totalEvaluators > 0) {
         WHERE a.call_for_proposal_id = :call_id
         GROUP BY o.id, o.name
         HAVING COUNT(e.id) = COUNT(DISTINCT a.id) * :total_evaluators
-        ORDER BY total_score DESC, organization_name ASC'
+        ORDER BY average_score DESC, organization_name ASC'
     );
 
     $organizationsStmt->execute([
@@ -260,7 +264,7 @@ if ($totalEvaluators > 0) {
                                         <th>Ente</th>
                                         <th>Valutazioni ricevute</th>
                                         <th>Valutazioni forzate</th>
-                                        <th>Punteggio totale</th>
+                                        <th>Punteggio medio</th>
                                         <th>Azioni</th>
                                     </tr>
                                 </thead>
@@ -271,7 +275,7 @@ if ($totalEvaluators > 0) {
                                             $organizationId = (int) $organization['organization_id'];
                                             $detailRowId = 'organization-detail-' . $organizationId;
                                             $organizationDetailRows = $organizationEvaluatorDetails[$organizationId] ?? [];
-                                            $organizationTotalScore = number_format((float) $organization['total_score'], 2, ',', '.');
+                                            $organizationAverageScore = number_format((float) $organization['average_score'], 2, ',', '.');
                                             $organizationEvaluatorCount = count($organizationDetailRows);
                                         ?>
                                         <tr>
@@ -279,7 +283,7 @@ if ($totalEvaluators > 0) {
                                             <td><?php echo htmlspecialchars($organization['organization_name']); ?></td>
                                             <td><?php echo htmlspecialchars((string) $organization['total_evaluations']); ?></td>
                                             <td><?php echo htmlspecialchars((string) $organization['forced_evaluations']); ?></td>
-                                            <td><?php echo htmlspecialchars($organizationTotalScore); ?></td>
+                                            <td><?php echo htmlspecialchars($organizationAverageScore); ?></td>
                                             <td>
                                                 <div class="actions-cell actions-cell--single-row">
                                                     <button
