@@ -6,6 +6,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 include_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
+require_once 'default_call_for_proposal.php';
 $rolePermissionManager = new RolePermissionManager($pdo);
 $currentUserId = (int) $_SESSION['user_id'];
 if ($rolePermissionManager->userHasPermission($currentUserId, RolePermissionManager::$PERMISSIONS['EVALUATION_CREATE']) === false) {
@@ -17,6 +18,8 @@ $successMessage = $_SESSION['evaluation_success'] ?? null;
 unset($_SESSION['evaluation_success']);
 $errorMessage = $_SESSION['evaluation_error'] ?? null;
 unset($_SESSION['evaluation_error']);
+$defaultCallMessage = $_SESSION['default_call_message'] ?? null;
+unset($_SESSION['default_call_message']);
 
 // ----------------------------
 // Sorting
@@ -33,10 +36,6 @@ $sortOrder = in_array($sortOrderParam, $allowedSortOrders, true) ? strtoupper($s
 // ----------------------------
 // Filters
 // ----------------------------
-$selectedCall = isset($_GET['filter_call']) ? trim($_GET['filter_call']) : '';
-if ($selectedCall !== '' && !ctype_digit($selectedCall)) {
-    $selectedCall = '';
-}
 $selectedEnte = isset($_GET['filter_ente']) ? trim($_GET['filter_ente']) : '';
 $selectedEnteLength = function_exists('mb_strlen') ? mb_strlen($selectedEnte) : strlen($selectedEnte);
 if ($selectedEnte !== '' && $selectedEnteLength > 255) {
@@ -105,18 +104,24 @@ asort($callOptions, SORT_NATURAL | SORT_FLAG_CASE);
 $enteOptions = array_keys($enteOptions);
 sort($enteOptions, SORT_NATURAL | SORT_FLAG_CASE);
 
+$defaultCallId = getUserDefaultCallForProposalId($pdo, $currentUserId);
+$callResolution = resolveCallFilterSelection(
+    $_GET,
+    'filter_call',
+    $defaultCallId,
+    array_keys($callOptions)
+);
+$selectedCall = $callResolution['selected_value'];
+$selectedCallId = $callResolution['effective_call_id'];
+$persistAllCallFilter = array_key_exists('filter_call', $_GET) && $selectedCall === 'all';
 $selectedCallTitle = '';
-if ($selectedCall !== '') {
-    $callKey = (int) $selectedCall;
-    if (isset($callOptions[$callKey])) {
-        $selectedCallTitle = $callOptions[$callKey];
-    } elseif (isset($callOptions[$selectedCall])) {
-        $selectedCallTitle = $callOptions[$selectedCall];
-    }
+if ($selectedCallId !== null && isset($callOptions[$selectedCallId])) {
+    $selectedCallTitle = $callOptions[$selectedCallId];
 }
-$filtersApplied = ($selectedCall !== '' || $selectedEnte !== '' || $selectedStatus !== '');
+$isCallFilterActive = $selectedCallId !== null;
+$filtersApplied = ($isCallFilterActive || $selectedEnte !== '' || $selectedStatus !== '');
 $currentFilters = [
-    'filter_call' => $selectedCall !== '' ? $selectedCall : null,
+    'filter_call' => $selectedCall === 'all' ? ($persistAllCallFilter ? 'all' : null) : $selectedCall,
     'filter_ente' => $selectedEnte !== '' ? $selectedEnte : null,
     'filter_status' => $selectedStatus !== '' ? $selectedStatus : null,
 ];
@@ -167,9 +172,9 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
       WHERE e.evaluator_id = :uid AND e.status = 'SUBMITTED' AND c.status = 'OPEN'
     ";
     $submittedParams = [':uid' => $currentUserId];
-    if ($selectedCall !== '') {
+    if ($selectedCallId !== null) {
         $submittedQuery .= " AND c.id = :call_filter";
-        $submittedParams[':call_filter'] = (int) $selectedCall;
+        $submittedParams[':call_filter'] = $selectedCallId;
     }
     if ($selectedEnte !== '') {
         $submittedQuery .= " AND COALESCE(o.name, 'Soggetto proponente') = :ente_filter";
@@ -203,9 +208,9 @@ if ($selectedStatus === '' || $selectedStatus === 'REVISED') {
       WHERE e.evaluator_id = :uid AND e.status = 'REVISED' AND c.status = 'OPEN'
     ";
     $revisedParams = [':uid' => $currentUserId];
-    if ($selectedCall !== '') {
+    if ($selectedCallId !== null) {
         $revisedQuery .= " AND c.id = :call_filter";
-        $revisedParams[':call_filter'] = (int) $selectedCall;
+        $revisedParams[':call_filter'] = $selectedCallId;
     }
     if ($selectedEnte !== '') {
         $revisedQuery .= " AND COALESCE(o.name, 'Soggetto proponente') = :ente_filter";
@@ -239,9 +244,9 @@ if ($selectedStatus === '' || $selectedStatus === 'DRAFT') {
       WHERE e.evaluator_id = :uid AND e.status = 'DRAFT' AND c.status = 'OPEN'
     ";
     $draftsParams = [':uid' => $currentUserId];
-    if ($selectedCall !== '') {
+    if ($selectedCallId !== null) {
         $draftsQuery .= " AND c.id = :call_filter";
-        $draftsParams[':call_filter'] = (int) $selectedCall;
+        $draftsParams[':call_filter'] = $selectedCallId;
     }
     if ($selectedEnte !== '') {
         $draftsQuery .= " AND COALESCE(o.name, 'Soggetto proponente') = :ente_filter";
@@ -278,9 +283,9 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
       ) AND a.status = 'FINAL_VALIDATION' AND c.status = 'OPEN'
     ";
     $pendingParams = [':uid' => $currentUserId];
-    if ($selectedCall !== '') {
+    if ($selectedCallId !== null) {
         $pendingQuery .= " AND c.id = :call_filter";
-        $pendingParams[':call_filter'] = (int) $selectedCall;
+        $pendingParams[':call_filter'] = $selectedCallId;
     }
     if ($selectedEnte !== '') {
         $pendingQuery .= " AND COALESCE(o.name, 'Soggetto proponente') = :ente_filter";
@@ -356,15 +361,21 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                 <?php echo htmlspecialchars($errorMessage); ?>
               </div>
             <?php endif; ?>
+            <?php if (is_array($defaultCallMessage) && isset($defaultCallMessage['text'])): ?>
+              <div class="message <?php echo (($defaultCallMessage['type'] ?? 'success') === 'error') ? 'error' : 'success'; ?>" style="display:block;">
+                <?php echo htmlspecialchars((string) $defaultCallMessage['text']); ?>
+              </div>
+            <?php endif; ?>
 
             <form method="get" class="filters-form">
               <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sortField); ?>">
               <input type="hidden" name="order" value="<?php echo htmlspecialchars(strtolower($sortOrder)); ?>">
               <div class="form-group">
                 <select name="filter_call" id="filter_call" class="form-input">
-                  <option value="">Tutti i bandi</option>
+                  <option value="all" <?php echo $selectedCall === 'all' ? 'selected' : ''; ?>>Tutti i bandi</option>
                   <?php foreach ($callOptions as $callId => $callTitle): ?>
-                    <option value="<?php echo htmlspecialchars((string) $callId); ?>" <?php echo ((string) $callId === $selectedCall) ? 'selected' : ''; ?>>
+                    <?php $callOptionId = (int) $callId; ?>
+                    <option value="<?php echo htmlspecialchars((string) $callOptionId); ?>" <?php echo ((string) $callOptionId === $selectedCall) ? 'selected' : ''; ?>>
                       <?php echo htmlspecialchars($callTitle); ?>
                     </option>
                   <?php endforeach; ?>
@@ -392,6 +403,16 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
               </div>
               <div class="filters-actions">
                 <button type="submit" class="page-button">Applica filtri</button>
+                <button
+                  type="submit"
+                  class="page-button secondary-button"
+                  formaction="default_call_for_proposal_save.php"
+                  formmethod="post"
+                  name="redirect"
+                  value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'evaluations.php'); ?>"
+                >
+                  Salva bando di default
+                </button>
                 <a class="page-button secondary-button" href="<?php echo htmlspecialchars($resetUrl); ?>">Reset</a>
               </div>
             </form>
@@ -401,11 +422,11 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                 Visualizzando le valutazioni
                 <?php if ($selectedCallTitle !== ''): ?>
                   per il bando "<strong><?php echo htmlspecialchars($selectedCallTitle); ?></strong>"
-                <?php elseif ($selectedCall !== ''): ?>
+                <?php elseif ($isCallFilterActive): ?>
                   per il bando selezionato
                 <?php endif; ?>
                 <?php if ($selectedEnte !== ''): ?>
-                  <?php if ($selectedCall !== ''): ?>
+                  <?php if ($isCallFilterActive): ?>
                     e
                   <?php else: ?>
                     per
@@ -413,7 +434,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                   l'ente "<strong><?php echo htmlspecialchars($selectedEnte); ?></strong>"
                 <?php endif; ?>
                 <?php if ($selectedStatus !== ''): ?>
-                  <?php if ($selectedCall !== '' || $selectedEnte !== ''): ?>
+                  <?php if ($isCallFilterActive || $selectedEnte !== ''): ?>
                     con lo stato
                   <?php else: ?>
                     nello stato

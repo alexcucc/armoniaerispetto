@@ -3,6 +3,7 @@ session_start();
 
 require_once 'db/common-db.php';
 require_once 'RolePermissionManager.php';
+require_once 'default_call_for_proposal.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
 if (!isset($_SESSION['user_id']) ||
@@ -14,6 +15,8 @@ if (!isset($_SESSION['user_id']) ||
     exit();
 }
 $currentUserId = (int) $_SESSION['user_id'];
+$defaultCallMessage = $_SESSION['default_call_message'] ?? null;
+unset($_SESSION['default_call_message']);
 $adminCheckStmt = $pdo->prepare(
     "SELECT 1 FROM user_role ur JOIN role r ON r.id = ur.role_id WHERE ur.user_id = :user_id AND r.name = 'Admin' LIMIT 1"
 );
@@ -34,10 +37,25 @@ $filters = [];
 
 $evaluatorId = filter_input(INPUT_GET, 'evaluator_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $organizationId = filter_input(INPUT_GET, 'organization_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
-$callId = filter_input(INPUT_GET, 'call_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null;
 $statusParam = filter_input(INPUT_GET, 'status', FILTER_UNSAFE_RAW) ?? '';
 $allowedStatuses = ['SUBMITTED', 'REVISED', 'DRAFT', 'NOT_STARTED'];
 $statusFilter = in_array($statusParam, $allowedStatuses, true) ? $statusParam : null;
+
+$callsStmt = $pdo->query(
+    "SELECT id, title FROM call_for_proposal ORDER BY title"
+);
+$calls = $callsStmt->fetchAll(PDO::FETCH_ASSOC);
+$callIds = array_map(
+    static function (array $call): int {
+        return (int) $call['id'];
+    },
+    $calls
+);
+$defaultCallId = getUserDefaultCallForProposalId($pdo, $currentUserId);
+$callResolution = resolveCallFilterSelection($_GET, 'call_id', $defaultCallId, $callIds);
+$callFilterValue = $callResolution['selected_value'];
+$callId = $callResolution['effective_call_id'];
+$persistAllCallFilter = array_key_exists('call_id', $_GET) && $callFilterValue === 'all';
 
 if ($evaluatorId) {
     $filters[] = 'ev.id = :evaluator_id';
@@ -142,11 +160,6 @@ $organizationsStmt = $pdo->query(
 );
 $organizations = $organizationsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$callsStmt = $pdo->query(
-    "SELECT id, title FROM call_for_proposal ORDER BY title"
-);
-$calls = $callsStmt->fetchAll(PDO::FETCH_ASSOC);
-
 $statusLabels = [
     'SUBMITTED' => 'Valutata',
     'REVISED' => 'Revisionata',
@@ -157,7 +170,7 @@ $statusLabels = [
 $currentFilters = [
     'evaluator_id' => $evaluatorId,
     'organization_id' => $organizationId,
-    'call_id' => $callId,
+    'call_id' => $callFilterValue === 'all' ? ($persistAllCallFilter ? 'all' : null) : $callFilterValue,
     'status' => $statusFilter,
 ];
 
@@ -193,6 +206,11 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
         <div class="content-container">
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
+                <?php if (is_array($defaultCallMessage) && isset($defaultCallMessage['text'])): ?>
+                    <div class="message <?php echo (($defaultCallMessage['type'] ?? 'success') === 'error') ? 'error' : 'success'; ?>" style="display: block;">
+                        <?php echo htmlspecialchars((string) $defaultCallMessage['text']); ?>
+                    </div>
+                <?php endif; ?>
                 <div class="button-container">
                     <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
@@ -219,9 +237,10 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                     </div>
                     <div class="form-group">
                         <select id="call_id" name="call_id" class="form-input">
-                            <option value="">Tutti i bandi</option>
+                            <option value="all" <?php echo $callFilterValue === 'all' ? 'selected' : ''; ?>>Tutti i bandi</option>
                             <?php foreach ($calls as $call): ?>
-                                <option value="<?php echo htmlspecialchars($call['id']); ?>" <?php echo ($callId === (int) $call['id']) ? 'selected' : ''; ?>>
+                                <?php $callOptionId = (int) $call['id']; ?>
+                                <option value="<?php echo $callOptionId; ?>" <?php echo ($callFilterValue === (string) $callOptionId) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($call['title']); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -238,6 +257,16 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                     </div>
                     <div class="filters-actions">
                         <button type="submit" class="page-button">Applica filtri</button>
+                        <button
+                            type="submit"
+                            class="page-button secondary-button"
+                            formaction="default_call_for_proposal_save.php"
+                            formmethod="post"
+                            name="redirect"
+                            value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'evaluator_evaluation_overview.php'); ?>"
+                        >
+                            Salva bando di default
+                        </button>
                         <a href="evaluator_evaluation_overview.php" class="page-button secondary-button">Reset</a>
                     </div>
                 </form>

@@ -11,6 +11,8 @@ require_once 'db/common-db.php';
 
 $user_id = $_SESSION['user_id'];
 $message = '';
+$callOptionsStmt = $pdo->query('SELECT id, title FROM call_for_proposal ORDER BY title');
+$callOptions = $callOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,12 +22,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $organization = trim(filter_input(INPUT_POST, 'organization', FILTER_UNSAFE_RAW));
         $phone = trim(filter_input(INPUT_POST, 'phone', FILTER_UNSAFE_RAW));
         $new_password = trim(filter_input(INPUT_POST, 'new_password', FILTER_UNSAFE_RAW));
+        $defaultCallInput = trim((string) (filter_input(INPUT_POST, 'default_call_for_proposal_id', FILTER_UNSAFE_RAW) ?? ''));
+        $defaultCallId = null;
 
-        if (empty($phone)) {
+        if ($defaultCallInput !== '') {
+            if (!ctype_digit($defaultCallInput) || (int) $defaultCallInput <= 0) {
+                $message = "Il bando di default selezionato non è valido.";
+            } else {
+                $candidateCallId = (int) $defaultCallInput;
+                $callCheckStmt = $pdo->prepare('SELECT 1 FROM call_for_proposal WHERE id = ?');
+                $callCheckStmt->execute([$candidateCallId]);
+                if (!$callCheckStmt->fetchColumn()) {
+                    $message = "Il bando di default selezionato non esiste.";
+                } else {
+                    $defaultCallId = $candidateCallId;
+                }
+            }
+        }
+
+        if ($message !== '') {
+            // Validation message already set above.
+        } elseif (empty($phone)) {
             $message = "Il numero di telefono è obbligatorio.";
         } else {
-            $sql = "UPDATE user SET organization = ?, phone = ?";
-            $params = [$organization, $phone];
+            $sql = "UPDATE user SET organization = ?, phone = ?, default_call_for_proposal_id = ?";
+            $params = [$organization, $phone, $defaultCallId];
 
             if (!empty($new_password)) {
                 $sql .= ", password = ?";
@@ -46,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get user data
-$stmt = $pdo->prepare("SELECT first_name, last_name, email, organization, phone FROM user WHERE id = ?");
+$stmt = $pdo->prepare("SELECT first_name, last_name, email, organization, phone, default_call_for_proposal_id FROM user WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
@@ -90,6 +111,21 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     <label class="form-label required" for="phone">Numero di Telefono</label>
                     <input type="tel" id="phone" name="phone" class="form-input"
                            value="<?php echo htmlspecialchars($user['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="default_call_for_proposal_id">Bando di default</label>
+                    <select id="default_call_for_proposal_id" name="default_call_for_proposal_id" class="form-input">
+                        <option value="">Nessun bando di default</option>
+                        <?php foreach ($callOptions as $callOption): ?>
+                            <option
+                                value="<?php echo (int) $callOption['id']; ?>"
+                                <?php echo ((int) ($user['default_call_for_proposal_id'] ?? 0) === (int) $callOption['id']) ? 'selected' : ''; ?>
+                            >
+                                <?php echo htmlspecialchars($callOption['title'], ENT_QUOTES, 'UTF-8'); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
 
                 <div class="form-group">

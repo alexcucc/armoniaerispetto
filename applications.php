@@ -3,12 +3,16 @@ session_start();
 
 require_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
+require_once 'default_call_for_proposal.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
 if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['APPLICATION_LIST'])) {
     header('Location: index.php');
     exit();
 }
+$currentUserId = (int) $_SESSION['user_id'];
+$defaultCallMessage = $_SESSION['default_call_message'] ?? null;
+unset($_SESSION['default_call_message']);
 
 $canCreate = $rolePermissionManager->userHasPermission(
     $_SESSION['user_id'],
@@ -50,7 +54,6 @@ $sortOrder = isset($_GET['order']) && in_array(strtolower($_GET['order']), $allo
 
 // Fetch all applications including supervisor full name
 $organizationId = isset($_GET['organization_id']) ? (int) $_GET['organization_id'] : null;
-$callId = isset($_GET['call_id']) ? (int) $_GET['call_id'] : null;
 $supervisorId = isset($_GET['supervisor_id']) ? (int) $_GET['supervisor_id'] : null;
 $selectedOrganizationName = null;
 $selectedCallTitle = null;
@@ -63,16 +66,6 @@ if ($organizationId) {
 
     if (!$selectedOrganizationName) {
         $organizationId = null;
-    }
-}
-
-if ($callId) {
-    $callStmt = $pdo->prepare('SELECT title FROM call_for_proposal WHERE id = :id');
-    $callStmt->execute([':id' => $callId]);
-    $selectedCallTitle = $callStmt->fetchColumn();
-
-    if (!$selectedCallTitle) {
-        $callId = null;
     }
 }
 
@@ -91,6 +84,23 @@ if ($supervisorId) {
 
 $callOptionsStmt = $pdo->query('SELECT id, title FROM call_for_proposal ORDER BY title');
 $callOptions = $callOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
+$callTitleById = [];
+foreach ($callOptions as $callOption) {
+    $callTitleById[(int) $callOption['id']] = $callOption['title'];
+}
+$defaultCallId = getUserDefaultCallForProposalId($pdo, $currentUserId);
+$callResolution = resolveCallFilterSelection(
+    $_GET,
+    'call_id',
+    $defaultCallId,
+    array_keys($callTitleById)
+);
+$callFilterValue = $callResolution['selected_value'];
+$callId = $callResolution['effective_call_id'];
+$persistAllCallFilter = array_key_exists('call_id', $_GET) && $callFilterValue === 'all';
+if ($callId !== null && isset($callTitleById[$callId])) {
+    $selectedCallTitle = $callTitleById[$callId];
+}
 
 $organizationOptionsStmt = $pdo->query('SELECT id, name FROM organization ORDER BY name');
 $organizationOptions = $organizationOptionsStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -136,7 +146,7 @@ $stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $currentFilters = [
-    'call_id' => $callId ?: null,
+    'call_id' => $callFilterValue === 'all' ? ($persistAllCallFilter ? 'all' : null) : $callFilterValue,
     'organization_id' => $organizationId ?: null,
     'supervisor_id' => $supervisorId ?: null,
     'status' => $statusFilter ?: null,
@@ -181,6 +191,11 @@ $resetUrl = 'applications.php?' . http_build_query([
         <div class="content-container">
                 <div class="content">
                     <div id="message" class="message" style="display: none;"></div>
+                    <?php if (is_array($defaultCallMessage) && isset($defaultCallMessage['text'])): ?>
+                        <div class="message <?php echo (($defaultCallMessage['type'] ?? 'success') === 'error') ? 'error' : 'success'; ?>" style="display: block;">
+                            <?php echo htmlspecialchars((string) $defaultCallMessage['text']); ?>
+                        </div>
+                    <?php endif; ?>
                     <div class="button-container">
                         <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                         <?php if ($canCreate): ?>
@@ -190,9 +205,10 @@ $resetUrl = 'applications.php?' . http_build_query([
                     <form method="get" class="filters-form">
                         <div class="form-group">
                             <select id="call_id" name="call_id" class="form-input">
-                                <option value="">Tutti i bandi</option>
+                                <option value="all" <?php echo $callFilterValue === 'all' ? 'selected' : ''; ?>>Tutti i bandi</option>
                                 <?php foreach ($callOptions as $callOption): ?>
-                                    <option value="<?php echo (int) $callOption['id']; ?>" <?php echo $callId === (int) $callOption['id'] ? 'selected' : ''; ?>>
+                                    <?php $callOptionId = (int) $callOption['id']; ?>
+                                    <option value="<?php echo $callOptionId; ?>" <?php echo $callFilterValue === (string) $callOptionId ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($callOption['title']); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -235,6 +251,16 @@ $resetUrl = 'applications.php?' . http_build_query([
                         <input type="hidden" name="order" value="<?php echo htmlspecialchars(strtolower($sortOrder)); ?>">
                         <div class="filters-actions">
                             <button type="submit" class="page-button">Applica filtri</button>
+                            <button
+                                type="submit"
+                                class="page-button secondary-button"
+                                formaction="default_call_for_proposal_save.php"
+                                formmethod="post"
+                                name="redirect"
+                                value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'applications.php'); ?>"
+                            >
+                                Salva bando di default
+                            </button>
                             <a href="<?php echo htmlspecialchars($resetUrl); ?>" class="page-button secondary-button">Reset</a>
                         </div>
                     </form>
