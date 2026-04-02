@@ -59,7 +59,7 @@ $canFinalize = $application['status'] === 'APPROVED';
     <?php include 'common-head.php'; ?>
     <title>Convalida Risposta al Bando</title>
 </head>
-<body class="management-page">
+<body class="management-page management-page--scroll">
 <?php include 'header.php'; ?>
 <main>
     <div class="contact-form-container">
