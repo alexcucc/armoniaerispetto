@@ -25,11 +25,11 @@ if (!$callForProposalId) {
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT pdf_path FROM call_for_proposal WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT id, pdf_path FROM call_for_proposal WHERE id = ?');
     $stmt->execute([$callForProposalId]);
-    $pdfPath = $stmt->fetchColumn();
+    $callForProposal = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($pdfPath === false) {
+    if (!$callForProposal) {
         echo json_encode(['success' => false, 'message' => 'Bando non trovato']);
         exit();
     }
@@ -46,9 +46,18 @@ try {
         exit();
     }
 
+    $pdfPath = $callForProposal['pdf_path'];
+    $destinationDir = 'private/documents/call_for_proposals/' . $callForProposalId;
+    $zipPath = $destinationDir . '/application_documents.zip';
+
     if ($pdfPath && file_exists($pdfPath)) {
         unlink($pdfPath);
-        @rmdir(dirname($pdfPath));
+    }
+    if (file_exists($zipPath)) {
+        unlink($zipPath);
+    }
+    if (is_dir($destinationDir)) {
+        @rmdir($destinationDir);
     }
 
     $stmt = $pdo->prepare('DELETE FROM call_for_proposal WHERE id = ?');

@@ -1493,6 +1493,75 @@ body.management-page .users-table {
   margin-bottom: 0;
 }
 
+.current-documents-minimal {
+  margin-top: 0.35rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.current-documents-minimal__item {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) auto auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.current-documents-minimal__item:last-child {
+  border-bottom: 0;
+}
+
+.current-documents-minimal__name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.current-documents-minimal__status {
+  font-size: 0.82rem;
+  border-radius: 999px;
+  padding: 0.08rem 0.45rem;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.current-documents-minimal__status.is-available {
+  color: #176437;
+  background: #e7f6eb;
+  border-color: #b8e1c1;
+}
+
+.current-documents-minimal__status.is-missing {
+  color: #7f1d1d;
+  background: #fdeaea;
+  border-color: #f3b8b8;
+}
+
+.current-documents-minimal__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.current-documents-minimal__actions a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.current-documents-minimal__actions a:hover,
+.current-documents-minimal__actions a:focus-visible {
+  text-decoration: underline;
+}
+
+.current-documents-minimal__actions span {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,

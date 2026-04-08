@@ -1,3 +1,23 @@
+<?php
+require_once 'db/common-db.php';
+
+$callId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$callId) {
+    header('Location: bandi.php?tab=attivi');
+    exit();
+}
+
+$stmt = $pdo->prepare('SELECT id, title FROM call_for_proposal WHERE id = :id');
+$stmt->execute([':id' => $callId]);
+$call = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$call) {
+    header('Location: bandi.php?tab=attivi');
+    exit();
+}
+
+$zipPath = 'private/documents/call_for_proposals/' . $callId . '/application_documents.zip';
+$zipExists = is_file($zipPath);
+?>
 <!DOCTYPE html>
 <html lang="it">
   <head>
@@ -16,14 +36,19 @@
             <?php
             if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             ?>
-            <p>Per rispondere al bando e presentare una domanda di finanziamento è necessario scaricare e compilare i seguenti 4 documenti e prendere visione delle "Linee guida alla rendicontazione"</p>
-            <p>I quattro moduli compilati dovranno essere inviati a <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a> assieme ad eventuali vostre integrazioni o proposte.</p>
+            <p><strong>Bando:</strong> <?php echo htmlspecialchars($call['title']); ?></p>
+            <p>Per rispondere al bando e presentare una domanda di finanziamento è necessario scaricare e compilare i documenti richiesti e prendere visione delle "Linee guida alla rendicontazione".</p>
+            <p>I moduli compilati dovranno essere inviati a <a href="mailto:segreteria@armoniaerispetto.it">segreteria@armoniaerispetto.it</a> assieme ad eventuali vostre integrazioni o proposte.</p>
             <p>Sempre allo stesso indirizzo email è possibile indirizzare richieste di informazioni o chiarimenti sul bando e su come parteciparvi.</p>
+            <?php if ($zipExists): ?>
             <div class="button-container">
-              <a href="documents/presentazione_domanda_bando.zip" class="page-button" download>
+              <a href="call_for_proposal_application_documents_download.php?id=<?php echo urlencode((string) $callId); ?>" class="page-button">
                 Scarica file
               </a>
             </div>
+            <?php else: ?>
+            <p>I documenti per la presentazione della domanda non sono ancora disponibili per questo bando.</p>
+            <?php endif; ?>
             <?php
             } else {
             ?>

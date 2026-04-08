@@ -114,6 +114,46 @@ try {
 
         $pdfPath = $destination_path;
     }
+
+    if (
+        isset($_FILES['application_documents_zip'])
+        && $_FILES['application_documents_zip']['error'] !== UPLOAD_ERR_NO_FILE
+    ) {
+        if ($_FILES['application_documents_zip']['error'] !== UPLOAD_ERR_OK) {
+            $pdo->rollBack();
+            $_SESSION['call_for_proposal_form_error'] = 'Errore durante il caricamento dello ZIP dei documenti.';
+            header('Location: call_for_proposal_edit.php?id=' . urlencode($id));
+            exit();
+        }
+
+        $zip_tmp_path = $_FILES['application_documents_zip']['tmp_name'];
+        $zip_name = $_FILES['application_documents_zip']['name'];
+        $zip_extension = strtolower(pathinfo($zip_name, PATHINFO_EXTENSION));
+        if ($zip_extension !== 'zip') {
+            $pdo->rollBack();
+            $_SESSION['call_for_proposal_form_error'] = 'I documenti della presentazione domanda devono essere in formato ZIP.';
+            header('Location: call_for_proposal_edit.php?id=' . urlencode($id));
+            exit();
+        }
+
+        $destination_dir = 'private/documents/call_for_proposals/' . $id;
+        if (!is_dir($destination_dir)) {
+            mkdir($destination_dir, 0755, true);
+        }
+
+        $zip_destination_path = $destination_dir . '/application_documents.zip';
+        if (file_exists($zip_destination_path)) {
+            unlink($zip_destination_path);
+        }
+
+        if (!move_uploaded_file($zip_tmp_path, $zip_destination_path)) {
+            $pdo->rollBack();
+            $_SESSION['call_for_proposal_form_error'] = 'Errore durante il caricamento dello ZIP dei documenti.';
+            header('Location: call_for_proposal_edit.php?id=' . urlencode($id));
+            exit();
+        }
+    }
+
     $start_date_dt = $start_date->format('Y-m-d 00:00:00');
     $end_date_dt = $end_date->format('Y-m-d 00:00:00');
 

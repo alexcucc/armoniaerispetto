@@ -47,7 +47,7 @@ $backUrl = $isExpired ? 'bandi.php?tab=passati' : 'bandi.php?tab=attivi';
             </object>
             <?php if (!$isExpired): ?>
             <div class="button-container">
-              <button onclick="window.location.href='presentazione_della_domanda.php';" class="page-button">
+              <button onclick="window.location.href='presentazione_della_domanda.php?id=<?php echo urlencode((string) $callId); ?>';" class="page-button">
                 Presentazione della risposta al bando
               </button>
             </div>

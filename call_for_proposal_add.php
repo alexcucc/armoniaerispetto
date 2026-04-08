@@ -55,6 +55,17 @@ $evaluators = $evaluatorsStmt->fetchAll(PDO::FETCH_ASSOC);
                 <input type="file" id="pdf" name="pdf" class="form-input" accept="application/pdf" required>
             </div>
             <div class="form-group">
+                <label class="form-label required" for="application_documents_zip">ZIP documenti presentazione domanda</label>
+                <input
+                    type="file"
+                    id="application_documents_zip"
+                    name="application_documents_zip"
+                    class="form-input"
+                    accept=".zip,application/zip,application/x-zip-compressed"
+                    required
+                >
+            </div>
+            <div class="form-group">
                 <label class="form-label required" for="start_date">Data Inizio</label>
                 <input type="date" id="start_date" name="start_date" class="form-input" required>
             </div>

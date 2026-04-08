@@ -25,6 +25,11 @@ if (!$proposal) {
     exit();
 }
 
+$pdfPath = (string) ($proposal['pdf_path'] ?? '');
+$hasCurrentPdf = $pdfPath !== '' && is_file($pdfPath);
+$zipPath = 'private/documents/call_for_proposals/' . $id . '/application_documents.zip';
+$hasCurrentZip = is_file($zipPath);
+
 $errorMessage = $_SESSION['call_for_proposal_form_error'] ?? null;
 unset($_SESSION['call_for_proposal_form_error']);
 
@@ -86,6 +91,60 @@ $evaluators = $evaluatorsStmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="form-group">
                 <label class="form-label" for="pdf">PDF (opzionale)</label>
                 <input type="file" id="pdf" name="pdf" class="form-input" accept="application/pdf">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="application_documents_zip">ZIP documenti presentazione domanda (opzionale)</label>
+                <input
+                    type="file"
+                    id="application_documents_zip"
+                    name="application_documents_zip"
+                    class="form-input"
+                    accept=".zip,application/zip,application/x-zip-compressed"
+                >
+                <p class="form-note">Lascia vuoto per mantenere il file ZIP attuale.</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Documenti correnti</label>
+                <div class="current-documents-minimal">
+                    <div class="current-documents-minimal__item">
+                        <span class="current-documents-minimal__name">PDF del bando</span>
+                        <span class="current-documents-minimal__status <?php echo $hasCurrentPdf ? 'is-available' : 'is-missing'; ?>">
+                            <?php echo $hasCurrentPdf ? 'Disponibile' : 'Non disponibile'; ?>
+                        </span>
+                        <div class="current-documents-minimal__actions">
+                            <?php if ($hasCurrentPdf): ?>
+                                <a
+                                    href="call_for_proposal_download.php?id=<?php echo urlencode((string) $proposal['id']); ?>&mode=inline"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Apri
+                                </a>
+                                <a href="call_for_proposal_download.php?id=<?php echo urlencode((string) $proposal['id']); ?>">
+                                    Scarica
+                                </a>
+                            <?php else: ?>
+                                <span>-</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="current-documents-minimal__item">
+                        <span class="current-documents-minimal__name">ZIP presentazione</span>
+                        <span class="current-documents-minimal__status <?php echo $hasCurrentZip ? 'is-available' : 'is-missing'; ?>">
+                            <?php echo $hasCurrentZip ? 'Disponibile' : 'Non disponibile'; ?>
+                        </span>
+                        <div class="current-documents-minimal__actions">
+                            <?php if ($hasCurrentZip): ?>
+                                <a href="call_for_proposal_application_documents_download.php?id=<?php echo urlencode((string) $proposal['id']); ?>">
+                                    Scarica
+                                </a>
+                            <?php else: ?>
+                                <span>-</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <label class="form-label required">Valutatori abilitati</label>

@@ -16,6 +16,9 @@ if (!$id) {
     exit();
 }
 
+$mode = strtolower((string) filter_input(INPUT_GET, 'mode', FILTER_UNSAFE_RAW));
+$contentDispositionType = $mode === 'inline' ? 'inline' : 'attachment';
+
 $stmt = $pdo->prepare('SELECT pdf_path FROM call_for_proposal WHERE id = :id');
 $stmt->execute([':id' => $id]);
 $call = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,7 +37,7 @@ if (!$realPath || !$baseDir || strpos($realPath, $baseDir) !== 0 || !is_file($re
 }
 
 header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="call_for_proposal.pdf"');
+header('Content-Disposition: ' . $contentDispositionType . '; filename="call_for_proposal.pdf"');
 header('Content-Length: ' . filesize($realPath));
 
 readfile($realPath);
