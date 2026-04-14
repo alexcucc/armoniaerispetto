@@ -26,9 +26,14 @@ $isActiveTabActive = $selectedTab === 'attivi';
               </div>
 
               <section id="premi-passati" class="tab-panel<?php echo $isPastTabActive ? ' active' : ''; ?>" role="tabpanel"<?php echo $isPastTabActive ? '' : ' hidden'; ?>>
-                <div class="button-container">
-                  <a class="page-button" href="premi_passati.php">Visualizza premiati</a>
-                </div>
+                <article class="call-item">
+                  <div class="call-item__content">
+                    <p>PRemio anno 2025</p>
+                  </div>
+                  <div class="button-container button-container--right call-item__actions">
+                    <a class="page-button" href="premi_passati.php">Visualizza premiati</a>
+                  </div>
+                </article>
               </section>
 
               <section id="premi-attivi" class="tab-panel<?php echo $isActiveTabActive ? ' active' : ''; ?>" role="tabpanel"<?php echo $isActiveTabActive ? '' : ' hidden'; ?>>
