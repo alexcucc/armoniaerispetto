@@ -81,9 +81,6 @@ try {
                 </div>
 
                 <section id="bandi-passati" class="tab-panel<?php echo $isPastTabActive ? ' active' : ''; ?>" role="tabpanel"<?php echo $isPastTabActive ? '' : ' hidden'; ?>>
-                  <div class="button-container">
-                    <a class="page-button" href="call_for_proposal_winners.php">Visualizza vincitori</a>
-                  </div>
                   <?php if ($pastCalls === []): ?>
                     <p>Nessun bando passato.</p>
                   <?php else: ?>
@@ -99,8 +96,9 @@ try {
                             <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
                           <?php endif; ?>
                         </div>
-                        <div class="button-container button-container--right call-item__actions">
+                        <div class="button-container button-container--right call-item__actions call-item__actions--stack">
                           <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
+                          <a class="page-button" href="call_for_proposal_winners.php">Visualizza vincitori</a>
                         </div>
                       </article>
                     <?php endforeach; ?>

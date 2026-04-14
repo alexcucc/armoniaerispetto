@@ -1674,6 +1674,11 @@ textarea:focus-visible {
   margin: 0;
 }
 
+.call-item__actions--stack {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .users-filters {
   display: grid;
   gap: 0.25rem;
