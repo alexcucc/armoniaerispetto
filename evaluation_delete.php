@@ -28,13 +28,26 @@ $evaluationId = (int) $evaluationId;
 try {
     $pdo->beginTransaction();
 
-    $selectStmt = $pdo->prepare('SELECT id FROM evaluation WHERE id = :id');
+    $selectStmt = $pdo->prepare(
+        'SELECT e.id, c.status AS call_status '
+        . 'FROM evaluation e '
+        . 'JOIN application a ON a.id = e.application_id '
+        . 'JOIN call_for_proposal c ON c.id = a.call_for_proposal_id '
+        . 'WHERE e.id = :id '
+        . 'LIMIT 1'
+    );
     $selectStmt->execute([':id' => $evaluationId]);
     $evaluation = $selectStmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$evaluation) {
         $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Valutazione non trovata']);
+        exit();
+    }
+
+    if (($evaluation['call_status'] ?? null) === 'CLOSED') {
+        $pdo->rollBack();
+        echo json_encode(['success' => false, 'message' => "Il bando è chiuso e non è possibile eliminare la valutazione."]);
         exit();
     }
 

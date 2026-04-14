@@ -98,7 +98,7 @@ if ($statusFilter !== null) {
     }
 }
 
-$completedQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, o.name AS organization_name, "
+$completedQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, c.status AS call_status, o.name AS organization_name, "
     . "e.forced_weighted_total_score, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
     . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
@@ -115,7 +115,7 @@ $completedQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user
     . ($filterClause === '' ? ' WHERE ' : $filterClause . ' AND ')
     . $completedStatusClause;
 
-$pendingQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, o.name AS organization_name, "
+$pendingQuery = "SELECT e.id AS evaluation_id, a.id AS application_id, ev.user_id AS evaluator_user_id, c.title AS call_title, c.status AS call_status, o.name AS organization_name, "
     . "e.forced_weighted_total_score, "
     . "CONCAT(u.last_name, ' ', u.first_name) AS evaluator_name, "
     . "CONCAT(su.last_name, ' ', su.first_name) AS supervisor_name, "
@@ -317,13 +317,15 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                                     <?php
                                         $formattedDate = $evaluation['updated_at'] ? date('d/m/Y H:i', strtotime($evaluation['updated_at'])) : '-';
                                         $evaluationId = isset($evaluation['evaluation_id']) ? (int) $evaluation['evaluation_id'] : 0;
-                                        $canDelete = $evaluationId > 0;
+                                        $isCallClosed = (($evaluation['call_status'] ?? '') === 'CLOSED');
+                                        $canDelete = $evaluationId > 0 && !$isCallClosed;
                                         $applicationId = isset($evaluation['application_id']) ? (int) $evaluation['application_id'] : 0;
                                         $selectedEvaluatorUserId = isset($evaluation['evaluator_user_id']) ? (int) $evaluation['evaluator_user_id'] : 0;
                                         $isForcedEvaluation = is_numeric($evaluation['forced_weighted_total_score'] ?? null);
                                         $canForceVote = $isAdminUser
                                             && $applicationId > 0
                                             && $selectedEvaluatorUserId > 0
+                                            && !$isCallClosed
                                             && ((($evaluation['status'] ?? '') === 'NOT_STARTED') || $isForcedEvaluation);
                                     ?>
                                     <tr>
