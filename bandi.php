@@ -81,6 +81,9 @@ try {
                 </div>
 
                 <section id="bandi-passati" class="tab-panel<?php echo $isPastTabActive ? ' active' : ''; ?>" role="tabpanel"<?php echo $isPastTabActive ? '' : ' hidden'; ?>>
+                  <div class="button-container">
+                    <a class="page-button" href="call_for_proposal_winners.php">Visualizza vincitori</a>
+                  </div>
                   <?php if ($pastCalls === []): ?>
                     <p>Nessun bando passato.</p>
                   <?php else: ?>

@@ -26,7 +26,9 @@ $isActiveTabActive = $selectedTab === 'attivi';
               </div>
 
               <section id="premi-passati" class="tab-panel<?php echo $isPastTabActive ? ' active' : ''; ?>" role="tabpanel"<?php echo $isPastTabActive ? '' : ' hidden'; ?>>
-                <p>Nessun premio o riconoscimento passato disponibile al momento.</p>
+                <div class="button-container">
+                  <a class="page-button" href="premi_passati.php">Visualizza premiati</a>
+                </div>
               </section>
 
               <section id="premi-attivi" class="tab-panel<?php echo $isActiveTabActive ? ' active' : ''; ?>" role="tabpanel"<?php echo $isActiveTabActive ? '' : ' hidden'; ?>>
