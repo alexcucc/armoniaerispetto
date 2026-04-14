@@ -18,8 +18,6 @@ $successMessage = $_SESSION['evaluation_success'] ?? null;
 unset($_SESSION['evaluation_success']);
 $errorMessage = $_SESSION['evaluation_error'] ?? null;
 unset($_SESSION['evaluation_error']);
-$defaultCallMessage = $_SESSION['default_call_message'] ?? null;
-unset($_SESSION['default_call_message']);
 
 // ----------------------------
 // Sorting
@@ -111,6 +109,7 @@ $callResolution = resolveCallFilterSelection(
     $defaultCallId,
     array_keys($callOptions)
 );
+syncUserDefaultCallForProposalFromFilter($pdo, $currentUserId, $_GET, 'filter_call', array_keys($callOptions));
 $selectedCall = $callResolution['selected_value'];
 $selectedCallId = $callResolution['effective_call_id'];
 $persistAllCallFilter = array_key_exists('filter_call', $_GET) && $selectedCall === 'all';
@@ -361,11 +360,6 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                 <?php echo htmlspecialchars($errorMessage); ?>
               </div>
             <?php endif; ?>
-            <?php if (is_array($defaultCallMessage) && isset($defaultCallMessage['text'])): ?>
-              <div class="message <?php echo (($defaultCallMessage['type'] ?? 'success') === 'error') ? 'error' : 'success'; ?>" style="display:block;">
-                <?php echo htmlspecialchars((string) $defaultCallMessage['text']); ?>
-              </div>
-            <?php endif; ?>
 
             <form method="get" class="filters-form">
               <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sortField); ?>">
@@ -403,16 +397,6 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
               </div>
               <div class="filters-actions">
                 <button type="submit" class="page-button">Applica filtri</button>
-                <button
-                  type="submit"
-                  class="page-button secondary-button"
-                  formaction="default_call_for_proposal_save.php"
-                  formmethod="post"
-                  name="redirect"
-                  value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'evaluations.php'); ?>"
-                >
-                  Salva bando di default
-                </button>
                 <a class="page-button secondary-button" href="<?php echo htmlspecialchars($resetUrl); ?>">Reset</a>
               </div>
             </form>

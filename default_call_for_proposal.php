@@ -81,6 +81,57 @@ function resolveCallFilterSelection(array $query, string $paramName, ?int $defau
     ];
 }
 
+function syncUserDefaultCallForProposalFromFilter(
+    PDO $pdo,
+    ?int $userId,
+    array $query,
+    string $paramName,
+    array $availableCallIds
+): void {
+    if ($userId === null || $userId <= 0 || !array_key_exists($paramName, $query)) {
+        return;
+    }
+
+    $rawValue = trim((string) $query[$paramName]);
+    $normalizedRawValue = strtolower($rawValue);
+    $newDefaultCallId = null;
+
+    if ($rawValue !== '' && $normalizedRawValue !== 'all') {
+        if (!ctype_digit($rawValue)) {
+            return;
+        }
+
+        $candidateCallId = (int) $rawValue;
+        if ($candidateCallId <= 0) {
+            return;
+        }
+
+        $availableCallSet = [];
+        foreach ($availableCallIds as $availableCallId) {
+            $normalizedId = (int) $availableCallId;
+            if ($normalizedId > 0) {
+                $availableCallSet[$normalizedId] = true;
+            }
+        }
+
+        if (!isset($availableCallSet[$candidateCallId])) {
+            return;
+        }
+
+        $newDefaultCallId = $candidateCallId;
+    }
+
+    $currentDefaultCallId = getUserDefaultCallForProposalId($pdo, $userId);
+    if ($currentDefaultCallId === $newDefaultCallId) {
+        return;
+    }
+
+    $updateStmt = $pdo->prepare('UPDATE user SET default_call_for_proposal_id = :default_call_id WHERE id = :user_id');
+    $updateStmt->bindValue(':default_call_id', $newDefaultCallId, $newDefaultCallId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+    $updateStmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    $updateStmt->execute();
+}
+
 function normalizeRedirectPath(?string $redirect, string $fallbackPath): string
 {
     $fallback = ltrim($fallbackPath, '/');

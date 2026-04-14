@@ -15,8 +15,6 @@ if (!isset($_SESSION['user_id']) ||
     exit();
 }
 $currentUserId = (int) $_SESSION['user_id'];
-$defaultCallMessage = $_SESSION['default_call_message'] ?? null;
-unset($_SESSION['default_call_message']);
 
 // Retrieve supervisor id for the logged in user
 $stmt = $pdo->prepare('SELECT id FROM supervisor WHERE user_id = :uid');
@@ -51,6 +49,7 @@ $callResolution = resolveCallFilterSelection(
     $defaultCallId,
     array_keys($callTitleById)
 );
+syncUserDefaultCallForProposalFromFilter($pdo, $currentUserId, $_GET, 'call_id', array_keys($callTitleById));
 $callFilterValue = $callResolution['selected_value'];
 $callId = $callResolution['effective_call_id'];
 if ($callId !== null && isset($callTitleById[$callId])) {
@@ -134,11 +133,6 @@ if ($supervisorId) {
                     <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
                 <div id="message" class="message" style="display: none;"></div>
-                <?php if (is_array($defaultCallMessage) && isset($defaultCallMessage['text'])): ?>
-                    <div class="message <?php echo (($defaultCallMessage['type'] ?? 'success') === 'error') ? 'error' : 'success'; ?>" style="display: block;">
-                        <?php echo htmlspecialchars((string) $defaultCallMessage['text']); ?>
-                    </div>
-                <?php endif; ?>
                 <form method="get" class="filters-form">
                     <div class="form-group">
                         <select id="call_id" name="call_id" class="form-input">
@@ -172,16 +166,6 @@ if ($supervisorId) {
                     </div>
                     <div class="filters-actions">
                         <button type="submit" class="page-button">Applica filtri</button>
-                        <button
-                            type="submit"
-                            class="page-button secondary-button"
-                            formaction="default_call_for_proposal_save.php"
-                            formmethod="post"
-                            name="redirect"
-                            value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'supervisor_applications.php'); ?>"
-                        >
-                            Salva bando di default
-                        </button>
                         <a href="<?php echo htmlspecialchars($resetUrl); ?>" class="page-button secondary-button">Reset</a>
                     </div>
                 </form>
