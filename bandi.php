@@ -84,16 +84,21 @@ try {
                   <?php if ($pastCalls === []): ?>
                     <p>Nessun bando passato.</p>
                   <?php else: ?>
+                    <p class="tab-panel__count"><?php echo count($pastCalls); ?> bandi</p>
+                    <div class="calls-list">
                     <?php foreach ($pastCalls as $call): ?>
                       <article class="call-item">
                         <div class="call-item__content">
-                          <h2><?php echo htmlspecialchars($call['title']); ?></h2>
-                          <p>
+                          <div class="call-item__header">
+                            <h2><?php echo htmlspecialchars($call['title']); ?></h2>
+                            <span class="call-item__status call-item__status--past">Passato</span>
+                          </div>
+                          <p class="call-item__meta">
                             Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
                             al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
                           </p>
                           <?php if (trim((string) $call['description']) !== ''): ?>
-                            <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
+                            <p class="call-item__description"><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
                           <?php endif; ?>
                         </div>
                         <div class="button-container button-container--right call-item__actions call-item__actions--stack">
@@ -102,6 +107,7 @@ try {
                         </div>
                       </article>
                     <?php endforeach; ?>
+                    </div>
                   <?php endif; ?>
                 </section>
 
@@ -109,16 +115,21 @@ try {
                   <?php if ($activeCalls === []): ?>
                     <p>Nessun bando attivo.</p>
                   <?php else: ?>
+                    <p class="tab-panel__count"><?php echo count($activeCalls); ?> bandi</p>
+                    <div class="calls-list">
                     <?php foreach ($activeCalls as $call): ?>
                       <article class="call-item">
                         <div class="call-item__content">
-                          <h2><?php echo htmlspecialchars($call['title']); ?></h2>
-                          <p>
+                          <div class="call-item__header">
+                            <h2><?php echo htmlspecialchars($call['title']); ?></h2>
+                            <span class="call-item__status call-item__status--active">Attivo</span>
+                          </div>
+                          <p class="call-item__meta">
                             Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
                             al <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['end_date']))); ?>
                           </p>
                           <?php if (trim((string) $call['description']) !== ''): ?>
-                            <p><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
+                            <p class="call-item__description"><?php echo nl2br(htmlspecialchars($call['description'])); ?></p>
                           <?php endif; ?>
                         </div>
                         <div class="button-container button-container--right call-item__actions">
@@ -126,6 +137,7 @@ try {
                         </div>
                       </article>
                     <?php endforeach; ?>
+                    </div>
                   <?php endif; ?>
                 </section>
               </div>

@@ -1610,7 +1610,7 @@ textarea:focus-visible {
 }
 
 .tab-container {
-  margin-top: 0.2rem;
+  margin-top: 0.4rem;
 }
 
 .tab-buttons {
@@ -1657,11 +1657,28 @@ textarea:focus-visible {
   display: block;
 }
 
+.tab-panel__count {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  color: #4A5568;
+  font-weight: 600;
+}
+
+.calls-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
 .call-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #d9e2ec;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
 }
 
 .call-item__content {
@@ -1669,9 +1686,62 @@ textarea:focus-visible {
   min-width: 0;
 }
 
+.call-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.call-item__header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #1f2937;
+  line-height: 1.3;
+}
+
+.call-item__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.call-item__status--past {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.call-item__status--active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.call-item__meta {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.call-item__description {
+  margin: 0.65rem 0 0;
+  padding-top: 0.65rem;
+  border-top: 1px solid #e5e7eb;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
 .call-item__actions {
   flex: 0 0 auto;
   margin: 0;
+  padding-left: 1rem;
+  border-left: 1px solid #e5e7eb;
 }
 
 .call-item__actions--stack {
@@ -2154,11 +2224,22 @@ body.bandi-finanziamenti-page .sub-button-container {
 
   .call-item {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    padding: 0.85rem;
   }
 
   .call-item__actions {
     width: 100%;
+    padding-left: 0;
+    padding-top: 0.65rem;
+    border-left: none;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .call-item__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
   }
 
   .button-container .page-button {
