@@ -24,7 +24,7 @@ if (!$id || !$supervisorIdInput || !$projectName) {
     exit();
 }
 
-$applicationStmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, checklist_path, application_pdf_path, budget_pdf_path FROM application WHERE id = :id');
+$applicationStmt = $pdo->prepare('SELECT call_for_proposal_id, organization_id, supervisor_id, checklist_path, application_pdf_path, budget_pdf_path, cronoprogramma_pdf_path FROM application WHERE id = :id');
 $applicationStmt->execute([':id' => $id]);
 $existingApplication = $applicationStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -108,10 +108,12 @@ function buildUploadDestinationPath(string $destinationDir, string $label, strin
 
 $pdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
 $budgetPdfUploaded = isset($_FILES['budget_pdf']) && $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
+$cronoprogrammaPdfUploaded = isset($_FILES['cronoprogramma_pdf']) && $_FILES['cronoprogramma_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
 
 if (
     ($pdfUploaded && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK) ||
-    ($budgetPdfUploaded && $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_OK)
+    ($budgetPdfUploaded && $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_OK) ||
+    ($cronoprogrammaPdfUploaded && $_FILES['cronoprogramma_pdf']['error'] !== UPLOAD_ERR_OK)
 ) {
     header('Location: application_edit.php?id=' . urlencode($id));
     exit();
@@ -120,10 +122,13 @@ if (
 $destinationDir = 'private/documents/applications/' . $id;
 $destinationPath = null;
 $budgetDestinationPath = null;
+$cronoprogrammaDestinationPath = null;
 $pdfTmpPath = null;
 $budgetPdfTmpPath = null;
+$cronoprogrammaPdfTmpPath = null;
 $existingPdfPath = $existingApplication['application_pdf_path'] ?? null;
 $existingBudgetPdfPath = $existingApplication['budget_pdf_path'] ?? null;
+$existingCronoprogrammaPdfPath = $existingApplication['cronoprogramma_pdf_path'] ?? null;
 $reservedPaths = [];
 
 if ($pdfUploaded) {
@@ -152,11 +157,24 @@ if ($budgetPdfUploaded) {
     $reservedPaths[] = $budgetDestinationPath;
 }
 
+if ($cronoprogrammaPdfUploaded) {
+    try {
+        $cronoprogrammaPdf = validateUploadedPdf($_FILES['cronoprogramma_pdf']);
+    } catch (RuntimeException $e) {
+        header('Location: application_edit.php?id=' . urlencode($id));
+        exit();
+    }
+
+    $cronoprogrammaPdfTmpPath = $cronoprogrammaPdf['tmp_path'];
+    $cronoprogrammaDestinationPath = buildUploadDestinationPath($destinationDir, 'cronoprogramma', $cronoprogrammaPdf['original_name'], $reservedPaths);
+    $reservedPaths[] = $cronoprogrammaDestinationPath;
+}
+
 $movedFiles = [];
 try {
     $pdo->beginTransaction();
 
-    if ($pdfUploaded || $budgetPdfUploaded) {
+    if ($pdfUploaded || $budgetPdfUploaded || $cronoprogrammaPdfUploaded) {
         if (!is_dir($destinationDir)) {
             if (!mkdir($destinationDir, 0755, true)) {
                 throw new RuntimeException('Unable to create application directory');
@@ -164,7 +182,7 @@ try {
         }
     }
 
-    if ($pdfUploaded || $budgetPdfUploaded) {
+    if ($pdfUploaded || $budgetPdfUploaded || $cronoprogrammaPdfUploaded) {
         $destinationBasePath = realpath($destinationDir);
         if (!$destinationBasePath) {
             throw new RuntimeException('Unable to resolve application directory');
@@ -185,6 +203,13 @@ try {
         $movedFiles[] = $budgetDestinationPath;
     }
 
+    if ($cronoprogrammaPdfUploaded) {
+        if (!move_uploaded_file($cronoprogrammaPdfTmpPath, $cronoprogrammaDestinationPath)) {
+            throw new RuntimeException('Unable to move uploaded cronoprogramma PDF');
+        }
+        $movedFiles[] = $cronoprogrammaDestinationPath;
+    }
+
     if ($pdfUploaded && !empty($existingPdfPath)) {
         $existingPdfRealPath = realpath($existingPdfPath);
         if ($existingPdfRealPath && strpos($existingPdfRealPath, $destinationBasePath) === 0 && is_file($existingPdfRealPath)) {
@@ -199,6 +224,15 @@ try {
         if ($existingBudgetPdfRealPath && strpos($existingBudgetPdfRealPath, $destinationBasePath) === 0 && is_file($existingBudgetPdfRealPath)) {
             if (!unlink($existingBudgetPdfRealPath)) {
                 throw new RuntimeException('Unable to replace existing budget PDF');
+            }
+        }
+    }
+
+    if ($cronoprogrammaPdfUploaded && !empty($existingCronoprogrammaPdfPath)) {
+        $existingCronoprogrammaPdfRealPath = realpath($existingCronoprogrammaPdfPath);
+        if ($existingCronoprogrammaPdfRealPath && strpos($existingCronoprogrammaPdfRealPath, $destinationBasePath) === 0 && is_file($existingCronoprogrammaPdfRealPath)) {
+            if (!unlink($existingCronoprogrammaPdfRealPath)) {
+                throw new RuntimeException('Unable to replace existing cronoprogramma PDF');
             }
         }
     }
@@ -219,6 +253,10 @@ try {
     if ($budgetPdfUploaded) {
         $query .= ', budget_pdf_path = :budget_pdf_path';
         $params[':budget_pdf_path'] = $budgetDestinationPath;
+    }
+    if ($cronoprogrammaPdfUploaded) {
+        $query .= ', cronoprogramma_pdf_path = :cronoprogramma_pdf_path';
+        $params[':cronoprogramma_pdf_path'] = $cronoprogrammaDestinationPath;
     }
 
     $query .= ' WHERE id = :id';

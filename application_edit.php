@@ -18,7 +18,7 @@ if (!$appId) {
 
 $stmt = $pdo->prepare(
     'SELECT a.call_for_proposal_id, a.organization_id, a.supervisor_id, a.project_name, '
-    . 'a.application_pdf_path, a.budget_pdf_path, a.checklist_path, '
+    . 'a.application_pdf_path, a.budget_pdf_path, a.cronoprogramma_pdf_path, a.checklist_path, '
     . 'c.title AS call_title, o.name AS organization_name '
     . 'FROM application a '
     . 'JOIN call_for_proposal c ON a.call_for_proposal_id = c.id '
@@ -57,6 +57,10 @@ if (!empty($application['application_pdf_path'])) {
 $currentBudgetPdfName = null;
 if (!empty($application['budget_pdf_path'])) {
     $currentBudgetPdfName = basename($application['budget_pdf_path']);
+}
+$currentCronoprogrammaPdfName = null;
+if (!empty($application['cronoprogramma_pdf_path'])) {
+    $currentCronoprogrammaPdfName = basename($application['cronoprogramma_pdf_path']);
 }
 
 $errorMessage = $_SESSION['error_message'] ?? null;
@@ -133,6 +137,13 @@ if (!empty($formData)) {
                 <?php else: ?>
                 <p id="current_application_pdf">Nessun PDF caricato.</p>
                 <?php endif; ?>
+                <?php if (!empty($application['application_pdf_path'])): ?>
+                <p>
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=application&mode=inline" target="_blank" rel="noopener">Apri</a>
+                    |
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=application">Scarica</a>
+                </p>
+                <?php endif; ?>
             </div>
             <div class="form-group">
                 <label class="form-label" for="application_pdf">Sostituisci PDF della risposta al bando</label>
@@ -148,10 +159,37 @@ if (!empty($formData)) {
                 <?php else: ?>
                 <p id="current_budget_pdf">Nessun PDF caricato.</p>
                 <?php endif; ?>
+                <?php if (!empty($application['budget_pdf_path'])): ?>
+                <p>
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=budget&mode=inline" target="_blank" rel="noopener">Apri</a>
+                    |
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=budget">Scarica</a>
+                </p>
+                <?php endif; ?>
             </div>
             <div class="form-group">
                 <label class="form-label" for="budget_pdf">Sostituisci PDF del modulo budget</label>
                 <input type="file" id="budget_pdf" name="budget_pdf" class="form-input" accept="application/pdf">
+                <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="current_cronoprogramma_pdf">PDF attuale del cronoprogramma</label>
+                <?php if (!empty($application['cronoprogramma_pdf_path'])): ?>
+                <p id="current_cronoprogramma_pdf">
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener"><?php echo htmlspecialchars($currentCronoprogrammaPdfName ?? 'Apri il PDF attuale'); ?></a>
+                </p>
+                <p>
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener">Apri</a>
+                    |
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=cronoprogramma">Scarica</a>
+                </p>
+                <?php else: ?>
+                <p id="current_cronoprogramma_pdf">Nessun PDF caricato.</p>
+                <?php endif; ?>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="cronoprogramma_pdf">Sostituisci PDF del cronoprogramma</label>
+                <input type="file" id="cronoprogramma_pdf" name="cronoprogramma_pdf" class="form-input" accept="application/pdf">
                 <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
             </div>
             <div class="button-container">

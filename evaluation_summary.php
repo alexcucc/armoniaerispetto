@@ -23,6 +23,7 @@ if (!$applicationId) {
 $stmt = $pdo->prepare(
     "SELECT e.id AS evaluation_id, e.status AS evaluation_status, e.updated_at, e.forced_weighted_total_score, "
     . "c.title AS call_title, COALESCE(o.name, 'Soggetto proponente') AS organization_name, "
+    . "a.application_pdf_path, a.budget_pdf_path, a.cronoprogramma_pdf_path, a.checklist_path, "
     . "eg.proposing_entity_score, eg.general_project_score, eg.financial_plan_score, "
     . "eg.qualitative_elements_score, eg.thematic_criteria_score, eg.overall_score, "
     . "etr.overall_score AS thematic_repopulation_score, "
@@ -311,6 +312,44 @@ function formatScore($value): string
                   <span class="summary-context__label">Ente:</span>
                   <span class="summary-context__value"><?php echo htmlspecialchars($evaluation['organization_name']); ?></span>
                 </p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Documenti della risposta</label>
+                <div class="actions-cell document-actions">
+                  <?php if (!empty($evaluation['application_pdf_path'])): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Risposta</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=application" title="Scarica risposta" aria-label="Scarica risposta"><i class="fas fa-download" aria-hidden="true"></i></a>
+                    </div>
+                  <?php else: ?>
+                    <span class="text-muted">Risposta non disponibile</span>
+                  <?php endif; ?>
+                  <?php if (!empty($evaluation['budget_pdf_path'])): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Budget</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=budget&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=budget" title="Scarica budget" aria-label="Scarica budget"><i class="fas fa-download" aria-hidden="true"></i></a>
+                    </div>
+                  <?php else: ?>
+                    <span class="text-muted">Budget non disponibile</span>
+                  <?php endif; ?>
+                  <?php if (!empty($evaluation['cronoprogramma_pdf_path'])): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Cronoprogr.</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=cronoprogramma" title="Scarica cronoprogramma" aria-label="Scarica cronoprogramma"><i class="fas fa-download" aria-hidden="true"></i></a>
+                    </div>
+                  <?php else: ?>
+                    <span class="text-muted">Cronoprogramma non disponibile</span>
+                  <?php endif; ?>
+                  <?php if (!empty($evaluation['checklist_path'])): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Checklist</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_checklist_download.php?id=<?php echo $applicationId; ?>" target="_blank" rel="noopener noreferrer" title="Apri checklist" aria-label="Apri checklist"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                    </div>
+                  <?php endif; ?>
+                </div>
               </div>
 
               <section class="summary-card summary-card--primary">

@@ -24,7 +24,7 @@ if (!$appId) {
 try {
     $pdo->beginTransaction();
 
-    $selectStmt = $pdo->prepare('SELECT application_pdf_path, budget_pdf_path, status FROM application WHERE id = :id');
+    $selectStmt = $pdo->prepare('SELECT application_pdf_path, budget_pdf_path, cronoprogramma_pdf_path, status FROM application WHERE id = :id');
     $selectStmt->execute([':id' => $appId]);
     $application = $selectStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -51,6 +51,7 @@ try {
         $paths = [
             $application['application_pdf_path'] ?? null,
             $application['budget_pdf_path'] ?? null,
+            $application['cronoprogramma_pdf_path'] ?? null,
         ];
 
         foreach ($paths as $filePath) {

@@ -91,13 +91,18 @@ function buildUploadDestinationPath(string $destinationDir, string $label, strin
 
 $applicationPdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
 $budgetPdfUploaded = isset($_FILES['budget_pdf']) && $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
+$cronoprogrammaPdfUploaded = isset($_FILES['cronoprogramma_pdf']) && $_FILES['cronoprogramma_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
 
-if (!$applicationPdfUploaded || !$budgetPdfUploaded) {
+if (!$applicationPdfUploaded || !$budgetPdfUploaded || !$cronoprogrammaPdfUploaded) {
     header('Location: applications.php');
     exit();
 }
 
-if ($_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK || $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_OK) {
+if (
+    $_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK
+    || $_FILES['budget_pdf']['error'] !== UPLOAD_ERR_OK
+    || $_FILES['cronoprogramma_pdf']['error'] !== UPLOAD_ERR_OK
+) {
     header('Location: applications.php');
     exit();
 }
@@ -105,6 +110,7 @@ if ($_FILES['application_pdf']['error'] !== UPLOAD_ERR_OK || $_FILES['budget_pdf
 try {
     $applicationPdf = validateUploadedPdf($_FILES['application_pdf']);
     $budgetPdf = validateUploadedPdf($_FILES['budget_pdf']);
+    $cronoprogrammaPdf = validateUploadedPdf($_FILES['cronoprogramma_pdf']);
 } catch (RuntimeException $e) {
     header('Location: applications.php');
     exit();
@@ -131,6 +137,7 @@ try {
 
     $applicationPdfPath = buildUploadDestinationPath($destinationDir, 'risposta', $applicationPdf['original_name']);
     $budgetPdfPath = buildUploadDestinationPath($destinationDir, 'budget', $budgetPdf['original_name']);
+    $cronoprogrammaPdfPath = buildUploadDestinationPath($destinationDir, 'cronoprogramma', $cronoprogrammaPdf['original_name']);
 
     if (!move_uploaded_file($applicationPdf['tmp_path'], $applicationPdfPath)) {
         throw new RuntimeException('Unable to move uploaded application PDF');
@@ -142,10 +149,16 @@ try {
     }
     $movedFiles[] = $budgetPdfPath;
 
-    $updateStmt = $pdo->prepare('UPDATE application SET application_pdf_path = :application_pdf_path, budget_pdf_path = :budget_pdf_path WHERE id = :id');
+    if (!move_uploaded_file($cronoprogrammaPdf['tmp_path'], $cronoprogrammaPdfPath)) {
+        throw new RuntimeException('Unable to move uploaded cronoprogramma PDF');
+    }
+    $movedFiles[] = $cronoprogrammaPdfPath;
+
+    $updateStmt = $pdo->prepare('UPDATE application SET application_pdf_path = :application_pdf_path, budget_pdf_path = :budget_pdf_path, cronoprogramma_pdf_path = :cronoprogramma_pdf_path WHERE id = :id');
     $updateStmt->execute([
         ':application_pdf_path' => $applicationPdfPath,
         ':budget_pdf_path' => $budgetPdfPath,
+        ':cronoprogramma_pdf_path' => $cronoprogrammaPdfPath,
         ':id' => $applicationId
     ]);
 

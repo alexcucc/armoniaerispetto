@@ -162,6 +162,7 @@ if ($selectedStatus === '' || $selectedStatus === 'SUBMITTED') {
         e.forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
+        a.cronoprogramma_pdf_path,
         a.checklist_path
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
@@ -198,6 +199,7 @@ if ($selectedStatus === '' || $selectedStatus === 'REVISED') {
         e.forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
+        a.cronoprogramma_pdf_path,
         a.checklist_path
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
@@ -234,6 +236,7 @@ if ($selectedStatus === '' || $selectedStatus === 'DRAFT') {
         e.forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
+        a.cronoprogramma_pdf_path,
         a.checklist_path
       FROM evaluation e
       JOIN application a ON e.application_id = a.id
@@ -270,6 +273,7 @@ if ($selectedStatus === '' || $selectedStatus === 'PENDING') {
         NULL AS forced_weighted_total_score,
         a.application_pdf_path,
         a.budget_pdf_path,
+        a.cronoprogramma_pdf_path,
         a.checklist_path
       FROM application a
       JOIN call_for_proposal c ON a.call_for_proposal_id = c.id
@@ -461,6 +465,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                     <th>Stato</th>
                     <th>Risposta al bando</th>
                     <th>Modulo budget</th>
+                    <th>Cronoprogramma</th>
                     <th>Checklist</th>
                     <th>Azione</th>
                   </tr>
@@ -482,6 +487,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                         $isForcedEvaluation = is_numeric($row['forced_weighted_total_score'] ?? null);
                         $hasApplicationPdf = !empty($row['application_pdf_path']);
                         $hasBudgetPdf = !empty($row['budget_pdf_path']);
+                        $hasCronoprogrammaPdf = !empty($row['cronoprogramma_pdf_path']);
                         $hasChecklist = !empty($row['checklist_path']);
                       ?>
                       <tr>
@@ -496,11 +502,19 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                           <div class="actions-cell">
                             <?php if ($hasApplicationPdf): ?>
                               <a
-                                class="page-button secondary-button"
-                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=application"
+                                class="page-button secondary-button page-button--icon"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=application&mode=inline"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                              >Apri</a>
+                                title="Apri risposta"
+                                aria-label="Apri risposta"
+                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
+                              <a
+                                class="page-button secondary-button page-button--icon"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=application"
+                                title="Scarica risposta"
+                                aria-label="Scarica risposta"
+                              ><i class="fas fa-download" aria-hidden="true"></i></a>
                             <?php else: ?>
                               <span>Non disponibile</span>
                             <?php endif; ?>
@@ -510,11 +524,41 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                           <div class="actions-cell">
                             <?php if ($hasBudgetPdf): ?>
                               <a
-                                class="page-button secondary-button"
-                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget"
+                                class="page-button secondary-button page-button--icon"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget&mode=inline"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                              >Apri</a>
+                                title="Apri budget"
+                                aria-label="Apri budget"
+                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
+                              <a
+                                class="page-button secondary-button page-button--icon"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget"
+                                title="Scarica budget"
+                                aria-label="Scarica budget"
+                              ><i class="fas fa-download" aria-hidden="true"></i></a>
+                            <?php else: ?>
+                              <span>Non disponibile</span>
+                            <?php endif; ?>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="actions-cell">
+                            <?php if ($hasCronoprogrammaPdf): ?>
+                              <a
+                                class="page-button secondary-button page-button--icon"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=cronoprogramma&mode=inline"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Apri cronoprogramma"
+                                aria-label="Apri cronoprogramma"
+                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
+                              <a
+                                class="page-button secondary-button page-button--icon"
+                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=cronoprogramma"
+                                title="Scarica cronoprogramma"
+                                aria-label="Scarica cronoprogramma"
+                              ><i class="fas fa-download" aria-hidden="true"></i></a>
                             <?php else: ?>
                               <span>Non disponibile</span>
                             <?php endif; ?>
@@ -524,11 +568,13 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                           <div class="actions-cell">
                             <?php if ($hasChecklist): ?>
                               <a
-                                class="page-button secondary-button"
+                                class="page-button secondary-button page-button--icon"
                                 href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                              >Apri</a>
+                                title="Apri checklist"
+                                aria-label="Apri checklist"
+                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
                             <?php else: ?>
                               <span>Non disponibile</span>
                             <?php endif; ?>
@@ -561,7 +607,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                     <?php endforeach; ?>
                   <?php else: ?>
                     <tr>
-                      <td colspan="7">Non ci sono valutazioni da mostrare.</td>
+                      <td colspan="8">Non ci sono valutazioni da mostrare.</td>
                     </tr>
                   <?php endif; ?>
                 </tbody>

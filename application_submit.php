@@ -113,6 +113,10 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             <label class="form-label required" for="budget_pdf">PDF del modulo budget</label>
             <input type="file" id="budget_pdf" name="budget_pdf" class="form-input" accept="application/pdf" required>
           </div>
+          <div class="form-group">
+            <label class="form-label required" for="cronoprogramma_pdf">PDF del cronoprogramma</label>
+            <input type="file" id="cronoprogramma_pdf" name="cronoprogramma_pdf" class="form-input" accept="application/pdf" required>
+          </div>
           <br>
           <div class="button-container">
             <a href="applications.php" class="page-button" style="background-color: #007bff;">Indietro</a>

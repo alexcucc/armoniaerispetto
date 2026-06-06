@@ -17,12 +17,20 @@ if (!$id) {
 }
 
 $downloadType = strtolower((string) ($_GET['type'] ?? 'application'));
-if (!in_array($downloadType, ['application', 'budget'], true)) {
+if (!in_array($downloadType, ['application', 'budget', 'cronoprogramma'], true)) {
     http_response_code(404);
     exit();
 }
 
-$column = $downloadType === 'budget' ? 'budget_pdf_path' : 'application_pdf_path';
+$mode = strtolower((string) filter_input(INPUT_GET, 'mode', FILTER_UNSAFE_RAW));
+$contentDispositionType = $mode === 'inline' ? 'inline' : 'attachment';
+
+$columnMap = [
+    'application' => 'application_pdf_path',
+    'budget' => 'budget_pdf_path',
+    'cronoprogramma' => 'cronoprogramma_pdf_path',
+];
+$column = $columnMap[$downloadType];
 $stmt = $pdo->prepare("SELECT $column AS file_path FROM application WHERE id = :id");
 $stmt->execute([':id' => $id]);
 $application = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -42,7 +50,7 @@ if (!$realPath || !$baseDir || strpos($realPath, $baseDir) !== 0 || !is_file($re
 
 $filename = basename($realPath);
 header('Content-Type: application/pdf');
-header('Content-Disposition: attachment; filename="' . $filename . '"');
+header('Content-Disposition: ' . $contentDispositionType . '; filename="' . $filename . '"');
 header('Content-Length: ' . filesize($realPath));
 
 readfile($realPath);

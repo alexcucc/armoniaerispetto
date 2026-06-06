@@ -140,7 +140,7 @@ if (!empty($whereClauses)) {
     $whereClause = 'WHERE ' . implode(' AND ', $whereClauses);
 }
 
-$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.created_at AS application_created_at, a.application_pdf_path, a.budget_pdf_path, a.rejection_reason FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
+$stmt = $pdo->prepare("SELECT a.id, c.title AS call_title, o.name AS organization_name, a.project_name, CONCAT(u.first_name, ' ', u.last_name) AS supervisor_name, a.status, a.created_at AS application_created_at, a.application_pdf_path, a.budget_pdf_path, a.cronoprogramma_pdf_path, a.rejection_reason FROM application a LEFT JOIN call_for_proposal c ON a.call_for_proposal_id = c.id LEFT JOIN organization o ON a.organization_id = o.id LEFT JOIN supervisor s ON a.supervisor_id = s.id LEFT JOIN user u ON s.user_id = u.id $whereClause ORDER BY $sortField $sortOrder");
 $stmt->execute($params);
 $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -382,17 +382,28 @@ $resetUrl = 'applications.php?' . http_build_query([
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <div class="actions-cell">
-                                            <?php if (!empty($app['application_pdf_path']) || !empty($app['budget_pdf_path'])): ?>
+                                        <div class="actions-cell document-actions">
+                                            <?php if (!empty($app['application_pdf_path']) || !empty($app['budget_pdf_path']) || !empty($app['cronoprogramma_pdf_path'])): ?>
                                                 <?php if (!empty($app['application_pdf_path'])): ?>
-                                                <button class="download-btn" onclick="window.location.href='application_download.php?id=<?php echo $app['id']; ?>'">
-                                                    <i class="fas fa-file-download"></i> Risposta
-                                                </button>
+                                                <div class="document-action-group">
+                                                    <span class="document-action-label">Risposta</span>
+                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=application" title="Scarica risposta" aria-label="Scarica risposta"><i class="fas fa-download" aria-hidden="true"></i></a>
+                                                </div>
                                                 <?php endif; ?>
                                                 <?php if (!empty($app['budget_pdf_path'])): ?>
-                                                <button class="download-btn" onclick="window.location.href='application_download.php?id=<?php echo $app['id']; ?>&type=budget'">
-                                                    <i class="fas fa-file-download"></i> Budget
-                                                </button>
+                                                <div class="document-action-group">
+                                                    <span class="document-action-label">Budget</span>
+                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=budget&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=budget" title="Scarica budget" aria-label="Scarica budget"><i class="fas fa-download" aria-hidden="true"></i></a>
+                                                </div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($app['cronoprogramma_pdf_path'])): ?>
+                                                <div class="document-action-group">
+                                                    <span class="document-action-label">Cronoprogr.</span>
+                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=cronoprogramma" title="Scarica cronoprogramma" aria-label="Scarica cronoprogramma"><i class="fas fa-download" aria-hidden="true"></i></a>
+                                                </div>
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="text-muted">Non disponibile</span>

@@ -20,7 +20,7 @@
   
   // Query to fetch the organization name of the proponent
   $stmt = $pdo->prepare(
-      "SELECT o.name AS organization_name, a.status, c.status AS call_status, "
+      "SELECT o.name AS organization_name, a.status, c.status AS call_status, a.application_pdf_path, a.budget_pdf_path, a.cronoprogramma_pdf_path, a.checklist_path, "
       . "CASE WHEN cfe.evaluator_user_id IS NULL THEN 0 ELSE 1 END AS evaluator_assigned "
       . "FROM application a "
       . "LEFT JOIN organization o ON a.organization_id = o.id "
@@ -61,6 +61,11 @@
   if ($entity_name === '') {
       $entity_name = 'Soggetto proponente';
   }
+
+  $applicationPdfPath = $applicationInfo['application_pdf_path'] ?? null;
+  $budgetPdfPath = $applicationInfo['budget_pdf_path'] ?? null;
+  $cronoprogrammaPdfPath = $applicationInfo['cronoprogramma_pdf_path'] ?? null;
+  $checklistPath = $applicationInfo['checklist_path'] ?? null;
 
   $sectionDefinitions = [
       'proposing_entity' => [
@@ -786,6 +791,44 @@
                 <p class="evaluation-subject-name">Ente: <strong><?php echo htmlspecialchars($entity_name); ?></strong></p>
               </div>
               <p class="form-note">Tutte le valutazioni utilizzano una scala da 0 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
+              <div class="form-group">
+                <label class="form-label">Documenti della risposta</label>
+                <div class="actions-cell document-actions">
+                  <?php if (!empty($applicationPdfPath)): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Risposta</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=application" title="Scarica risposta" aria-label="Scarica risposta"><i class="fas fa-download" aria-hidden="true"></i></a>
+                    </div>
+                  <?php else: ?>
+                    <span class="text-muted">Risposta non disponibile</span>
+                  <?php endif; ?>
+                  <?php if (!empty($budgetPdfPath)): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Budget</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=budget&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=budget" title="Scarica budget" aria-label="Scarica budget"><i class="fas fa-download" aria-hidden="true"></i></a>
+                    </div>
+                  <?php else: ?>
+                    <span class="text-muted">Budget non disponibile</span>
+                  <?php endif; ?>
+                  <?php if (!empty($cronoprogrammaPdfPath)): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Cronoprogr.</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=cronoprogramma" title="Scarica cronoprogramma" aria-label="Scarica cronoprogramma"><i class="fas fa-download" aria-hidden="true"></i></a>
+                    </div>
+                  <?php else: ?>
+                    <span class="text-muted">Cronoprogramma non disponibile</span>
+                  <?php endif; ?>
+                  <?php if (!empty($checklistPath)): ?>
+                    <div class="document-action-group">
+                      <span class="document-action-label">Checklist</span>
+                      <a class="page-button secondary-button page-button--icon" href="application_checklist_download.php?id=<?php echo $application_id; ?>" target="_blank" rel="noopener noreferrer" title="Apri checklist" aria-label="Apri checklist"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                    </div>
+                  <?php endif; ?>
+                </div>
+              </div>
             </div>
             <div class="evaluation-status-panel evaluation-status-panel--<?php echo htmlspecialchars($displayStatusClass); ?>">
               <span class="evaluation-status-panel__label">Stato valutazione</span>
