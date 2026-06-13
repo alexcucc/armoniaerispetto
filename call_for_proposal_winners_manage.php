@@ -226,23 +226,12 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                             <i class="fas fa-plus" aria-hidden="true"></i>
                         </button>
                     <?php endif; ?>
-                    <button type="button" class="page-button secondary-button page-button--icon" data-save-draft title="Salva bozza browser" aria-label="Salva bozza browser">
-                        <i class="fas fa-save" aria-hidden="true"></i>
-                    </button>
-                    <button type="button" class="page-button secondary-button page-button--icon" data-restore-draft title="Ripristina bozza browser" aria-label="Ripristina bozza browser">
-                        <i class="fas fa-rotate-left" aria-hidden="true"></i>
-                    </button>
-                    <button type="button" class="page-button secondary-button page-button--icon" data-clear-draft title="Cancella bozza browser" aria-label="Cancella bozza browser">
-                        <i class="fas fa-trash" aria-hidden="true"></i>
-                    </button>
                     <?php if ($dbWinners !== []): ?>
                         <a href="call_for_proposal_winners.php?id=<?php echo urlencode((string) $callId); ?>" class="page-button secondary-button page-button--icon" target="_blank" rel="noopener noreferrer" title="Anteprima pubblica" aria-label="Anteprima pubblica">
                             <i class="fas fa-eye" aria-hidden="true"></i>
                         </a>
                     <?php endif; ?>
                 </div>
-                <p class="winner-draft-note">La bozza locale salva campi, ordine e struttura della pagina, ma non i file selezionati nei campi immagine.</p>
-                <div class="winner-draft-status" data-draft-status hidden></div>
 
                 <?php if ($message !== null && isset($message['text'])): ?>
                     <div class="message <?php echo ($message['type'] ?? 'success') === 'error' ? 'error' : 'success'; ?>" style="display:block;">
@@ -553,14 +542,9 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
         const stack = document.querySelector('[data-winner-stack]');
         const addWinnerButton = document.querySelector('[data-add-winner]');
         const template = document.getElementById('winner-card-template');
-        const saveDraftButton = document.querySelector('[data-save-draft]');
-        const restoreDraftButton = document.querySelector('[data-restore-draft]');
-        const clearDraftButton = document.querySelector('[data-clear-draft]');
-        const draftStatus = document.querySelector('[data-draft-status]');
         const publicationStatusInput = document.querySelector('[data-publication-status-input]');
         const publicationBadge = document.querySelector('[data-publication-badge]');
         const publicationButtons = document.querySelectorAll('[data-submit-publication-status]');
-        const draftKey = 'call_for_proposal_winners_draft_<?php echo htmlspecialchars((string) $callId, ENT_QUOTES); ?>';
 
         if (!form || !stack || !template || !addWinnerButton) {
             return;
@@ -571,27 +555,6 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
             nextIndex = 0;
         }
         let initialSnapshot = '';
-
-        const showDraftStatus = (message, isError = false) => {
-            if (!draftStatus) {
-                return;
-            }
-
-            draftStatus.hidden = false;
-            draftStatus.textContent = message;
-            draftStatus.classList.toggle('is-error', isError);
-            draftStatus.classList.toggle('is-success', !isError);
-        };
-
-        const hideDraftStatus = () => {
-            if (!draftStatus) {
-                return;
-            }
-
-            draftStatus.hidden = true;
-            draftStatus.textContent = '';
-            draftStatus.classList.remove('is-error', 'is-success');
-        };
 
         const updatePublicationBadge = () => {
             if (!publicationStatusInput || !publicationBadge) {
@@ -631,87 +594,6 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
         };
 
         const getFormSnapshot = () => JSON.stringify(getControlsSnapshot());
-
-        const getControlsByName = name => Array.from(form.elements).filter(element => {
-            return element instanceof HTMLElement && 'name' in element && element.name === name;
-        });
-
-        const updateDraftButtons = () => {
-            const hasDraft = localStorage.getItem(draftKey) !== null;
-            if (restoreDraftButton) {
-                restoreDraftButton.disabled = !hasDraft;
-            }
-            if (clearDraftButton) {
-                clearDraftButton.disabled = !hasDraft;
-            }
-        };
-
-        const saveDraft = () => {
-            const payload = {
-                savedAt: new Date().toISOString(),
-                stackHtml: stack.innerHTML,
-                nextWinnerIndex: stack.getAttribute('data-next-new-index') || String(nextIndex),
-                publicationStatus: publicationStatusInput ? publicationStatusInput.value : '',
-                controls: getControlsSnapshot(),
-            };
-            localStorage.setItem(draftKey, JSON.stringify(payload));
-            updateDraftButtons();
-            showDraftStatus('Bozza salvata localmente.');
-        };
-
-        const restoreDraft = () => {
-            const rawDraft = localStorage.getItem(draftKey);
-            if (!rawDraft) {
-                showDraftStatus('Nessuna bozza disponibile da ripristinare.', true);
-                return false;
-            }
-
-            try {
-                const draft = JSON.parse(rawDraft);
-                if (!draft || typeof draft.stackHtml !== 'string' || !Array.isArray(draft.controls)) {
-                    throw new Error('invalid draft');
-                }
-
-                stack.innerHTML = draft.stackHtml;
-                stack.setAttribute('data-next-new-index', String(draft.nextWinnerIndex ?? nextIndex));
-                nextIndex = Number.parseInt(stack.getAttribute('data-next-new-index') || '0', 10);
-                if (!Number.isFinite(nextIndex) || nextIndex < 0) {
-                    nextIndex = 0;
-                }
-                if (publicationStatusInput && (draft.publicationStatus === 'DRAFT' || draft.publicationStatus === 'PUBLISHED')) {
-                    publicationStatusInput.value = draft.publicationStatus;
-                    updatePublicationBadge();
-                }
-
-                draft.controls.forEach(controlState => {
-                    if (!controlState || typeof controlState.name !== 'string') {
-                        return;
-                    }
-
-                    const controls = getControlsByName(controlState.name);
-                    controls.forEach(control => {
-                        if (control instanceof HTMLInputElement && control.type === 'checkbox') {
-                            control.checked = Boolean(controlState.checked);
-                            return;
-                        }
-
-                        if ('value' in control && typeof controlState.value === 'string') {
-                            control.value = controlState.value;
-                        }
-                    });
-                });
-
-                stack.querySelectorAll('[data-winner-card]').forEach(attachCardEvents);
-                refreshCardHeadings();
-                initialSnapshot = getFormSnapshot();
-                updateDraftButtons();
-                showDraftStatus('Bozza ripristinata. Ricorda di ricaricare i file immagine se necessario.');
-                return true;
-            } catch (error) {
-                showDraftStatus('La bozza salvata non è valida e non può essere ripristinata.', true);
-                return false;
-            }
-        };
 
         const getActiveWinnerCards = () => Array.from(stack.querySelectorAll('[data-winner-card]')).filter(card => {
             const deleteToggle = card.querySelector('[data-role="delete-toggle"]');
@@ -940,7 +822,6 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                 imageStack.appendChild(row);
                 attachImageRowEvents(row);
                 syncImageOrders();
-                hideDraftStatus();
             });
         };
 
@@ -950,7 +831,6 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                 removeButton.addEventListener('click', () => {
                     card.remove();
                     refreshCardHeadings();
-                    hideDraftStatus();
                 });
             }
 
@@ -961,7 +841,6 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                     if (previousCard) {
                         stack.insertBefore(card, previousCard);
                         refreshCardHeadings();
-                        hideDraftStatus();
                     }
                 });
             }
@@ -973,7 +852,6 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                     if (nextCard) {
                         stack.insertBefore(nextCard, card);
                         refreshCardHeadings();
-                        hideDraftStatus();
                     }
                 });
             }
@@ -1005,7 +883,6 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
         });
         refreshCardHeadings();
         updatePublicationBadge();
-        updateDraftButtons();
         initialSnapshot = getFormSnapshot();
 
         addWinnerButton.addEventListener('click', () => {
@@ -1023,24 +900,7 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
             attachCardEvents(card);
             refreshCardHeadings();
             card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            hideDraftStatus();
         });
-
-        if (saveDraftButton) {
-            saveDraftButton.addEventListener('click', saveDraft);
-        }
-
-        if (restoreDraftButton) {
-            restoreDraftButton.addEventListener('click', restoreDraft);
-        }
-
-        if (clearDraftButton) {
-            clearDraftButton.addEventListener('click', () => {
-                localStorage.removeItem(draftKey);
-                updateDraftButtons();
-                showDraftStatus('Bozza locale cancellata.');
-            });
-        }
 
         publicationButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -1054,8 +914,7 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
         });
 
         form.addEventListener('submit', () => {
-            localStorage.removeItem(draftKey);
-            updateDraftButtons();
+            initialSnapshot = getFormSnapshot();
         });
 
         window.addEventListener('beforeunload', event => {

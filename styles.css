@@ -541,31 +541,6 @@ img {
   border: 1px solid #86efac;
 }
 
-.winner-draft-note {
-  margin: 0.5rem 0 1rem;
-  color: #5b6673;
-  font-size: 0.95rem;
-}
-
-.winner-draft-status {
-  margin: 0 0 1.25rem;
-  padding: 0.85rem 1rem;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.winner-draft-status.is-success {
-  background: #ecfdf3;
-  color: #166534;
-  border: 1px solid #86efac;
-}
-
-.winner-draft-status.is-error {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
-}
-
 .winner-new-images__header {
   display: flex;
   align-items: center;
