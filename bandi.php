@@ -110,7 +110,6 @@ try {
                         <div class="call-item__content">
                           <div class="call-item__header">
                             <h2><?php echo htmlspecialchars($call['title']); ?></h2>
-                            <span class="call-item__status call-item__status--past">Passato</span>
                           </div>
                           <p class="call-item__meta">
                             Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
@@ -143,7 +142,6 @@ try {
                         <div class="call-item__content">
                           <div class="call-item__header">
                             <h2><?php echo htmlspecialchars($call['title']); ?></h2>
-                            <span class="call-item__status call-item__status--active">Attivo</span>
                           </div>
                           <p class="call-item__meta">
                             Dal <?php echo htmlspecialchars(date('d/m/Y', strtotime($call['start_date']))); ?>
