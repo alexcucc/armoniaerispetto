@@ -453,6 +453,31 @@ img {
   gap: 0.75rem;
 }
 
+.winner-config-card__actions .page-button--icon,
+.winner-new-image-row__actions .page-button--icon,
+.winner-new-images__add.page-button--icon,
+.winner-config-footer .page-button--icon,
+.button-container .page-button--icon,
+.winner-icon-delete-btn {
+  width: 2.35rem;
+  height: 2.35rem;
+  min-width: 2.35rem;
+  min-height: 2.35rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.winner-icon-delete-btn {
+  border-radius: 999px;
+}
+
+.winner-publish-button {
+  font-size: 0.95rem;
+}
+
 .winner-config-card__header h2 {
   margin: 0;
 }

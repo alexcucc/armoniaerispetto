@@ -218,15 +218,27 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
         <div class="content-container">
             <div class="content">
                 <div class="button-container">
-                    <a href="call_for_proposals.php" class="page-button back-button">Indietro</a>
+                    <a href="call_for_proposals.php" class="page-button back-button page-button--icon" title="Indietro" aria-label="Indietro">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    </a>
                     <?php if ($eligibleApplications !== []): ?>
-                        <button type="button" class="page-button" data-add-winner>Aggiungi vincitore</button>
+                        <button type="button" class="page-button page-button--icon" data-add-winner title="Aggiungi vincitore" aria-label="Aggiungi vincitore">
+                            <i class="fas fa-plus" aria-hidden="true"></i>
+                        </button>
                     <?php endif; ?>
-                    <button type="button" class="page-button secondary-button" data-save-draft>Salva bozza browser</button>
-                    <button type="button" class="page-button secondary-button" data-restore-draft>Ripristina bozza browser</button>
-                    <button type="button" class="page-button secondary-button" data-clear-draft>Cancella bozza browser</button>
+                    <button type="button" class="page-button secondary-button page-button--icon" data-save-draft title="Salva bozza browser" aria-label="Salva bozza browser">
+                        <i class="fas fa-save" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="page-button secondary-button page-button--icon" data-restore-draft title="Ripristina bozza browser" aria-label="Ripristina bozza browser">
+                        <i class="fas fa-rotate-left" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="page-button secondary-button page-button--icon" data-clear-draft title="Cancella bozza browser" aria-label="Cancella bozza browser">
+                        <i class="fas fa-trash" aria-hidden="true"></i>
+                    </button>
                     <?php if ($dbWinners !== []): ?>
-                        <a href="call_for_proposal_winners.php?id=<?php echo urlencode((string) $callId); ?>" class="page-button secondary-button" target="_blank" rel="noopener noreferrer">Anteprima pubblica</a>
+                        <a href="call_for_proposal_winners.php?id=<?php echo urlencode((string) $callId); ?>" class="page-button secondary-button page-button--icon" target="_blank" rel="noopener noreferrer" title="Anteprima pubblica" aria-label="Anteprima pubblica">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                        </a>
                     <?php endif; ?>
                 </div>
                 <p class="winner-draft-note">La bozza locale salva campi, ordine e struttura della pagina, ma non i file selezionati nei campi immagine.</p>
@@ -291,15 +303,19 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                                             <?php endif; ?>
                                         </div>
                                         <div class="winner-config-card__actions">
-                                            <button type="button" class="page-button secondary-button" data-move-winner-up>Su</button>
-                                            <button type="button" class="page-button secondary-button" data-move-winner-down>Giu</button>
+                                            <button type="button" class="page-button secondary-button page-button--icon" data-move-winner-up title="Sposta in alto" aria-label="Sposta vincitore in alto">
+                                                <i class="fas fa-arrow-up" aria-hidden="true"></i>
+                                            </button>
+                                            <button type="button" class="page-button secondary-button page-button--icon" data-move-winner-down title="Sposta in basso" aria-label="Sposta vincitore in basso">
+                                                <i class="fas fa-arrow-down" aria-hidden="true"></i>
+                                            </button>
                                             <?php if ($winnerId !== null): ?>
                                                 <label class="winner-config-card__delete-toggle">
                                                     <input type="checkbox" name="winners[<?php echo htmlspecialchars($formKey); ?>][delete]" value="1" <?php echo !empty($winner['delete']) ? 'checked' : ''; ?> data-role="delete-toggle">
                                                     Elimina vincitore
                                                 </label>
                                             <?php else: ?>
-                                                <button type="button" class="delete-btn" data-remove-new-winner><i class="fas fa-trash"></i> Rimuovi</button>
+                                                <button type="button" class="delete-btn winner-icon-delete-btn" data-remove-new-winner title="Rimuovi vincitore" aria-label="Rimuovi vincitore"><i class="fas fa-trash" aria-hidden="true"></i></button>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -371,7 +387,9 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                                     <div class="form-group">
                                         <div class="winner-new-images__header">
                                             <label class="form-label">Nuove immagini (opzionali)</label>
-                                            <button type="button" class="page-button secondary-button winner-new-images__add" data-add-image-row>Aggiungi immagine</button>
+                                            <button type="button" class="page-button secondary-button page-button--icon winner-new-images__add" data-add-image-row title="Aggiungi immagine" aria-label="Aggiungi immagine">
+                                                <i class="fas fa-image" aria-hidden="true"></i>
+                                            </button>
                                         </div>
                                         <div class="winner-new-images" data-image-stack data-next-image-index="<?php echo htmlspecialchars((string) count($winner['pending_new_images'])); ?>">
                                             <?php foreach ($winner['pending_new_images'] as $imageIndex => $pendingImage): ?>
@@ -393,9 +411,9 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                                                         <input type="text" id="new_image_caption_<?php echo htmlspecialchars($formKey); ?>_<?php echo $imageIndex; ?>" name="winners[<?php echo htmlspecialchars($formKey); ?>][new_images_meta][<?php echo $imageIndex; ?>][caption]" class="form-input" value="<?php echo htmlspecialchars((string) ($pendingImage['caption'] ?? '')); ?>">
                                                     </div>
                                                     <div class="winner-new-image-row__actions">
-                                                        <button type="button" class="page-button secondary-button" data-move-image-up>Su</button>
-                                                        <button type="button" class="page-button secondary-button" data-move-image-down>Giu</button>
-                                                        <button type="button" class="delete-btn" data-remove-image-row><i class="fas fa-trash"></i> Rimuovi</button>
+                                                        <button type="button" class="page-button secondary-button page-button--icon" data-move-image-up title="Sposta immagine in alto" aria-label="Sposta immagine in alto"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+                                                        <button type="button" class="page-button secondary-button page-button--icon" data-move-image-down title="Sposta immagine in basso" aria-label="Sposta immagine in basso"><i class="fas fa-arrow-down" aria-hidden="true"></i></button>
+                                                        <button type="button" class="delete-btn winner-icon-delete-btn" data-remove-image-row title="Rimuovi immagine" aria-label="Rimuovi immagine"><i class="fas fa-trash" aria-hidden="true"></i></button>
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
@@ -419,9 +437,9 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                                                     <input type="text" id="new_image_caption___FORM_KEY____IMAGE_INDEX__" name="winners[__FORM_KEY__][new_images_meta][__IMAGE_INDEX__][caption]" class="form-input" value="">
                                                 </div>
                                                 <div class="winner-new-image-row__actions">
-                                                    <button type="button" class="page-button secondary-button" data-move-image-up>Su</button>
-                                                    <button type="button" class="page-button secondary-button" data-move-image-down>Giu</button>
-                                                    <button type="button" class="delete-btn" data-remove-image-row><i class="fas fa-trash"></i> Rimuovi</button>
+                                                    <button type="button" class="page-button secondary-button page-button--icon" data-move-image-up title="Sposta immagine in alto" aria-label="Sposta immagine in alto"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+                                                    <button type="button" class="page-button secondary-button page-button--icon" data-move-image-down title="Sposta immagine in basso" aria-label="Sposta immagine in basso"><i class="fas fa-arrow-down" aria-hidden="true"></i></button>
+                                                    <button type="button" class="delete-btn winner-icon-delete-btn" data-remove-image-row title="Rimuovi immagine" aria-label="Rimuovi immagine"><i class="fas fa-trash" aria-hidden="true"></i></button>
                                                 </div>
                                             </div>
                                         </template>
@@ -432,10 +450,16 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
 
                         <div class="button-container winner-config-footer">
                             <?php if ($publicationStatusColumnExists): ?>
-                                <button type="submit" class="page-button secondary-button" data-submit-publication-status="DRAFT">Salva bozza</button>
-                                <button type="submit" class="page-button" data-submit-publication-status="PUBLISHED">Pubblica vincitori</button>
+                                <button type="submit" class="page-button secondary-button page-button--icon" data-submit-publication-status="DRAFT" title="Salva bozza" aria-label="Salva bozza">
+                                    <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+                                </button>
+                                <button type="submit" class="page-button page-button--icon winner-publish-button" data-submit-publication-status="PUBLISHED" title="Pubblica vincitori" aria-label="Pubblica vincitori">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                </button>
                             <?php else: ?>
-                                <button type="submit" class="page-button">Salva tutti i vincitori</button>
+                                <button type="submit" class="page-button page-button--icon" title="Salva tutti i vincitori" aria-label="Salva tutti i vincitori">
+                                    <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+                                </button>
                             <?php endif; ?>
                         </div>
                     </form>
@@ -450,9 +474,9 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                                     <p class="winner-config-card__summary">Configura un nuovo vincitore e salvalo insieme agli altri.</p>
                                 </div>
                                 <div class="winner-config-card__actions">
-                                    <button type="button" class="page-button secondary-button" data-move-winner-up>Su</button>
-                                    <button type="button" class="page-button secondary-button" data-move-winner-down>Giu</button>
-                                    <button type="button" class="delete-btn" data-remove-new-winner><i class="fas fa-trash"></i> Rimuovi</button>
+                                    <button type="button" class="page-button secondary-button page-button--icon" data-move-winner-up title="Sposta in alto" aria-label="Sposta vincitore in alto"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+                                    <button type="button" class="page-button secondary-button page-button--icon" data-move-winner-down title="Sposta in basso" aria-label="Sposta vincitore in basso"><i class="fas fa-arrow-down" aria-hidden="true"></i></button>
+                                    <button type="button" class="delete-btn winner-icon-delete-btn" data-remove-new-winner title="Rimuovi vincitore" aria-label="Rimuovi vincitore"><i class="fas fa-trash" aria-hidden="true"></i></button>
                                 </div>
                             </div>
 
@@ -486,7 +510,7 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                             <div class="form-group">
                                 <div class="winner-new-images__header">
                                     <label class="form-label">Nuove immagini (opzionali)</label>
-                                    <button type="button" class="page-button secondary-button winner-new-images__add" data-add-image-row>Aggiungi immagine</button>
+                                    <button type="button" class="page-button secondary-button page-button--icon winner-new-images__add" data-add-image-row title="Aggiungi immagine" aria-label="Aggiungi immagine"><i class="fas fa-image" aria-hidden="true"></i></button>
                                 </div>
                                 <div class="winner-new-images" data-image-stack data-next-image-index="0"></div>
                                 <template data-image-row-template>
@@ -508,9 +532,9 @@ $winnerForms = buildWinnerFormState($eligibleApplications, $dbWinners, $imagesBy
                                             <input type="text" id="new_image_caption___FORM_KEY____IMAGE_INDEX__" name="winners[__FORM_KEY__][new_images_meta][__IMAGE_INDEX__][caption]" class="form-input" value="">
                                         </div>
                                         <div class="winner-new-image-row__actions">
-                                            <button type="button" class="page-button secondary-button" data-move-image-up>Su</button>
-                                            <button type="button" class="page-button secondary-button" data-move-image-down>Giu</button>
-                                            <button type="button" class="delete-btn" data-remove-image-row><i class="fas fa-trash"></i> Rimuovi</button>
+                                            <button type="button" class="page-button secondary-button page-button--icon" data-move-image-up title="Sposta immagine in alto" aria-label="Sposta immagine in alto"><i class="fas fa-arrow-up" aria-hidden="true"></i></button>
+                                            <button type="button" class="page-button secondary-button page-button--icon" data-move-image-down title="Sposta immagine in basso" aria-label="Sposta immagine in basso"><i class="fas fa-arrow-down" aria-hidden="true"></i></button>
+                                            <button type="button" class="delete-btn winner-icon-delete-btn" data-remove-image-row title="Rimuovi immagine" aria-label="Rimuovi immagine"><i class="fas fa-trash" aria-hidden="true"></i></button>
                                         </div>
                                     </div>
                                 </template>
