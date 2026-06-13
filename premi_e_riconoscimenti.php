@@ -19,6 +19,9 @@ $isActiveTabActive = $selectedTab === 'attivi';
         </div>
         <div class="content-container">
           <div class="content">
+            <div class="button-container">
+              <a href="bandi_e_finanziamenti.php" class="page-button back-button">Indietro</a>
+            </div>
             <div class="tab-container" role="region" aria-label="Elenco premi e riconoscimenti" data-sync-query-param="tab">
               <div class="tab-buttons" role="tablist" aria-label="Filtri premi e riconoscimenti">
                 <button class="tab-button tab-button-past<?php echo $isPastTabActive ? ' active' : ''; ?>" type="button" role="tab" aria-controls="premi-passati" aria-selected="<?php echo $isPastTabActive ? 'true' : 'false'; ?>" data-tab-query-value="passati">Passati</button>
