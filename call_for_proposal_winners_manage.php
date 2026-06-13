@@ -3,6 +3,7 @@ session_start();
 
 require_once 'db/common-db.php';
 require_once 'RolePermissionManager.php';
+require_once 'call_for_proposal_winner_utils.php';
 
 function buildWinnerFormState(
     array $eligibleApplications,
