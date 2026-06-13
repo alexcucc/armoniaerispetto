@@ -1,5 +1,6 @@
 <?php
 require_once 'db/common-db.php';
+require_once 'call_for_proposal_winner_utils.php';
 
 $today = (new DateTimeImmutable('today'))->format('Y-m-d');
 $activeCalls = [];
@@ -11,7 +12,25 @@ $isPastTabActive = $selectedTab === 'passati';
 $isActiveTabActive = $selectedTab === 'attivi';
 
 try {
-    $stmt = $pdo->query('SELECT id, title, description, start_date, end_date FROM call_for_proposal');
+    if (callForProposalWinnersTableExists($pdo)) {
+        $winnerCountSelect = callForProposalWinnerPublicationStatusColumnExists($pdo)
+            ? 'CASE WHEN c.winner_publication_status = "PUBLISHED" THEN '
+                . '(SELECT COUNT(*) FROM call_for_proposal_winner w WHERE w.call_for_proposal_id = c.id) '
+                . 'ELSE 0 END AS winner_count '
+            : '';
+        $stmt = $pdo->query(
+            'SELECT c.id, c.title, c.description, c.start_date, c.end_date, c.status, '
+            . ($winnerCountSelect !== ''
+                ? $winnerCountSelect
+                : '(SELECT COUNT(*) FROM call_for_proposal_winner w WHERE w.call_for_proposal_id = c.id) AS winner_count ')
+            . 'FROM call_for_proposal c'
+        );
+    } else {
+        $stmt = $pdo->query(
+            'SELECT c.id, c.title, c.description, c.start_date, c.end_date, c.status, 0 AS winner_count '
+            . 'FROM call_for_proposal c'
+        );
+    }
     $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($calls as $call) {
@@ -103,7 +122,9 @@ try {
                         </div>
                         <div class="button-container button-container--right call-item__actions call-item__actions--stack">
                           <a class="page-button" href="testo_del_bando.php?id=<?php echo urlencode((string) $call['id']); ?>">Apri bando</a>
-                          <a class="page-button" href="call_for_proposal_winners.php">Visualizza vincitori</a>
+                          <?php if (($call['status'] ?? '') === 'CLOSED' && (int) ($call['winner_count'] ?? 0) > 0): ?>
+                            <a class="page-button" href="call_for_proposal_winners.php?id=<?php echo urlencode((string) $call['id']); ?>">Visualizza vincitori</a>
+                          <?php endif; ?>
                         </div>
                       </article>
                     <?php endforeach; ?>

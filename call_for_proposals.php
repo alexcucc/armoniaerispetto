@@ -3,6 +3,7 @@ session_start();
 
 require_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
+require_once 'call_for_proposal_winner_utils.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
 if (!isset($_SESSION['user_id'])) {
@@ -32,7 +33,18 @@ $canDelete = $rolePermissionManager->userHasPermission(
     $_SESSION['user_id'],
     RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_DELETE']
 );
+$winnerPublicationStatusSelect = callForProposalWinnerPublicationStatusColumnExists($pdo)
+    ? 'cfp.winner_publication_status,'
+    : '"PUBLISHED" AS winner_publication_status,';
 // Fetch all call for proposals with associated application counts
+$winnerCountSelect = callForProposalWinnersTableExists($pdo)
+    ? "(
+                SELECT COUNT(*)
+                FROM call_for_proposal_winner w
+                WHERE w.call_for_proposal_id = cfp.id
+            ) AS winner_count"
+    : '0 AS winner_count';
+
 $stmt = $pdo->prepare(
     "SELECT cfp.id,
             cfp.title,
@@ -41,6 +53,7 @@ $stmt = $pdo->prepare(
             cfp.end_date,
             cfp.pdf_path,
             cfp.status,
+            $winnerPublicationStatusSelect
             cfp.closed_at,
             cfp.created_at,
             cfp.updated_at,
@@ -54,7 +67,8 @@ $stmt = $pdo->prepare(
                 SELECT COUNT(*)
                 FROM application a
                 WHERE a.call_for_proposal_id = cfp.id
-            ) AS application_count
+            ) AS application_count,
+            $winnerCountSelect
      FROM call_for_proposal cfp"
 );
 $stmt->execute();
@@ -162,6 +176,20 @@ $calls = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <a class="page-button" href="call_for_proposal_download.php?id=<?php echo $cfp['id']; ?>">Scarica PDF</a>
                                             <?php if ($canUpdate): ?>
                                                 <button class="modify-btn" onclick="location.href='call_for_proposal_edit.php?id=<?php echo $cfp['id']; ?>'"><i class="fas fa-edit"></i> Modifica</button>
+                                                <?php if (($cfp['status'] ?? '') === 'CLOSED'): ?>
+                                                    <a class="page-button" href="call_for_proposal_winners_manage.php?id=<?php echo $cfp['id']; ?>">
+                                                        <?php
+                                                            $winnerStatus = (string) ($cfp['winner_publication_status'] ?? 'PUBLISHED');
+                                                            if ((int) ($cfp['winner_count'] ?? 0) === 0) {
+                                                                echo 'Configura vincitori';
+                                                            } elseif ($winnerStatus === 'PUBLISHED') {
+                                                                echo 'Vincitori pubblicati';
+                                                            } else {
+                                                                echo 'Vincitori in bozza';
+                                                            }
+                                                        ?>
+                                                    </a>
+                                                <?php endif; ?>
                                                 <?php if ($cfp['status'] === 'OPEN'): ?>
                                                     <button class="close-btn" data-id="<?php echo $cfp['id']; ?>">
                                                         <i class="fas fa-ban"></i> Chiudi
