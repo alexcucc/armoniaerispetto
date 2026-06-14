@@ -393,7 +393,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                                                         title="Apri risposta"
                                                         aria-label="Apri risposta"
                                                     >
-                                                        <i class="fas fa-eye" aria-hidden="true"></i>
                                                         <span>Risposta</span>
                                                     </a>
                                                 <?php endif; ?>
@@ -406,7 +405,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                                                         title="Apri budget"
                                                         aria-label="Apri budget"
                                                     >
-                                                        <i class="fas fa-eye" aria-hidden="true"></i>
                                                         <span>Budget</span>
                                                     </a>
                                                 <?php endif; ?>
@@ -419,7 +417,6 @@ $resetUrl = 'applications.php?' . http_build_query([
                                                         title="Apri cronoprogramma"
                                                         aria-label="Apri cronoprogramma"
                                                     >
-                                                        <i class="fas fa-eye" aria-hidden="true"></i>
                                                         <span>Cronoprogr.</span>
                                                     </a>
                                                 <?php endif; ?>

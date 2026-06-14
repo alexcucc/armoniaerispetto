@@ -1165,12 +1165,7 @@ ul.nav-links {
 .document-action-button {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
   white-space: nowrap;
-}
-
-.document-action-button i {
-  font-size: 0.78rem;
 }
 
 .document-action-button span {
