@@ -1159,46 +1159,22 @@ ul.nav-links {
 .document-actions {
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 0.3rem;
+  gap: 0.45rem;
 }
 
-.document-action-group {
+.document-action-button {
   display: flex;
   align-items: center;
-  gap: 0.2rem;
-  flex-wrap: wrap;
-  padding: 0.1rem 0.18rem;
-  border: 1px solid #d8dee4;
-  border-radius: 999px;
-  background-color: #f8fafc;
-}
-
-.document-action-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #475569;
+  gap: 0.4rem;
   white-space: nowrap;
 }
 
-.page-button.page-button--icon {
-  width: 1.55rem;
-  height: 1.55rem;
-  padding: 0;
-  min-height: 0;
-  border-radius: 999px;
-  font-size: 0.68rem;
+.document-action-button i {
+  font-size: 0.78rem;
 }
 
-.document-action-label--sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.document-action-button span {
+  line-height: 1;
 }
 
 .actions-cell.actions-cell--single-row {

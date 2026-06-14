@@ -385,25 +385,43 @@ $resetUrl = 'applications.php?' . http_build_query([
                                         <div class="actions-cell document-actions">
                                             <?php if (!empty($app['application_pdf_path']) || !empty($app['budget_pdf_path']) || !empty($app['cronoprogramma_pdf_path'])): ?>
                                                 <?php if (!empty($app['application_pdf_path'])): ?>
-                                                <div class="document-action-group">
-                                                    <span class="document-action-label">Risposta</span>
-                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=application" title="Scarica risposta" aria-label="Scarica risposta"><i class="fas fa-download" aria-hidden="true"></i></a>
-                                                </div>
+                                                    <a
+                                                        class="page-button secondary-button document-action-button"
+                                                        href="application_download.php?id=<?php echo $app['id']; ?>&type=application&mode=inline"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        title="Apri risposta"
+                                                        aria-label="Apri risposta"
+                                                    >
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                        <span>Risposta</span>
+                                                    </a>
                                                 <?php endif; ?>
                                                 <?php if (!empty($app['budget_pdf_path'])): ?>
-                                                <div class="document-action-group">
-                                                    <span class="document-action-label">Budget</span>
-                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=budget&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=budget" title="Scarica budget" aria-label="Scarica budget"><i class="fas fa-download" aria-hidden="true"></i></a>
-                                                </div>
+                                                    <a
+                                                        class="page-button secondary-button document-action-button"
+                                                        href="application_download.php?id=<?php echo $app['id']; ?>&type=budget&mode=inline"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        title="Apri budget"
+                                                        aria-label="Apri budget"
+                                                    >
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                        <span>Budget</span>
+                                                    </a>
                                                 <?php endif; ?>
                                                 <?php if (!empty($app['cronoprogramma_pdf_path'])): ?>
-                                                <div class="document-action-group">
-                                                    <span class="document-action-label">Cronoprogr.</span>
-                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                                                    <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $app['id']; ?>&type=cronoprogramma" title="Scarica cronoprogramma" aria-label="Scarica cronoprogramma"><i class="fas fa-download" aria-hidden="true"></i></a>
-                                                </div>
+                                                    <a
+                                                        class="page-button secondary-button document-action-button"
+                                                        href="application_download.php?id=<?php echo $app['id']; ?>&type=cronoprogramma&mode=inline"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        title="Apri cronoprogramma"
+                                                        aria-label="Apri cronoprogramma"
+                                                    >
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                        <span>Cronoprogr.</span>
+                                                    </a>
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="text-muted">Non disponibile</span>
