@@ -58,6 +58,7 @@ $currentBudgetPdfName = null;
 if (!empty($application['budget_pdf_path'])) {
     $currentBudgetPdfName = basename($application['budget_pdf_path']);
 }
+$isCurrentBudgetPdf = !empty($application['budget_pdf_path']) && strtolower((string) pathinfo($application['budget_pdf_path'], PATHINFO_EXTENSION)) === 'pdf';
 $currentCronoprogrammaPdfName = null;
 if (!empty($application['cronoprogramma_pdf_path'])) {
     $currentCronoprogrammaPdfName = basename($application['cronoprogramma_pdf_path']);
@@ -151,26 +152,28 @@ if (!empty($formData)) {
                 <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
             </div>
             <div class="form-group">
-                <label class="form-label" for="current_budget_pdf">PDF attuale del modulo budget</label>
+                <label class="form-label" for="current_budget_pdf">File attuale del modulo budget</label>
                 <?php if (!empty($application['budget_pdf_path'])): ?>
                 <p id="current_budget_pdf">
-                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=budget" target="_blank" rel="noopener"><?php echo htmlspecialchars($currentBudgetPdfName ?? 'Scarica il PDF attuale'); ?></a>
+                    <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=budget" target="_blank" rel="noopener"><?php echo htmlspecialchars($currentBudgetPdfName ?? 'Scarica il file attuale'); ?></a>
                 </p>
                 <?php else: ?>
-                <p id="current_budget_pdf">Nessun PDF caricato.</p>
+                <p id="current_budget_pdf">Nessun file caricato.</p>
                 <?php endif; ?>
                 <?php if (!empty($application['budget_pdf_path'])): ?>
                 <p>
+                    <?php if ($isCurrentBudgetPdf): ?>
                     <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=budget&mode=inline" target="_blank" rel="noopener">Apri</a>
                     |
+                    <?php endif; ?>
                     <a href="application_download.php?id=<?php echo htmlspecialchars($appId); ?>&type=budget">Scarica</a>
                 </p>
                 <?php endif; ?>
             </div>
             <div class="form-group">
-                <label class="form-label" for="budget_pdf">Sostituisci PDF del modulo budget</label>
-                <input type="file" id="budget_pdf" name="budget_pdf" class="form-input" accept="application/pdf">
-                <small>Carica un nuovo file solo se desideri sostituire il PDF attuale.</small>
+                <label class="form-label" for="budget_pdf">Sostituisci file del modulo budget</label>
+                <input type="file" id="budget_pdf" name="budget_pdf" class="form-input" accept=".pdf,.xlsx,.xls,.ods,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.oasis.opendocument.spreadsheet">
+                <small>Formati ammessi: PDF, Excel (.xlsx, .xls) o OpenDocument Spreadsheet (.ods).</small>
             </div>
             <div class="form-group">
                 <label class="form-label" for="current_cronoprogramma_pdf">PDF attuale del cronoprogramma</label>

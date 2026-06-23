@@ -173,6 +173,11 @@ $resetUrl = 'applications.php?' . http_build_query([
     'order' => strtolower($sortOrder),
 ]);
 
+function isPdfDocumentPath(?string $path): bool
+{
+    return !empty($path) && strtolower((string) pathinfo($path, PATHINFO_EXTENSION)) === 'pdf';
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -399,11 +404,16 @@ $resetUrl = 'applications.php?' . http_build_query([
                                                 <?php if (!empty($app['budget_pdf_path'])): ?>
                                                     <a
                                                         class="page-button secondary-button document-action-button"
-                                                        href="application_download.php?id=<?php echo $app['id']; ?>&type=budget&mode=inline"
+                                                        href="application_download.php?id=<?php echo $app['id']; ?>&type=budget<?php echo isPdfDocumentPath($app['budget_pdf_path']) ? '&mode=inline' : ''; ?>"
+                                                        <?php if (isPdfDocumentPath($app['budget_pdf_path'])): ?>
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         title="Apri budget"
                                                         aria-label="Apri budget"
+                                                        <?php else: ?>
+                                                        title="Scarica budget"
+                                                        aria-label="Scarica budget"
+                                                        <?php endif; ?>
                                                     >
                                                         <span>Budget</span>
                                                     </a>

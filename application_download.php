@@ -49,7 +49,20 @@ if (!$realPath || !$baseDir || strpos($realPath, $baseDir) !== 0 || !is_file($re
 }
 
 $filename = basename($realPath);
-header('Content-Type: application/pdf');
+$extension = strtolower((string) pathinfo($realPath, PATHINFO_EXTENSION));
+$mimeTypes = [
+    'pdf' => 'application/pdf',
+    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'xls' => 'application/vnd.ms-excel',
+    'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+];
+$contentType = $mimeTypes[$extension] ?? 'application/octet-stream';
+
+if ($downloadType === 'budget' && $extension !== 'pdf') {
+    $contentDispositionType = 'attachment';
+}
+
+header('Content-Type: ' . $contentType);
 header('Content-Disposition: ' . $contentDispositionType . '; filename="' . $filename . '"');
 header('Content-Length: ' . filesize($realPath));
 

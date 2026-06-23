@@ -146,6 +146,11 @@ $resetUrl = 'evaluations.php?' . http_build_query([
     'order' => strtolower($sortOrder),
 ]);
 
+function isPdfDocumentPath(?string $path): bool
+{
+    return !empty($path) && strtolower((string) pathinfo($path, PATHINFO_EXTENSION)) === 'pdf';
+}
+
 // ----------------------------
 // Evaluations
 // ----------------------------
@@ -523,6 +528,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                         <td>
                           <div class="actions-cell">
                             <?php if ($hasBudgetPdf): ?>
+                              <?php if (isPdfDocumentPath($row['budget_pdf_path'])): ?>
                               <a
                                 class="page-button secondary-button page-button--icon"
                                 href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget&mode=inline"
@@ -531,6 +537,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                                 title="Apri budget"
                                 aria-label="Apri budget"
                               ><i class="fas fa-eye" aria-hidden="true"></i></a>
+                              <?php endif; ?>
                               <a
                                 class="page-button secondary-button page-button--icon"
                                 href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget"

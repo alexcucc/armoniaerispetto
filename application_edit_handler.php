@@ -89,17 +89,44 @@ function validateUploadedPdf(array $file): array
     ];
 }
 
-function buildUploadDestinationPath(string $destinationDir, string $label, string $originalName, array $reservedPaths = []): string
+function validateUploadedBudgetFile(array $file): array
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Invalid uploaded file');
+    }
+
+    $tmpPath = $file['tmp_name'] ?? '';
+    $originalName = basename((string) ($file['name'] ?? ''));
+    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $allowedExtensions = ['pdf', 'xlsx', 'xls', 'ods'];
+
+    if ($tmpPath === '' || $originalName === '' || !in_array($extension, $allowedExtensions, true)) {
+        throw new RuntimeException('Invalid budget file');
+    }
+
+    return [
+        'tmp_path' => $tmpPath,
+        'original_name' => $originalName,
+        'extension' => $extension,
+    ];
+}
+
+function buildUploadDestinationPath(string $destinationDir, string $label, string $originalName, array $reservedPaths = [], ?string $forcedExtension = null): string
 {
     $fileNameWithoutExtension = preg_replace('/[^A-Za-z0-9._-]+/', '_', (string) pathinfo($originalName, PATHINFO_FILENAME));
     if ($fileNameWithoutExtension === null || $fileNameWithoutExtension === '') {
         $fileNameWithoutExtension = 'documento';
     }
 
-    $candidatePath = $destinationDir . '/' . $label . '_' . $fileNameWithoutExtension . '.pdf';
+    $extension = $forcedExtension ?? strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
+    if ($extension === '') {
+        $extension = 'bin';
+    }
+
+    $candidatePath = $destinationDir . '/' . $label . '_' . $fileNameWithoutExtension . '.' . $extension;
     $counter = 1;
     while (in_array($candidatePath, $reservedPaths, true) || file_exists($candidatePath)) {
-        $candidatePath = $destinationDir . '/' . $label . '_' . $fileNameWithoutExtension . '_' . $counter . '.pdf';
+        $candidatePath = $destinationDir . '/' . $label . '_' . $fileNameWithoutExtension . '_' . $counter . '.' . $extension;
         $counter++;
     }
 
@@ -140,13 +167,13 @@ if ($pdfUploaded) {
     }
 
     $pdfTmpPath = $applicationPdf['tmp_path'];
-    $destinationPath = buildUploadDestinationPath($destinationDir, 'risposta', $applicationPdf['original_name'], $reservedPaths);
+    $destinationPath = buildUploadDestinationPath($destinationDir, 'risposta', $applicationPdf['original_name'], $reservedPaths, 'pdf');
     $reservedPaths[] = $destinationPath;
 }
 
 if ($budgetPdfUploaded) {
     try {
-        $budgetPdf = validateUploadedPdf($_FILES['budget_pdf']);
+        $budgetPdf = validateUploadedBudgetFile($_FILES['budget_pdf']);
     } catch (RuntimeException $e) {
         header('Location: application_edit.php?id=' . urlencode($id));
         exit();
@@ -166,7 +193,7 @@ if ($cronoprogrammaPdfUploaded) {
     }
 
     $cronoprogrammaPdfTmpPath = $cronoprogrammaPdf['tmp_path'];
-    $cronoprogrammaDestinationPath = buildUploadDestinationPath($destinationDir, 'cronoprogramma', $cronoprogrammaPdf['original_name'], $reservedPaths);
+    $cronoprogrammaDestinationPath = buildUploadDestinationPath($destinationDir, 'cronoprogramma', $cronoprogrammaPdf['original_name'], $reservedPaths, 'pdf');
     $reservedPaths[] = $cronoprogrammaDestinationPath;
 }
 

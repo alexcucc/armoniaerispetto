@@ -66,6 +66,7 @@
   $budgetPdfPath = $applicationInfo['budget_pdf_path'] ?? null;
   $cronoprogrammaPdfPath = $applicationInfo['cronoprogramma_pdf_path'] ?? null;
   $checklistPath = $applicationInfo['checklist_path'] ?? null;
+  $isBudgetPdf = !empty($budgetPdfPath) && strtolower((string) pathinfo($budgetPdfPath, PATHINFO_EXTENSION)) === 'pdf';
 
   $sectionDefinitions = [
       'proposing_entity' => [
@@ -806,7 +807,9 @@
                   <?php if (!empty($budgetPdfPath)): ?>
                     <div class="document-action-group">
                       <span class="document-action-label">Budget</span>
+                      <?php if ($isBudgetPdf): ?>
                       <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=budget&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <?php endif; ?>
                       <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=budget" title="Scarica budget" aria-label="Scarica budget"><i class="fas fa-download" aria-hidden="true"></i></a>
                     </div>
                   <?php else: ?>

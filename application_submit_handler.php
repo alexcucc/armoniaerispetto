@@ -79,14 +79,41 @@ function validateUploadedPdf(array $file): array
     ];
 }
 
-function buildUploadDestinationPath(string $destinationDir, string $label, string $originalName): string
+function validateUploadedBudgetFile(array $file): array
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Invalid uploaded file');
+    }
+
+    $tmpPath = $file['tmp_name'] ?? '';
+    $originalName = basename((string) ($file['name'] ?? ''));
+    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $allowedExtensions = ['pdf', 'xlsx', 'xls', 'ods'];
+
+    if ($tmpPath === '' || $originalName === '' || !in_array($extension, $allowedExtensions, true)) {
+        throw new RuntimeException('Invalid budget file');
+    }
+
+    return [
+        'tmp_path' => $tmpPath,
+        'original_name' => $originalName,
+        'extension' => $extension,
+    ];
+}
+
+function buildUploadDestinationPath(string $destinationDir, string $label, string $originalName, ?string $forcedExtension = null): string
 {
     $fileNameWithoutExtension = preg_replace('/[^A-Za-z0-9._-]+/', '_', (string) pathinfo($originalName, PATHINFO_FILENAME));
     if ($fileNameWithoutExtension === null || $fileNameWithoutExtension === '') {
         $fileNameWithoutExtension = 'documento';
     }
 
-    return $destinationDir . '/' . $label . '_' . $fileNameWithoutExtension . '.pdf';
+    $extension = $forcedExtension ?? strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
+    if ($extension === '') {
+        $extension = 'bin';
+    }
+
+    return $destinationDir . '/' . $label . '_' . $fileNameWithoutExtension . '.' . $extension;
 }
 
 $applicationPdfUploaded = isset($_FILES['application_pdf']) && $_FILES['application_pdf']['error'] !== UPLOAD_ERR_NO_FILE;
@@ -109,7 +136,7 @@ if (
 
 try {
     $applicationPdf = validateUploadedPdf($_FILES['application_pdf']);
-    $budgetPdf = validateUploadedPdf($_FILES['budget_pdf']);
+    $budgetPdf = validateUploadedBudgetFile($_FILES['budget_pdf']);
     $cronoprogrammaPdf = validateUploadedPdf($_FILES['cronoprogramma_pdf']);
 } catch (RuntimeException $e) {
     header('Location: applications.php');
@@ -135,9 +162,9 @@ try {
         }
     }
 
-    $applicationPdfPath = buildUploadDestinationPath($destinationDir, 'risposta', $applicationPdf['original_name']);
+    $applicationPdfPath = buildUploadDestinationPath($destinationDir, 'risposta', $applicationPdf['original_name'], 'pdf');
     $budgetPdfPath = buildUploadDestinationPath($destinationDir, 'budget', $budgetPdf['original_name']);
-    $cronoprogrammaPdfPath = buildUploadDestinationPath($destinationDir, 'cronoprogramma', $cronoprogrammaPdf['original_name']);
+    $cronoprogrammaPdfPath = buildUploadDestinationPath($destinationDir, 'cronoprogramma', $cronoprogrammaPdf['original_name'], 'pdf');
 
     if (!move_uploaded_file($applicationPdf['tmp_path'], $applicationPdfPath)) {
         throw new RuntimeException('Unable to move uploaded application PDF');

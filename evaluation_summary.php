@@ -56,6 +56,8 @@ if (!$evaluation) {
     exit;
 }
 
+$isBudgetPdf = !empty($evaluation['budget_pdf_path']) && strtolower((string) pathinfo((string) $evaluation['budget_pdf_path'], PATHINFO_EXTENSION)) === 'pdf';
+
 $sumNullableScores = static function (array $scores): ?float {
     $filteredScores = array_filter($scores, static fn ($score) => $score !== null);
     if ($filteredScores === []) {
@@ -328,7 +330,9 @@ function formatScore($value): string
                   <?php if (!empty($evaluation['budget_pdf_path'])): ?>
                     <div class="document-action-group">
                       <span class="document-action-label">Budget</span>
+                      <?php if ($isBudgetPdf): ?>
                       <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=budget&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <?php endif; ?>
                       <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $applicationId; ?>&type=budget" title="Scarica budget" aria-label="Scarica budget"><i class="fas fa-download" aria-hidden="true"></i></a>
                     </div>
                   <?php else: ?>

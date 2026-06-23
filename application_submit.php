@@ -110,8 +110,9 @@ $supervisors = $supStmt->fetchAll(PDO::FETCH_ASSOC);
             <input type="file" id="application_pdf" name="application_pdf" class="form-input" accept="application/pdf" required>
           </div>
           <div class="form-group">
-            <label class="form-label required" for="budget_pdf">PDF del modulo budget</label>
-            <input type="file" id="budget_pdf" name="budget_pdf" class="form-input" accept="application/pdf" required>
+            <label class="form-label required" for="budget_pdf">Modulo budget</label>
+            <input type="file" id="budget_pdf" name="budget_pdf" class="form-input" accept=".pdf,.xlsx,.xls,.ods,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.oasis.opendocument.spreadsheet" required>
+            <small>Formati ammessi: PDF, Excel (.xlsx, .xls) o OpenDocument Spreadsheet (.ods).</small>
           </div>
           <div class="form-group">
             <label class="form-label required" for="cronoprogramma_pdf">PDF del cronoprogramma</label>
