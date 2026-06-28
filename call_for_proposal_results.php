@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+require_once 'evaluation_models.php';
 require_once 'db/common-db.php';
 
 if (!isset($_SESSION['user_id'])) {
@@ -35,12 +36,17 @@ $totalEvaluatorsStmt = $pdo->prepare(
 $totalEvaluatorsStmt->execute([':call_id' => $callId]);
 $totalEvaluators = (int) $totalEvaluatorsStmt->fetchColumn();
 
+$legacyToV4Factor = evaluationGetV4Definition()['max_total_score'] / evaluationGetLegacyMaxTotalScoreRaw();
+
 $evaluationScoreSubquery = '
     SELECT
         ev.id AS evaluation_id,
         CASE
-            WHEN ev.forced_weighted_total_score IS NOT NULL THEN ev.forced_weighted_total_score
-            ELSE COALESCE(efp.weighted_score, 0)
+            WHEN ev.forced_weighted_total_score IS NOT NULL AND ev.model_version = \'v4\' THEN ev.forced_weighted_total_score
+            WHEN ev.forced_weighted_total_score IS NOT NULL THEN ev.forced_weighted_total_score * ' . $legacyToV4Factor . '
+            WHEN ev.model_version = \'v4\' THEN COALESCE(ev4g.overall_score, 0)
+            ELSE (
+                COALESCE(efp.weighted_score, 0)
                 + COALESCE(ep.weighted_score, 0)
                 + COALESCE(epe.weighted_score, 0)
                 + COALESCE(eq.weighted_score, 0)
@@ -49,6 +55,7 @@ $evaluationScoreSubquery = '
                 + COALESCE(etc_culture.weighted_score, 0)
                 + COALESCE(etc_repopulation.weighted_score, 0)
                 + COALESCE(etc_safeguard.weighted_score, 0)
+            ) * ' . $legacyToV4Factor . '
         END AS total_overall_score
     FROM evaluation ev
     LEFT JOIN (
@@ -138,6 +145,10 @@ $evaluationScoreSubquery = '
         FROM evaluation_thematic_criteria_safeguard
         GROUP BY evaluation_id
     ) etc_safeguard ON etc_safeguard.evaluation_id = ev.id
+    LEFT JOIN (
+        SELECT evaluation_id, overall_score
+        FROM evaluation_v4_general
+    ) ev4g ON ev4g.evaluation_id = ev.id
     WHERE ev.status IN (\'SUBMITTED\', \'REVISED\')
 ';
 

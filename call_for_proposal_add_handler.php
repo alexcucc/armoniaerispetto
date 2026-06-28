@@ -3,6 +3,7 @@ session_start();
 
 require_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
+require_once 'evaluation_models.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
 if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_CREATE'])) {
@@ -16,11 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $_SESSION['call_for_proposal_form_evaluator_ids'] = $_POST['evaluator_user_ids'] ?? [];
-
-$title = trim(filter_input(INPUT_POST, 'title', FILTER_UNSAFE_RAW));
-$description = trim(filter_input(INPUT_POST, 'description', FILTER_UNSAFE_RAW));
-$start_date_input = trim(filter_input(INPUT_POST, 'start_date', FILTER_UNSAFE_RAW));
-$end_date_input = trim(filter_input(INPUT_POST, 'end_date', FILTER_UNSAFE_RAW));
+$title = trim((string) filter_input(INPUT_POST, 'title', FILTER_UNSAFE_RAW));
+$description = trim((string) filter_input(INPUT_POST, 'description', FILTER_UNSAFE_RAW));
+$start_date_input = trim((string) filter_input(INPUT_POST, 'start_date', FILTER_UNSAFE_RAW));
+$end_date_input = trim((string) filter_input(INPUT_POST, 'end_date', FILTER_UNSAFE_RAW));
 $rawEvaluatorUserIds = $_POST['evaluator_user_ids'] ?? [];
 
 $start_date = DateTime::createFromFormat('Y-m-d', $start_date_input);
@@ -35,8 +35,7 @@ if (!$title || !$description || !$start_date || !$end_date || !$pdf_uploaded) {
 
 $pdf_tmp_path = $_FILES['pdf']['tmp_name'];
 $pdf_name = $_FILES['pdf']['name'];
-$pdf_extension = strtolower(pathinfo($pdf_name, PATHINFO_EXTENSION));
-if ($pdf_extension !== 'pdf') {
+if (strtolower(pathinfo($pdf_name, PATHINFO_EXTENSION)) !== 'pdf') {
     $_SESSION['call_for_proposal_form_error'] = 'Il file del bando deve essere in formato PDF.';
     header('Location: call_for_proposal_add.php');
     exit();
@@ -47,9 +46,7 @@ $zip_should_upload = false;
 if (isset($_FILES['application_documents_zip'])) {
     if ($_FILES['application_documents_zip']['error'] === UPLOAD_ERR_OK) {
         $zip_tmp_path = $_FILES['application_documents_zip']['tmp_name'];
-        $zip_name = $_FILES['application_documents_zip']['name'];
-        $zip_extension = strtolower(pathinfo($zip_name, PATHINFO_EXTENSION));
-        if ($zip_extension !== 'zip') {
+        if (strtolower(pathinfo($_FILES['application_documents_zip']['name'], PATHINFO_EXTENSION)) !== 'zip') {
             $_SESSION['call_for_proposal_form_error'] = 'I documenti della presentazione domanda devono essere in formato ZIP.';
             header('Location: call_for_proposal_add.php');
             exit();
@@ -87,11 +84,7 @@ if ($evaluatorUserIds === []) {
 try {
     $pdo->beginTransaction();
 
-    $validEvaluatorsStmt = $pdo->prepare(
-        'SELECT user_id FROM evaluator WHERE user_id IN ('
-        . implode(',', array_fill(0, count($evaluatorUserIds), '?'))
-        . ')'
-    );
+    $validEvaluatorsStmt = $pdo->prepare('SELECT user_id FROM evaluator WHERE user_id IN (' . implode(',', array_fill(0, count($evaluatorUserIds), '?')) . ')');
     $validEvaluatorsStmt->execute($evaluatorUserIds);
     $validEvaluatorIds = array_map('intval', $validEvaluatorsStmt->fetchAll(PDO::FETCH_COLUMN));
     if (count($validEvaluatorIds) !== count($evaluatorUserIds)) {
@@ -101,13 +94,14 @@ try {
         exit();
     }
 
-    $stmt = $pdo->prepare("INSERT INTO call_for_proposal (title, description, pdf_path, start_date, end_date) VALUES (:title, :description, '', :start_date, :end_date)");
+    $stmt = $pdo->prepare(
+        'INSERT INTO call_for_proposal (title, description, pdf_path, start_date, end_date) VALUES (:title, :description, \'\', :start_date, :end_date)'
+    );
     $stmt->execute([
         ':title' => $title,
         ':description' => $description,
         ':start_date' => $start_date->format('Y-m-d 00:00:00'),
-        ':end_date' => $end_date->format('Y-m-d 00:00:00')
-    ]);
+        ':end_date' => $end_date->format('Y-m-d 00:00:00'),    ]);
     $call_for_proposal_id = $pdo->lastInsertId();
 
     $destination_dir = 'private/documents/call_for_proposals/' . $call_for_proposal_id;
@@ -115,7 +109,6 @@ try {
         mkdir($destination_dir, 0755, true);
     }
     $destination_path = $destination_dir . '/call_for_proposal.pdf';
-
     if (!move_uploaded_file($pdf_tmp_path, $destination_path)) {
         $pdo->rollBack();
         header('Location: call_for_proposal_add.php');
@@ -132,26 +125,16 @@ try {
         }
     }
 
-    $stmt = $pdo->prepare("UPDATE call_for_proposal SET pdf_path = :pdf_path WHERE id = :id");
-    $stmt->execute([
-        ':pdf_path' => $destination_path,
-        ':id' => $call_for_proposal_id
-    ]);
+    $stmt = $pdo->prepare('UPDATE call_for_proposal SET pdf_path = :pdf_path WHERE id = :id');
+    $stmt->execute([':pdf_path' => $destination_path, ':id' => $call_for_proposal_id]);
 
-    $insertAssignmentStmt = $pdo->prepare(
-        'INSERT INTO call_for_proposal_evaluator (call_for_proposal_id, evaluator_user_id) '
-        . 'VALUES (:call_for_proposal_id, :evaluator_user_id)'
-    );
+    $insertAssignmentStmt = $pdo->prepare('INSERT INTO call_for_proposal_evaluator (call_for_proposal_id, evaluator_user_id) VALUES (:call_for_proposal_id, :evaluator_user_id)');
     foreach ($evaluatorUserIds as $evaluatorUserId) {
-        $insertAssignmentStmt->execute([
-            ':call_for_proposal_id' => $call_for_proposal_id,
-            ':evaluator_user_id' => $evaluatorUserId,
-        ]);
+        $insertAssignmentStmt->execute([':call_for_proposal_id' => $call_for_proposal_id, ':evaluator_user_id' => $evaluatorUserId]);
     }
 
     $pdo->commit();
     unset($_SESSION['call_for_proposal_form_evaluator_ids'], $_SESSION['call_for_proposal_form_error']);
-
     header('Location: call_for_proposals.php');
     exit();
 } catch (PDOException $e) {
@@ -162,3 +145,7 @@ try {
     header('Location: call_for_proposal_add.php');
     exit();
 }
+
+
+
+

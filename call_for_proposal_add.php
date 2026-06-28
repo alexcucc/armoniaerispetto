@@ -3,6 +3,7 @@ session_start();
 
 require_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
+require_once 'evaluation_models.php';
 
 $rolePermissionManager = new RolePermissionManager($pdo);
 if (!isset($_SESSION['user_id']) || !$rolePermissionManager->userHasPermission($_SESSION['user_id'], RolePermissionManager::$PERMISSIONS['CALL_FOR_PROPOSAL_CREATE'])) {
@@ -16,6 +17,7 @@ unset($_SESSION['call_for_proposal_form_error']);
 $selectedEvaluatorIds = $_SESSION['call_for_proposal_form_evaluator_ids'] ?? [];
 unset($_SESSION['call_for_proposal_form_evaluator_ids']);
 $selectedEvaluatorIds = array_values(array_unique(array_map('intval', is_array($selectedEvaluatorIds) ? $selectedEvaluatorIds : [])));
+
 
 $evaluatorsStmt = $pdo->query(
     "SELECT ev.user_id, CONCAT(u.last_name, ' ', u.first_name) AS full_name "
@@ -56,13 +58,7 @@ $evaluators = $evaluatorsStmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             <div class="form-group">
                 <label class="form-label" for="application_documents_zip">ZIP documenti presentazione domanda (opzionale)</label>
-                <input
-                    type="file"
-                    id="application_documents_zip"
-                    name="application_documents_zip"
-                    class="form-input"
-                    accept=".zip,application/zip,application/x-zip-compressed"
-                >
+                <input type="file" id="application_documents_zip" name="application_documents_zip" class="form-input" accept=".zip,application/zip,application/x-zip-compressed">
                 <p class="form-note">Lascia vuoto se non vuoi caricare documenti ora.</p>
             </div>
             <div class="form-group">
@@ -80,32 +76,18 @@ $evaluators = $evaluatorsStmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php else: ?>
                     <div class="evaluator-selector" data-evaluator-selector>
                         <div class="evaluator-selector__toolbar">
-                            <input
-                                type="text"
-                                class="form-input evaluator-selector__search"
-                                placeholder="Cerca valutatore..."
-                                data-role="search"
-                                aria-label="Cerca valutatore"
-                            >
+                            <input type="text" class="form-input evaluator-selector__search" placeholder="Cerca valutatore..." data-role="search" aria-label="Cerca valutatore">
                             <div class="evaluator-selector__actions">
                                 <button type="button" class="page-button secondary-button evaluator-selector__action" data-role="select-visible">Seleziona visibili</button>
                                 <button type="button" class="page-button secondary-button evaluator-selector__action" data-role="clear-visible">Deseleziona visibili</button>
                             </div>
-                            <p class="form-note evaluator-selector__stats">
-                                Mostrati: <span data-role="visible-count">0</span> - Selezionati: <span data-role="selected-count">0</span>
-                            </p>
+                            <p class="form-note evaluator-selector__stats">Mostrati: <span data-role="visible-count">0</span> - Selezionati: <span data-role="selected-count">0</span></p>
                         </div>
                         <div class="evaluator-selector__grid">
                             <?php foreach ($evaluators as $evaluator): ?>
                                 <?php $evaluatorUserId = (int) $evaluator['user_id']; ?>
                                 <label class="evaluator-option" data-role="option">
-                                    <input
-                                        type="checkbox"
-                                        name="evaluator_user_ids[]"
-                                        value="<?php echo htmlspecialchars((string) $evaluatorUserId); ?>"
-                                        class="evaluator-option__checkbox"
-                                        <?php echo in_array($evaluatorUserId, $selectedEvaluatorIds, true) ? 'checked' : ''; ?>
-                                    >
+                                    <input type="checkbox" name="evaluator_user_ids[]" value="<?php echo htmlspecialchars((string) $evaluatorUserId); ?>" class="evaluator-option__checkbox" <?php echo in_array($evaluatorUserId, $selectedEvaluatorIds, true) ? 'checked' : ''; ?>>
                                     <span class="evaluator-option__name"><?php echo htmlspecialchars($evaluator['full_name']); ?></span>
                                 </label>
                             <?php endforeach; ?>
@@ -122,84 +104,66 @@ $evaluators = $evaluatorsStmt->fetchAll(PDO::FETCH_ASSOC);
 </main>
 <?php include 'footer.php'; ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const selectors = document.querySelectorAll('[data-evaluator-selector]');
-
-        selectors.forEach(selector => {
-            const searchInput = selector.querySelector('[data-role="search"]');
-            const optionElements = Array.from(selector.querySelectorAll('[data-role="option"]'));
-            const visibleCountElement = selector.querySelector('[data-role="visible-count"]');
-            const selectedCountElement = selector.querySelector('[data-role="selected-count"]');
-            const selectVisibleButton = selector.querySelector('[data-role="select-visible"]');
-            const clearVisibleButton = selector.querySelector('[data-role="clear-visible"]');
-
-            const getVisibleOptions = () => optionElements.filter(option => !option.hidden);
-
-            const refreshState = () => {
-                const visibleOptions = getVisibleOptions();
-                const selectedCount = optionElements.filter(option => {
-                    const checkbox = option.querySelector('.evaluator-option__checkbox');
-                    return checkbox && checkbox.checked;
-                }).length;
-
-                optionElements.forEach(option => {
-                    const checkbox = option.querySelector('.evaluator-option__checkbox');
-                    option.classList.toggle('is-selected', Boolean(checkbox && checkbox.checked));
-                });
-
-                if (visibleCountElement) {
-                    visibleCountElement.textContent = String(visibleOptions.length);
-                }
-                if (selectedCountElement) {
-                    selectedCountElement.textContent = String(selectedCount);
-                }
-            };
-
-            if (searchInput) {
-                searchInput.addEventListener('input', () => {
-                    const term = searchInput.value.trim().toLowerCase();
-                    optionElements.forEach(option => {
-                        const optionText = (option.textContent || '').toLowerCase();
-                        option.hidden = term !== '' && !optionText.includes(term);
-                    });
-                    refreshState();
-                });
-            }
-
+document.addEventListener('DOMContentLoaded', function() {
+    const selectors = document.querySelectorAll('[data-evaluator-selector]');
+    selectors.forEach(selector => {
+        const searchInput = selector.querySelector('[data-role="search"]');
+        const optionElements = Array.from(selector.querySelectorAll('[data-role="option"]'));
+        const visibleCountElement = selector.querySelector('[data-role="visible-count"]');
+        const selectedCountElement = selector.querySelector('[data-role="selected-count"]');
+        const selectVisibleButton = selector.querySelector('[data-role="select-visible"]');
+        const clearVisibleButton = selector.querySelector('[data-role="clear-visible"]');
+        const getVisibleOptions = () => optionElements.filter(option => !option.hidden);
+        const refreshState = () => {
+            const visibleOptions = getVisibleOptions();
+            const selectedCount = optionElements.filter(option => {
+                const checkbox = option.querySelector('.evaluator-option__checkbox');
+                return checkbox && checkbox.checked;
+            }).length;
             optionElements.forEach(option => {
                 const checkbox = option.querySelector('.evaluator-option__checkbox');
-                if (checkbox) {
-                    checkbox.addEventListener('change', refreshState);
-                }
+                option.classList.toggle('is-selected', Boolean(checkbox && checkbox.checked));
             });
-
-            if (selectVisibleButton) {
-                selectVisibleButton.addEventListener('click', () => {
-                    getVisibleOptions().forEach(option => {
-                        const checkbox = option.querySelector('.evaluator-option__checkbox');
-                        if (checkbox) {
-                            checkbox.checked = true;
-                        }
-                    });
-                    refreshState();
+            if (visibleCountElement) visibleCountElement.textContent = String(visibleOptions.length);
+            if (selectedCountElement) selectedCountElement.textContent = String(selectedCount);
+        };
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                const term = searchInput.value.trim().toLowerCase();
+                optionElements.forEach(option => {
+                    const optionText = (option.textContent || '').toLowerCase();
+                    option.hidden = term !== '' && !optionText.includes(term);
                 });
-            }
-
-            if (clearVisibleButton) {
-                clearVisibleButton.addEventListener('click', () => {
-                    getVisibleOptions().forEach(option => {
-                        const checkbox = option.querySelector('.evaluator-option__checkbox');
-                        if (checkbox) {
-                            checkbox.checked = false;
-                        }
-                    });
-                    refreshState();
-                });
-            }
-
-            refreshState();
+                refreshState();
+            });
+        }
+        optionElements.forEach(option => {
+            const checkbox = option.querySelector('.evaluator-option__checkbox');
+            if (checkbox) checkbox.addEventListener('change', refreshState);
         });
+        if (selectVisibleButton) {
+            selectVisibleButton.addEventListener('click', () => {
+                getVisibleOptions().forEach(option => {
+                    const checkbox = option.querySelector('.evaluator-option__checkbox');
+                    if (checkbox) checkbox.checked = true;
+                });
+                refreshState();
+            });
+        }
+        if (clearVisibleButton) {
+            clearVisibleButton.addEventListener('click', () => {
+                getVisibleOptions().forEach(option => {
+                    const checkbox = option.querySelector('.evaluator-option__checkbox');
+                    if (checkbox) checkbox.checked = false;
+                });
+                refreshState();
+            });
+        }
+        refreshState();
     });
+});
 </script>
 </body>
 </html>
+
+

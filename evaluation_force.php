@@ -5,6 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+require_once 'evaluation_models.php';
 include_once 'db/common-db.php';
 include_once 'RolePermissionManager.php';
 
@@ -102,14 +103,16 @@ if (!$selectedEvaluator) {
 }
 
 $existingEvaluationStmt = $pdo->prepare(
-    'SELECT id, forced_weighted_total_score '
+    'SELECT id, forced_weighted_total_score, model_version '
     . 'FROM evaluation WHERE application_id = :application_id AND evaluator_id = :evaluator_id LIMIT 1'
 );
 $existingEvaluationStmt->execute([
     ':application_id' => $applicationId,
     ':evaluator_id' => $selectedEvaluatorId,
 ]);
-$existingEvaluation = $existingEvaluationStmt->fetch(PDO::FETCH_ASSOC);
+$existingEvaluation = $existingEvaluationStmt->fetch(PDO::FETCH_ASSOC) ?: null;
+$modelVersion = $existingEvaluation['model_version'] ?? evaluationGetCurrentModelVersion();
+$maxForcedWeightedTotalScore = evaluationGetForcedWeightedMaxScoreForModel($modelVersion);
 $existingForcedWeightedTotalScore = null;
 if ($existingEvaluation && is_numeric($existingEvaluation['forced_weighted_total_score'] ?? null)) {
     $existingForcedWeightedTotalScore = (float) $existingEvaluation['forced_weighted_total_score'];
@@ -143,8 +146,6 @@ if (!$existingEvaluation && ($totalEvaluators <= 0 || $completedEvaluations >= $
     header('Location: ' . $returnUrl);
     exit;
 }
-
-$maxForcedWeightedTotalScore = 2090;
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -171,6 +172,7 @@ $maxForcedWeightedTotalScore = 2090;
               <p><strong>Ente:</strong> <?php echo htmlspecialchars($applicationInfo['organization_name']); ?></p>
               <p><strong>Valutatore:</strong> <?php echo htmlspecialchars($selectedEvaluator['evaluator_name']); ?></p>
               <p><strong>Valutazioni complete:</strong> <?php echo htmlspecialchars((string) $completedEvaluations); ?>/<?php echo htmlspecialchars((string) $totalEvaluators); ?></p>
+              <p><strong>Modello valutazione:</strong> <?php echo htmlspecialchars(evaluationIsLegacyModel($modelVersion) ? 'Griglia precedente' : 'Griglia v4'); ?></p>
               <?php if ($existingEvaluation): ?>
                 <p><strong>Valutazione forzata esistente:</strong> puoi aggiornare il voto totale pesato salvato.</p>
               <?php endif; ?>
@@ -188,12 +190,12 @@ $maxForcedWeightedTotalScore = 2090;
                     id="forced_weighted_total_score"
                     name="forced_weighted_total_score"
                     min="0"
-                    max="<?php echo (int) $maxForcedWeightedTotalScore; ?>"
+                    max="<?php echo htmlspecialchars(number_format($maxForcedWeightedTotalScore, 2, '.', '')); ?>"
                     step="0.01"
                     value="<?php echo $existingForcedWeightedTotalScore !== null ? htmlspecialchars(number_format($existingForcedWeightedTotalScore, 2, '.', '')) : ''; ?>"
                     required
                   >
-                  <small class="form-text">Inserisci solo il punteggio totale pesato (0-<?php echo (int) $maxForcedWeightedTotalScore; ?>).</small>
+                  <small class="form-text">Inserisci solo il punteggio totale pesato (0-<?php echo htmlspecialchars(evaluationV4FormatScore($maxForcedWeightedTotalScore)); ?>).</small>
                 </div>
 
                 <div class="button-container">
