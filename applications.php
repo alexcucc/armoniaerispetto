@@ -184,6 +184,153 @@ function isPdfDocumentPath(?string $path): bool
 <head>
     <?php include 'common-head.php'; ?>
     <title>Risposte ai bandi</title>
+    <style>
+        .applications-table {
+            table-layout: auto;
+        }
+
+        .applications-table tbody tr:nth-child(even) {
+            background-color: #fbfcfd;
+        }
+
+        .applications-table th,
+        .applications-table td {
+            padding: 0.3rem 0.42rem;
+            line-height: 1.05;
+        }
+
+        .applications-table th {
+            padding-top: 0.38rem;
+            padding-bottom: 0.38rem;
+        }
+
+        .applications-table td {
+            vertical-align: middle;
+        }
+
+        .applications-table__status,
+        .applications-table__date {
+            white-space: nowrap;
+        }
+
+        .applications-table__reason,
+        .applications-table__documents,
+        .applications-table__actions {
+            width: 1%;
+            white-space: nowrap;
+        }
+
+        .applications-table__documents .document-actions,
+        .applications-table__actions .application-actions {
+            justify-content: center;
+        }
+
+        .applications-table__documents .document-actions {
+            flex-wrap: nowrap;
+            gap: 0.3rem;
+            align-items: center;
+        }
+
+        .applications-table__documents .document-action-button {
+            min-height: 1.35rem;
+            padding: 0.08em 0.38em;
+            font-size: 0.7rem;
+            line-height: 0.95;
+            border-radius: 999px;
+            border: 1px solid #cfd8dc;
+            background: #f8fafb;
+            color: #345;
+            box-shadow: none;
+            font-weight: 600;
+        }
+
+        .applications-table__documents .document-action-button:hover,
+        .applications-table__documents .document-action-button:focus-visible {
+            background: #eef3f5;
+            border-color: #b9c7cd;
+            color: #1f3b45;
+        }
+
+        .applications-table__actions .application-actions {
+            grid-template-columns: repeat(2, minmax(0, max-content));
+        }
+
+        .applications-table__actions .modify-btn,
+        .applications-table__actions .delete-btn {
+            min-height: 1.65rem;
+            padding: 0.2em 0.5em;
+            font-size: 0.78rem;
+            gap: 0.28rem;
+            white-space: nowrap;
+        }
+
+        .applications-table td > .text-muted,
+        .applications-table td > .motivation-icon,
+        .applications-table td > .icon-button {
+            vertical-align: middle;
+        }
+
+        .applications-table__actions .action-button__label {
+            display: inline;
+        }
+
+        @media (max-width: 1366px) {
+            .applications-table th,
+            .applications-table td {
+                padding: 0.24rem 0.34rem;
+                font-size: 0.8rem;
+            }
+
+            .applications-table td:nth-child(1),
+            .applications-table td:nth-child(2),
+            .applications-table td:nth-child(3),
+            .applications-table td:nth-child(4) {
+                line-height: 1.3;
+                word-break: break-word;
+            }
+
+            .applications-table__documents .document-action-button,
+            .applications-table__actions .modify-btn,
+            .applications-table__actions .delete-btn {
+                min-height: 1.5rem;
+                padding: 0.16em 0.38em;
+                font-size: 0.73rem;
+            }
+
+            .applications-table__documents .document-action-button {
+                min-height: 1.12rem;
+                padding: 0.04em 0.28em;
+                font-size: 0.62rem;
+            }
+
+            .applications-table__documents .document-actions,
+            .applications-table__actions .application-actions {
+                gap: 0.18rem;
+            }
+
+            .applications-table__actions .application-actions {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                column-gap: 0.25rem;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .applications-table__actions .modify-btn,
+            .applications-table__actions .delete-btn {
+                min-width: 2.2rem;
+                padding-inline: 0.55rem;
+            }
+
+            .applications-table__actions .action-button__label {
+                display: none;
+            }
+
+            .applications-table__actions .modify-btn i,
+            .applications-table__actions .delete-btn i {
+                margin: 0;
+            }
+        }
+    </style>
 </head>
 <body class="management-page">
 <?php include 'header.php'; ?>
@@ -295,7 +442,7 @@ function isPdfDocumentPath(?string $path): bool
                         </p>
                     <?php endif; ?>
                 <div class="users-table-container">
-                    <table class="users-table">
+                    <table class="users-table applications-table">
                         <thead>
                             <tr>
                                 <?php
@@ -328,11 +475,11 @@ function isPdfDocumentPath(?string $path): bool
                                         . '</th>';
                                 }
                                 ?>
-                                <th>Motivo</th>
-                                <th>Documenti</th>
+                                <th class="applications-table__reason">Motivo</th>
+                                <th class="applications-table__documents">Documenti</th>
                                 <?php
                                 ?>
-                                <th>Azioni</th>
+                                <th class="applications-table__actions">Azioni</th>
                             </tr>
                         </thead>
 
@@ -359,9 +506,9 @@ function isPdfDocumentPath(?string $path): bool
                                         ? date('d/m/Y H:i', strtotime($app['application_created_at']))
                                         : '-';
                                     ?>
-                                    <td><?php echo htmlspecialchars($statusLabel); ?></td>
-                                    <td><?php echo htmlspecialchars($createdAt); ?></td>
-                                    <td>
+                                    <td class="applications-table__status"><?php echo htmlspecialchars($statusLabel); ?></td>
+                                    <td class="applications-table__date"><?php echo htmlspecialchars($createdAt); ?></td>
+                                    <td class="applications-table__reason">
                                         <?php if ($statusKey === 'REJECTED'): ?>
                                             <?php if ($rejectionReason !== ''): ?>
                                                 <button
@@ -386,7 +533,7 @@ function isPdfDocumentPath(?string $path): bool
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td>
+                                    <td class="applications-table__documents">
                                         <div class="actions-cell document-actions">
                                             <?php if (!empty($app['application_pdf_path']) || !empty($app['budget_pdf_path']) || !empty($app['cronoprogramma_pdf_path'])): ?>
                                                 <?php if (!empty($app['application_pdf_path'])): ?>
@@ -435,16 +582,30 @@ function isPdfDocumentPath(?string $path): bool
                                             <?php endif; ?>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="applications-table__actions">
                                         <div class="actions-cell role-actions application-actions">
                                             <?php if ($canUpdate && !$isLocked): ?>
-                                                <button class="modify-btn" onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'">
-                                                    <i class="fas fa-edit"></i> Modifica
+                                                <button
+                                                    class="modify-btn"
+                                                    type="button"
+                                                    aria-label="Modifica risposta"
+                                                    title="Modifica risposta"
+                                                    onclick="window.location.href='application_edit.php?id=<?php echo $app['id']; ?>'"
+                                                >
+                                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                                    <span class="action-button__label">Modifica</span>
                                                 </button>
                                             <?php endif; ?>
                                             <?php if ($canDelete && $canDeleteApplication): ?>
-                                                <button class="delete-btn" data-id="<?php echo $app['id']; ?>">
-                                                    <i class="fas fa-trash"></i> Elimina
+                                                <button
+                                                    class="delete-btn"
+                                                    type="button"
+                                                    aria-label="Elimina risposta"
+                                                    title="Elimina risposta"
+                                                    data-id="<?php echo $app['id']; ?>"
+                                                >
+                                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                                    <span class="action-button__label">Elimina</span>
                                                 </button>
                                             <?php endif; ?>
                                         </div>
