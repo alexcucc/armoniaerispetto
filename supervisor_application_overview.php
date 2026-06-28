@@ -15,8 +15,6 @@ if (!isset($_SESSION['user_id']) ||
     exit();
 }
 $currentUserId = (int) $_SESSION['user_id'];
-$defaultCallMessage = $_SESSION['default_call_message'] ?? null;
-unset($_SESSION['default_call_message']);
 
 $allowedSortFields = ['call_title', 'organization_name', 'supervisor_name', 'status', 'updated_at'];
 $allowedSortOrders = ['asc', 'desc'];
@@ -48,6 +46,7 @@ $callIds = array_map(
 );
 $defaultCallId = getUserDefaultCallForProposalId($pdo, $currentUserId);
 $callResolution = resolveCallFilterSelection($_GET, 'call_id', $defaultCallId, $callIds);
+syncUserDefaultCallForProposalFromFilter($pdo, $currentUserId, $_GET, 'call_id', $callIds);
 $callFilterValue = $callResolution['selected_value'];
 $callId = $callResolution['effective_call_id'];
 $persistAllCallFilter = array_key_exists('call_id', $_GET) && $callFilterValue === 'all';
@@ -155,11 +154,6 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
         <div class="content-container">
             <div class="content">
                 <div id="message" class="message" style="display: none;"></div>
-                <?php if (is_array($defaultCallMessage) && isset($defaultCallMessage['text'])): ?>
-                    <div class="message <?php echo (($defaultCallMessage['type'] ?? 'success') === 'error') ? 'error' : 'success'; ?>" style="display: block;">
-                        <?php echo htmlspecialchars((string) $defaultCallMessage['text']); ?>
-                    </div>
-                <?php endif; ?>
                 <div class="button-container">
                     <a href="index.php?open_gestione=1" class="page-button back-button">Indietro</a>
                 </div>
@@ -206,16 +200,6 @@ function buildSortLink(string $field, string $sortField, string $sortOrder, arra
                     </div>
                     <div class="filters-actions">
                         <button type="submit" class="page-button">Applica filtri</button>
-                        <button
-                            type="submit"
-                            class="page-button secondary-button"
-                            formaction="default_call_for_proposal_save.php"
-                            formmethod="post"
-                            name="redirect"
-                            value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? 'supervisor_application_overview.php'); ?>"
-                        >
-                            Salva bando di default
-                        </button>
                         <a href="supervisor_application_overview.php" class="page-button secondary-button">Reset</a>
                     </div>
                 </form>
