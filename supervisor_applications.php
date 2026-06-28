@@ -221,6 +221,7 @@ if ($supervisorId) {
                                         $isFinal = $statusKey === 'FINAL_VALIDATION';
                                         $isClosed = ($app['call_status'] ?? null) === 'CLOSED';
                                         $canEdit = !$isFinal && !$isClosed;
+                                        $canFinalizeDirectly = $statusKey === 'APPROVED' && !$isClosed;
                                         $canDeleteValidation = !$isClosed && in_array($statusKey, ['APPROVED', 'REJECTED'], true);
                                     ?>
                                     <tr>
@@ -254,7 +255,7 @@ if ($supervisorId) {
                                                 <?php endif; ?>
                                             </td>
                                         <td>
-                                            <div class="actions-cell role-actions">
+                                            <div class="actions-cell actions-cell--single-row supervisor-actions-cell">
                                                 <?php if ($isClosed): ?>
                                                     <span class="text-muted">Bando chiuso</span>
                                                 <?php else: ?>
@@ -262,6 +263,18 @@ if ($supervisorId) {
                                                         <a class="page-button<?php echo $statusKey === 'SUBMITTED' ? '' : ' secondary-button'; ?>" href="application_review.php?application_id=<?php echo $app['id']; ?>">
                                                             <?php echo $statusKey === 'SUBMITTED' ? 'Convalida' : 'Modifica'; ?>
                                                         </a>
+                                                    <?php endif; ?>
+                                                    <?php if ($canFinalizeDirectly): ?>
+                                                        <form
+                                                            class="inline-action-form"
+                                                            method="post"
+                                                            action="application_review_handler.php"
+                                                            onsubmit="return confirm('Sei sicuro di voler convalidare in definitiva questa risposta al bando?');"
+                                                        >
+                                                            <input type="hidden" name="application_id" value="<?php echo (int) $app['id']; ?>">
+                                                            <input type="hidden" name="decision" value="FINAL_VALIDATION">
+                                                            <button type="submit" class="page-button secondary-button">Convalida definitiva</button>
+                                                        </form>
                                                     <?php endif; ?>
                                                     <?php if ($canDeleteValidation): ?>
                                                         <button

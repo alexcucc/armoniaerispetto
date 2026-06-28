@@ -1181,6 +1181,22 @@ ul.nav-links {
   white-space: nowrap;
 }
 
+.actions-cell.actions-cell--single-row .inline-action-form {
+  display: inline-flex;
+  margin: 0;
+}
+
+.supervisor-actions-cell {
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.supervisor-actions-cell > .page-button,
+.supervisor-actions-cell > .delete-btn,
+.supervisor-actions-cell > .inline-action-form {
+  flex: 0 0 auto;
+}
+
 .actions-cell.role-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(160px, max-content));
