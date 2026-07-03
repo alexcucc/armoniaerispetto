@@ -83,7 +83,7 @@ function evaluationGetV4Definition(): array
                     'new_project_score' => ['label' => 'Nuovo progetto', 'weight' => 3, 'help' => 'Nuova iniziativa o evoluzione sostanziale, non mera gestione corrente.'],
                     'long_term_impact_score' => ['label' => 'Impatto ed effetti di piu ampio e lungo termine', 'weight' => 5, 'help' => 'Potenziale sistemico nel lungo periodo.'],
                     'context_relevance_score' => ['label' => 'Pertinenza rispetto a bisogni e criticita del contesto', 'weight' => 3, 'help' => 'Coerenza con bisogni territoriali, priorita e politiche pubbliche.'],
-                    'innovation_score' => ['label' => 'Innovativita del progetto', 'weight' => 5, 'help' => 'Uso di tecnologie, metodi o approcci nuovi.'],
+                    'innovation_score' => ['label' => 'Innovativita del progetto', 'weight' => 5, 'help' => "E previsto l'utilizzo di tecnologie o metodi e approcci nuovi per il raggiungimento degli obiettivi dichiarati? Es. droni, IA, sensori satellitari, collari GPS, riconoscimento immagini..."],
                     'scientific_rigor_score' => ['label' => 'Rigore e validita scientifica', 'weight' => 6, 'help' => 'Evidenze scientifiche, fonti e collaborazioni di ricerca.'],
                     'replicability_scalability_score' => ['label' => 'Replicabilita e scalabilita', 'weight' => 3, 'help' => 'Adattabile e replicabile in altri contesti.'],
                 ],
@@ -342,6 +342,7 @@ function evaluationGetForcedWeightedMaxScoreForModel(?string $modelVersion): flo
 {
     return evaluationIsLegacyModel($modelVersion) ? evaluationGetLegacyMaxTotalScoreRaw() : evaluationGetV4Definition()['max_total_score'];
 }
+
 
 
 
