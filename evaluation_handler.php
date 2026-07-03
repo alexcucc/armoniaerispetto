@@ -276,9 +276,6 @@ function validateV4Sections(array $postData, bool $validateForSubmit, bool $isAj
             if (!$sectionIsThematic && $sectionIsIncomplete) {
                 $incompleteSections[] = $sectionDefinition['label'];
             }
-            if ($sectionIsThematic && !$hasAnyScore) {
-                $incompleteSections[] = $sectionDefinition['label'];
-            }
         }
 
         $data[$sectionKey]['scores'] = $sectionScores;
@@ -541,10 +538,12 @@ try {
             'evaluation_v4_financial_plan',
             'evaluation_v4_qualitative_elements',
             'evaluation_v4_thematic_safeguard',
-            'evaluation_v4_thematic_repopulation',
+            'evaluation_v4_thematic_conservation_species_habitat',
+            'evaluation_v4_thematic_anthropic_threat_reduction',
             'evaluation_v4_thematic_cohabitation',
             'evaluation_v4_thematic_community_support',
             'evaluation_v4_thematic_culture_education',
+            'evaluation_v4_thematic_weight_depth',
         ];
 
         foreach (array_merge($legacyTablesToReset, $v4TablesToReset) as $tableName) {
@@ -667,11 +666,8 @@ try {
                 }
 
                 if (($sectionDefinition['type'] ?? '') === 'thematic') {
-                    $columns[] = 'average_score';
                     $columns[] = 'weighted_score';
-                    $placeholders[] = ':average_score';
                     $placeholders[] = ':weighted_score';
-                    $params[':average_score'] = $sectionTotals['average_score'] ?? null;
                     $params[':weighted_score'] = $sectionTotals['weighted_score'] ?? null;
                 } else {
                     $columns[] = 'overall_score';

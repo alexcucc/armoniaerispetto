@@ -78,7 +78,7 @@ foreach ($sections as $sectionKey => $sectionDefinition) {
 <html lang="it">
 <head>
   <?php include 'common-head.php'; ?>
-  <title>Sintesi valutazione v4</title>
+  <title>Sintesi valutazione</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     .summary-v4-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; box-shadow: 0 8px 24px rgba(15,23,42,.06); }
@@ -176,12 +176,8 @@ foreach ($sections as $sectionKey => $sectionDefinition) {
               <thead>
                 <tr>
                   <th>Criterio</th>
-                  <?php if (($sectionDefinition['type'] ?? '') === 'thematic'): ?>
-                    <th>Voto</th>
-                  <?php else: ?>
-                    <th>Peso</th>
-                    <th>Voto</th>
-                  <?php endif; ?>
+                  <th>Peso</th>
+                  <th>Voto</th>
                 </tr>
               </thead>
               <tbody>
@@ -189,21 +185,13 @@ foreach ($sections as $sectionKey => $sectionDefinition) {
                   <?php $criterionNote = trim((string) ($sectionData[$sectionKey]['criterion_notes'][$fieldName] ?? '')); ?>
                   <tr>
                     <td><?php echo htmlspecialchars($criterionDefinition['label']); ?><?php if ($criterionNote !== ''): ?><div style="margin-top:.35rem;white-space:pre-wrap;"><strong>Nota:</strong><br><?php echo nl2br(htmlspecialchars($criterionNote)); ?></div><?php endif; ?></td>
-                    <?php if (($sectionDefinition['type'] ?? '') === 'thematic'): ?>
-                      <td><?php echo htmlspecialchars(evaluationV4FormatScore($sectionData[$sectionKey]['scores'][$fieldName] ?? null)); ?></td>
-                    <?php else: ?>
-                      <td><?php echo htmlspecialchars((string) $criterionDefinition['weight']); ?></td>
-                      <td><?php echo htmlspecialchars(evaluationV4FormatScore($sectionData[$sectionKey]['scores'][$fieldName] ?? null)); ?></td>
-                    <?php endif; ?>
+                    <td><?php echo htmlspecialchars((string) $criterionDefinition['weight']); ?></td>
+                    <td><?php echo htmlspecialchars(evaluationV4FormatScore($sectionData[$sectionKey]['scores'][$fieldName] ?? null)); ?></td>
                   </tr>
                 <?php endforeach; ?>
               </tbody>
             </table>
-            <?php if (($sectionDefinition['type'] ?? '') === 'thematic'): ?>
-              <p><strong>Media categoria:</strong> <?php echo htmlspecialchars(evaluationV4FormatScore($sectionResult['average_score'] ?? null)); ?> | <strong>Totale categoria:</strong> <?php echo htmlspecialchars(evaluationV4FormatScore($sectionResult['weighted_score'] ?? null)); ?> / <?php echo htmlspecialchars((string) $sectionDefinition['max']); ?></p>
-            <?php else: ?>
-              <p><strong>Totale sezione:</strong> <?php echo htmlspecialchars(evaluationV4FormatScore($sectionResult['weighted_score'] ?? null)); ?> / <?php echo htmlspecialchars((string) $sectionDefinition['max']); ?></p>
-            <?php endif; ?>
+            <p><strong>Totale sezione:</strong> <?php echo htmlspecialchars(evaluationV4FormatScore($sectionResult['weighted_score'] ?? null)); ?> / <?php echo htmlspecialchars((string) $sectionDefinition['max']); ?></p>
 
           </section>
         <?php endforeach; ?>
