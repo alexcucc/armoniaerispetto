@@ -86,6 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.page-button.back-button').forEach((button) => {
     button.addEventListener('click', (event) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+
       const explicitTarget = button.dataset.backTarget;
       const href = button.getAttribute('href');
       const target = explicitTarget || href;

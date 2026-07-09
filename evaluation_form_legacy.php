@@ -67,6 +67,7 @@
   $cronoprogrammaPdfPath = $applicationInfo['cronoprogramma_pdf_path'] ?? null;
   $checklistPath = $applicationInfo['checklist_path'] ?? null;
   $isBudgetPdf = !empty($budgetPdfPath) && strtolower((string) pathinfo($budgetPdfPath, PATHINFO_EXTENSION)) === 'pdf';
+  $budgetViewHref = 'application_download.php?id=' . $application_id . '&type=budget' . ($isBudgetPdf ? '&mode=inline' : '');
 
   $sectionDefinitions = [
       'proposing_entity' => [
@@ -492,11 +493,23 @@
       }
 
       .evaluation-step h3 {
-        margin: 0 0 0.22rem;
+        margin: 0 0 0.38rem;
         transform: translateX(calc((var(--evaluation-sidebar-width) + var(--evaluation-layout-gap)) / 2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.38rem;
+        flex-wrap: wrap;
+        padding: 0.58rem 0.95rem;
+        border: 1px solid #bae6fd;
+        border-radius: 0.8rem;
+        background: linear-gradient(135deg, #f0f9ff, #ffffff);
+        box-shadow: 0 12px 28px rgba(14, 165, 233, 0.08);
         text-align: center;
         line-height: 1.2;
-        font-size: 0.95rem;
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: #0f172a;
       }
 
       .evaluation-step .form-group + .form-group {
@@ -598,7 +611,33 @@
       }
 
       .section-weight-badge {
-        margin-left: 0.45rem;
+        margin-left: 0;
+      }
+
+      .document-actions {
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .document-action-group {
+        display: flex;
+      }
+
+      .document-action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.32rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        line-height: 1;
+        text-decoration: none;
+      }
+
+      .document-action-button i {
+        font-size: 0.8rem;
       }
 
       .criteria-row {
@@ -757,6 +796,11 @@
           max-width: 100%;
         }
 
+        .document-action-button {
+          width: 100%;
+          justify-content: center;
+        }
+
         .total-score-overlay__value {
           font-size: 1rem;
         }
@@ -798,37 +842,28 @@
                 <div class="actions-cell document-actions">
                   <?php if (!empty($applicationPdfPath)): ?>
                     <div class="document-action-group">
-                      <span class="document-action-label">Risposta</span>
-                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=application" title="Scarica risposta" aria-label="Scarica risposta"><i class="fas fa-download" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button document-action-button" href="application_download.php?id=<?php echo $application_id; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i><span>Risposta</span></a>
                     </div>
                   <?php else: ?>
                     <span class="text-muted">Risposta non disponibile</span>
                   <?php endif; ?>
                   <?php if (!empty($budgetPdfPath)): ?>
                     <div class="document-action-group">
-                      <span class="document-action-label">Budget</span>
-                      <?php if ($isBudgetPdf): ?>
-                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=budget&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                      <?php endif; ?>
-                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=budget" title="Scarica budget" aria-label="Scarica budget"><i class="fas fa-download" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button document-action-button" href="<?php echo htmlspecialchars($budgetViewHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i><span>Budget</span></a>
                     </div>
                   <?php else: ?>
                     <span class="text-muted">Budget non disponibile</span>
                   <?php endif; ?>
                   <?php if (!empty($cronoprogrammaPdfPath)): ?>
                     <div class="document-action-group">
-                      <span class="document-action-label">Cronoprogr.</span>
-                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i></a>
-                      <a class="page-button secondary-button page-button--icon" href="application_download.php?id=<?php echo $application_id; ?>&type=cronoprogramma" title="Scarica cronoprogramma" aria-label="Scarica cronoprogramma"><i class="fas fa-download" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button document-action-button" href="application_download.php?id=<?php echo $application_id; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i><span>Cronoprogr.</span></a>
                     </div>
                   <?php else: ?>
                     <span class="text-muted">Cronoprogramma non disponibile</span>
                   <?php endif; ?>
                   <?php if (!empty($checklistPath)): ?>
                     <div class="document-action-group">
-                      <span class="document-action-label">Checklist</span>
-                      <a class="page-button secondary-button page-button--icon" href="application_checklist_download.php?id=<?php echo $application_id; ?>" target="_blank" rel="noopener noreferrer" title="Apri checklist" aria-label="Apri checklist"><i class="fas fa-eye" aria-hidden="true"></i></a>
+                      <a class="page-button secondary-button document-action-button" href="application_checklist_download.php?id=<?php echo $application_id; ?>" target="_blank" rel="noopener noreferrer" title="Apri checklist" aria-label="Apri checklist"><i class="fas fa-eye" aria-hidden="true"></i><span>Checklist</span></a>
                     </div>
                   <?php endif; ?>
                 </div>
@@ -1376,6 +1411,9 @@
         const incompleteMessage = 'valutazione incompleta: valutazione non inviabile';
         let activeStepIndex = 0;
         let hasUnsavedChanges = false;
+        let allowHistoryBackNavigation = false;
+        let suppressBeforeUnloadPrompt = false;
+        const unsavedChangesMessage = 'Hai modificato la valutazione. Uscendo senza salvare perderai le modifiche. Vuoi continuare?';
 
         const markUnsavedChanges = () => {
           hasUnsavedChanges = true;
@@ -1383,6 +1421,20 @@
 
         const resetUnsavedChanges = () => {
           hasUnsavedChanges = false;
+        };
+
+        const releaseBeforeUnloadSuppression = () => {
+          window.setTimeout(() => {
+            suppressBeforeUnloadPrompt = false;
+          }, 0);
+        };
+
+        const canLeavePage = () => {
+          if (!hasUnsavedChanges) {
+            return true;
+          }
+
+          return window.confirm(unsavedChangesMessage);
         };
 
         const handleBackNavigation = (event) => {
@@ -1397,15 +1449,37 @@
           const destination = event.currentTarget.getAttribute('data-destination')
             || event.currentTarget.getAttribute('href')
             || 'evaluations.php';
-          if (!hasUnsavedChanges) {
+          if (canLeavePage()) {
+            resetUnsavedChanges();
             window.location.assign(destination);
+          }
+        };
+
+        const handleBrowserBackNavigation = () => {
+          if (allowHistoryBackNavigation) {
+            allowHistoryBackNavigation = false;
             return;
           }
 
-          const shouldLeave = window.confirm('Hai modificato la valutazione. Uscendo senza salvare perderai le modifiche. Vuoi continuare?');
-          if (shouldLeave) {
-            window.location.assign(destination);
+          suppressBeforeUnloadPrompt = true;
+          if (!canLeavePage()) {
+            window.history.pushState({ evaluationFormGuard: true }, '', window.location.href);
+            releaseBeforeUnloadSuppression();
+            return;
           }
+
+          resetUnsavedChanges();
+          allowHistoryBackNavigation = true;
+          window.history.back();
+        };
+
+        const installBrowserBackGuard = () => {
+          if (!window.history || typeof window.history.pushState !== 'function') {
+            return;
+          }
+
+          window.history.pushState({ evaluationFormGuard: true }, '', window.location.href);
+          window.addEventListener('popstate', handleBrowserBackNavigation);
         };
 
         const clampScore = (value) => {
@@ -1954,6 +2028,17 @@
         if (backLink) {
           backLink.addEventListener('click', handleBackNavigation);
         }
+
+        installBrowserBackGuard();
+
+        window.addEventListener('beforeunload', (event) => {
+          if (!hasUnsavedChanges || suppressBeforeUnloadPrompt) {
+            return;
+          }
+
+          event.preventDefault();
+          event.returnValue = '';
+        });
 
         form.addEventListener('submit', async function (event) {
           const submitter = event.submitter || null;
