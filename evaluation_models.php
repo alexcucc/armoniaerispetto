@@ -327,7 +327,7 @@ function evaluationGetV4Definition(): array
                     'anti_poaching_illegal_traffic_score' => [
                         'label' => "Lotta al bracconaggio es al traffico illegale di animali",
                         'weight' => 8,
-                        'help' => '',
+                        'help' => "Azioni di contrasto al bracconaggio e al traffico illegale di animali, comprese attività di prevenzione, controllo, segnalazione, repressione e collaborazione con le autorità competenti.",
                     ],
                     'infrastructure_impact_mitigation_score' => [
                         'label' => 'Mitigazione impatto infrastrutture',
