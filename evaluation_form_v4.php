@@ -117,11 +117,12 @@ function v4RenderScoreInput(string $sectionKey, string $fieldName, string $label
 
 function v4RenderBadges(array $criterionDefinition): void
 {
+    $bounds = evaluationGetV4FieldBounds($criterionDefinition);
+    echo '<span class="criteria-weight-badge criteria-weight-badge--range">Range: ' . htmlspecialchars((string) $bounds['min'], ENT_QUOTES, 'UTF-8') . ' / ' . htmlspecialchars((string) $bounds['max'], ENT_QUOTES, 'UTF-8') . '</span>';
+
     if (isset($criterionDefinition['weight'])) {
         echo '<span class="criteria-weight-badge">Peso: ' . htmlspecialchars((string) $criterionDefinition['weight'], ENT_QUOTES, 'UTF-8') . '</span><span class="criteria-weighted-score" aria-live="polite">Voto pesato: 0</span>';
     }
-    $bounds = evaluationGetV4FieldBounds($criterionDefinition);
-    echo '<span class="criteria-weight-badge criteria-weight-badge--range">Range: ' . htmlspecialchars((string) $bounds['min'], ENT_QUOTES, 'UTF-8') . ' / ' . htmlspecialchars((string) $bounds['max'], ENT_QUOTES, 'UTF-8') . '</span>';
 }
 
 function v4RenderSectionDescription(array $sectionDefinition): void
@@ -155,13 +156,642 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 <?php include 'common-head.php'; ?>
 <title>Invia la Valutazione</title>
 <style>
-.contact-form-container.evaluation-page{margin:.1rem 0 .05rem;padding:.06rem .38rem .1rem}.total-score-overlay{background:#fff;border:1px solid #d1d5db;border-radius:.58rem;padding:.32rem .42rem;box-shadow:0 8px 18px rgba(15,23,42,.1);font-weight:600;font-size:.78rem;color:#1f2937;text-align:center}.total-score-overlay__group{display:flex;flex-direction:column;gap:.03rem;padding:.04rem 0}.total-score-overlay__group--thematic{margin-top:.04rem;padding-top:.16rem;border-top:1px dashed #e5e7eb}.total-score-overlay__label{display:block;font-size:.68rem;font-weight:500;color:#4b5563;margin-bottom:.04rem;letter-spacing:.015em}.total-score-overlay__value-row{display:inline-flex;align-items:baseline;justify-content:center;gap:.18rem}.total-score-overlay__value{font-size:.96rem;color:#0c4a6e}.total-score-overlay__separator{font-size:.84rem;color:#64748b}.total-score-overlay__max{font-size:.84rem;color:#0f172a}.evaluation-header{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:.3rem;margin-bottom:.05rem}.evaluation-header__main{grid-column:2;min-width:0;text-align:center}.evaluation-header__title-row{display:flex;align-items:center;justify-content:center;gap:.26rem;flex-wrap:wrap}.evaluation-header h2{margin:0;text-align:center;font-size:clamp(.95rem,1.4vw,1.14rem);line-height:1.16}.evaluation-subject-name{margin:0;display:inline-flex;align-items:center;justify-content:center;gap:.18rem;padding:.1rem .4rem;border-radius:9999px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;font-size:.81rem;font-weight:700;line-height:1.1}.evaluation-status-panel{grid-column:3;justify-self:end}.evaluation-status-panel__note,.criteria-range-note,.form-text p{margin-top:.12rem;font-size:.74rem;line-height:1.18;color:#64748b}.section-note-text{margin:.1rem 0 .14rem;font-size:.74rem;line-height:1.24;color:#475569;white-space:pre-wrap}.section-note-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.5rem;padding:.26rem .34rem;margin:0 0 .14rem}.section-note-panel__title{margin:0 0 .14rem;font-size:.76rem;font-weight:700;color:#0f172a}.section-note-panel__lead,.section-note-panel__line{margin:0;font-size:.74rem;line-height:1.24;color:#475569}.section-note-panel__example-list{display:grid;gap:.12rem;margin-top:.18rem}.criteria-help-copy{margin:0;white-space:pre-wrap}.evaluation-shell{display:flex;flex-direction:column;gap:.1rem}.evaluation-layout{--evaluation-sidebar-width:168px;--evaluation-layout-gap:.36rem;display:grid;grid-template-columns:minmax(0,1fr) minmax(156px,var(--evaluation-sidebar-width));gap:var(--evaluation-layout-gap);align-items:start;flex:1 1 auto;overflow:hidden}.evaluation-content{min-width:0;max-height:calc(100vh - 6.9rem);overflow-y:auto;overflow-x:hidden;padding-right:.06rem}.evaluation-sidebar{position:sticky;top:calc(var(--header-height,70px) + .12rem);display:flex;flex-direction:column;gap:.16rem;align-items:stretch;min-width:156px;z-index:1100}.contact-form{padding-bottom:.08rem}.evaluation-step{display:none}.evaluation-step.active{display:block}.evaluation-step h3{margin:0 0 .28rem;transform:translateX(calc((var(--evaluation-sidebar-width) + var(--evaluation-layout-gap))/2));display:flex;align-items:center;justify-content:center;gap:.32rem;flex-wrap:wrap;padding:.48rem .8rem;border:1px solid #bae6fd;border-radius:.72rem;background:linear-gradient(135deg,#f0f9ff,#fff);box-shadow:0 10px 24px rgba(14,165,233,.08);text-align:center;line-height:1.16;font-size:1.02rem;font-weight:800;color:#0f172a}.evaluation-step .form-group + .form-group{margin-top:.18rem}.evaluation-actions{background:rgba(255,255,255,.95);border:1px solid #e5e7eb;box-shadow:0 4px 12px rgba(15,23,42,.12);padding:.2rem .24rem;display:flex;flex-direction:column;gap:.14rem;border-radius:.5rem}.evaluation-actions__nav,.evaluation-actions__main{display:flex;align-items:stretch;gap:.14rem;flex-direction:column}.evaluation-actions__nav .page-button{background:#0ea5e9;color:#fff;border:none;padding:.3rem .4rem;border-radius:.34rem;font-weight:600;cursor:pointer;font-size:.74rem}.evaluation-actions__nav .page-button:disabled{opacity:.6;cursor:not-allowed}.evaluation-actions .submit-btn,.evaluation-actions .page-button{width:100%;min-width:0;padding:.2rem .3rem;font-size:.68rem;line-height:1.15}.document-actions{display:flex;align-items:center;justify-content:center;gap:.45rem;flex-wrap:wrap}.document-action-group{display:flex}.document-action-button{display:inline-flex;align-items:center;gap:.34rem;padding:.24rem .58rem;border-radius:9999px;font-size:.72rem;font-weight:700;line-height:1;text-decoration:none}.document-action-button i{font-size:.78rem}.score-input{width:100%;max-width:68px;padding:.22rem .28rem;border-radius:.4rem;border:1px solid #cbd5e1;font-weight:600;font-size:.8rem}.score-input:focus,.criterion-note-textarea:focus{outline:2px solid #0ea5e9;outline-offset:1px;border-color:#0ea5e9}.criteria-weight-badge,.section-weight-badge{display:inline-flex;align-items:center;padding:.05rem .28rem;margin-left:.15rem;border-radius:9999px;background:#ecfeff;color:#0ea5e9;font-weight:700;font-size:.72rem;border:1px solid #bae6fd}.criteria-weight-badge--negative{background:#fef2f2;border-color:#fecaca;color:#b91c1c}.criteria-weight-badge--range{background:#f8fafc;border-color:#e2e8f0;color:#475569}.criteria-weighted-score{display:inline-flex;align-items:center;padding:.05rem .28rem;margin-left:.15rem;border-radius:9999px;background:#fef3c7;color:#b45309;font-weight:700;font-size:.72rem;border:1px solid #fde68a}.section-weight-badge{margin-left:0}.criteria-row{display:flex;align-items:flex-start;gap:.24rem;flex-wrap:wrap}.criteria-row__label{flex:1 1 220px;min-width:0}.criteria-row__input{flex:0 0 70px;display:flex;align-items:center;justify-content:flex-end}.criteria-row__weight{flex:1 1 150px;display:flex;align-items:center;gap:.14rem;flex-wrap:wrap}.criteria-row__actions{display:flex;align-items:center;gap:.14rem;flex-wrap:wrap;margin-left:auto}.criteria-label{display:inline-flex;align-items:flex-start;gap:.18rem;margin:0;line-height:1.12;font-size:.77rem}.criteria-info-toggle,.criterion-note-toggle,.criteria-info-placeholder{background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;border-radius:.4rem;padding:.12rem .3rem;font-weight:700;font-size:.63rem;cursor:pointer}.criteria-info-placeholder{visibility:hidden;pointer-events:none}.criteria-info-content,.criterion-note-panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:.5rem;padding:.24rem .32rem;font-size:.72rem;color:#0f172a;margin-top:.12rem}.criteria-info-text{margin:0;white-space:pre-wrap}.criterion-note-actions{margin-top:0}.criterion-note-panel{padding:.28rem .32rem}.criterion-note-textarea{display:block;width:100%;max-width:100%;box-sizing:border-box;min-height:92px;padding:.38rem .44rem;border-radius:.4rem;border:1px solid #cbd5e1;resize:vertical}.evaluation-success-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;z-index:9999}.evaluation-success-modal-content{background:#fff;border-radius:.75rem;padding:1.2rem 1.4rem;width:min(420px,calc(100vw - 2rem));text-align:center;box-shadow:0 18px 40px rgba(15,23,42,.22)}.evaluation-success-modal-icon{font-size:2rem;margin-bottom:.4rem}@media (max-width:1000px){.evaluation-header{grid-template-columns:1fr}.evaluation-header__main,.evaluation-status-panel{grid-column:1}.evaluation-status-panel{justify-self:stretch}.evaluation-layout{grid-template-columns:1fr;gap:.22rem;overflow:visible}.evaluation-step h3{transform:none}.evaluation-sidebar{order:-1;position:sticky;top:calc(var(--header-height,70px) + .12rem);min-width:0;z-index:1200}.evaluation-content{max-height:calc(100vh - 10.9rem);overflow-y:auto;padding-right:.04rem}.evaluation-status-panel__note{display:none}}@media (max-width:640px){.criteria-row__label,.criteria-row__input,.criteria-row__weight{flex:1 1 100%}.criteria-row__input{justify-content:flex-start}.score-input{max-width:100%}.document-action-button{width:100%;justify-content:center}}
+.contact-form-container.evaluation-page {
+  margin: 0.1rem 0 0.05rem;
+  padding: 0.06rem 0.38rem 0.1rem;
+}
+
+.contact-form-container.evaluation-page .form-label {
+  font-size: 0.95rem;
+}
+
+.total-score-overlay {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.58rem;
+  padding: 0.32rem 0.42rem;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #1f2937;
+  text-align: center;
+}
+
+.total-score-overlay__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.03rem;
+  padding: 0.04rem 0;
+}
+
+.total-score-overlay__group--thematic {
+  margin-top: 0.04rem;
+  padding-top: 0.16rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.total-score-overlay__label {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.04rem;
+  letter-spacing: 0.015em;
+}
+
+.total-score-overlay__value-row {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.18rem;
+}
+
+.total-score-overlay__value {
+  font-size: 1.08rem;
+  color: #0c4a6e;
+}
+
+.total-score-overlay__separator {
+  font-size: 0.96rem;
+  color: #64748b;
+}
+
+.total-score-overlay__max {
+  font-size: 0.96rem;
+  color: #0f172a;
+}
+
+.evaluation-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.05rem;
+}
+
+.evaluation-header__main {
+  grid-column: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.evaluation-header__title-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.14rem;
+}
+
+.evaluation-header h2 {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(0.8rem, 1.1vw, 0.94rem);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.evaluation-subject-name {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  padding: 0.22rem 0.72rem;
+  border-radius: 9999px;
+  border: 1px solid #c7d9c7;
+  background: linear-gradient(135deg, #f3faf4, #edf7ef);
+  color: #1f3b25;
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.15;
+  box-shadow: 0 8px 18px rgba(69, 102, 74, 0.12);
+}
+
+.evaluation-subject-name__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4b6a52;
+}
+
+.evaluation-subject-name strong {
+  font-weight: 800;
+}
+
+.evaluation-status-panel {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.evaluation-status-panel__note,
+.criteria-range-note,
+.form-text p {
+  margin-top: 0.12rem;
+  font-size: 0.74rem;
+  line-height: 1.18;
+  color: #64748b;
+}
+
+.section-note-text {
+  margin: 0.1rem 0 0.14rem;
+  font-size: 0.74rem;
+  line-height: 1.24;
+  color: #475569;
+  white-space: pre-wrap;
+}
+
+.section-note-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.26rem 0.34rem;
+  margin: 0 0 0.14rem;
+}
+
+.section-note-panel__title {
+  margin: 0 0 0.14rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.section-note-panel__lead,
+.section-note-panel__line {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.24;
+  color: #475569;
+}
+
+.section-note-panel__example-list {
+  display: grid;
+  gap: 0.12rem;
+  margin-top: 0.18rem;
+}
+
+.criteria-help-copy {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.36;
+  white-space: pre-wrap;
+}
+
+.evaluation-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.evaluation-layout {
+  --evaluation-sidebar-width: 168px;
+  --evaluation-layout-gap: 0.36rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(156px, var(--evaluation-sidebar-width));
+  gap: var(--evaluation-layout-gap);
+  align-items: start;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.evaluation-content {
+  min-width: 0;
+  max-height: calc(100vh - 6.9rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.06rem;
+}
+
+.evaluation-sidebar {
+  position: fixed;
+  top: calc(var(--header-height, 70px) + 0.12rem);
+  right: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+  align-items: stretch;
+  width: var(--evaluation-sidebar-width);
+  min-width: 156px;
+  z-index: 1100;
+}
+
+.contact-form {
+  padding-bottom: 0.08rem;
+}
+
+.evaluation-step {
+  display: none;
+}
+
+.evaluation-step.active {
+  display: block;
+}
+
+.evaluation-step h3 {
+  margin: 0 0 0.28rem;
+  transform: translateX(calc((var(--evaluation-sidebar-width) + var(--evaluation-layout-gap)) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  flex-wrap: wrap;
+  padding: 0.48rem 0.8rem;
+  border: 1px solid #bfd2c0;
+  border-radius: 0.72rem;
+  background: linear-gradient(135deg, #eef6ef, #ffffff);
+  box-shadow: 0 10px 24px rgba(92, 123, 97, 0.12);
+  text-align: center;
+  line-height: 1.16;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #274232;
+}
+
+.evaluation-step .form-group + .form-group {
+  margin-top: 0.18rem;
+}
+
+.evaluation-actions {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  padding: 0.2rem 0.24rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+  border-radius: 0.5rem;
+}
+
+.evaluation-actions__nav,
+.evaluation-actions__main {
+  display: flex;
+  align-items: stretch;
+  gap: 0.14rem;
+  flex-direction: column;
+}
+
+.evaluation-actions__nav .page-button {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.4rem;
+  border-radius: 0.34rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+
+.evaluation-actions__nav .page-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.evaluation-actions .submit-btn,
+.evaluation-actions .page-button {
+  width: 100%;
+  min-width: 0;
+  padding: 0.2rem 0.3rem;
+  font-size: 0.88rem;
+  line-height: 1.15;
+}
+
+.score-input {
+  width: 100%;
+  max-width: 68px;
+  padding: 0.24rem 0.32rem;
+  border-radius: 0.4rem;
+  border: 1px solid #cbd5e1;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.score-input:focus,
+.criterion-note-textarea:focus {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 1px;
+  border-color: #0ea5e9;
+}
+
+.criteria-weight-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.08rem 0.34rem;
+  margin-left: 0.15rem;
+  border-radius: 9999px;
+  background: #ecfeff;
+  color: #0ea5e9;
+  font-weight: 700;
+  font-size: 0.84rem;
+  white-space: nowrap;
+  border: 1px solid #bae6fd;
+}
+
+.section-weight-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.05rem 0.32rem;
+  margin-left: 0;
+  border-radius: 9999px;
+  background: #f4fbf5;
+  color: #2f5a3d;
+  font-weight: 700;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  border: 1px solid #c8ddca;
+}
+
+.criteria-weight-badge--negative {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.criteria-weight-badge--range {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.criteria-weighted-score {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.08rem 0.34rem;
+  margin-left: 0.15rem;
+  border-radius: 9999px;
+  background: #fef3c7;
+  color: #b45309;
+  font-weight: 700;
+  font-size: 0.84rem;
+  white-space: nowrap;
+  border: 1px solid #fde68a;
+}
+
+.criteria-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.26rem;
+  flex-wrap: wrap;
+}
+
+.criteria-row__label {
+  flex: 0 1 180px;
+  min-width: 0;
+}
+
+.criteria-row__input {
+  flex: 0 0 72px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.criteria-row__weight {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.14rem;
+  flex-wrap: nowrap;
+}
+
+.criteria-row__weight .criteria-weight-badge,
+.criteria-row__weight .criteria-weighted-score {
+  flex: 0 0 auto;
+}
+
+.criteria-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.14rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.criteria-label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.18rem;
+  margin: 0;
+  line-height: 1.18;
+  font-size: 0.95rem;
+}
+
+.criteria-info-toggle,
+.criterion-note-toggle,
+.criteria-info-placeholder {
+  display: inline-flex;
+  align-items: center;
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 0.4rem;
+  padding: 0.22rem 0.48rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.criteria-info-placeholder {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.criteria-info-content,
+.criterion-note-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.24rem 0.32rem;
+  color: #111827;
+  margin-top: 0.12rem;
+}
+
+.criteria-info-content {
+  font-size: 0.9rem;
+  line-height: 1.34;
+}
+
+.criteria-info-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.34;
+  color: #111827;
+  white-space: pre-wrap;
+}
+
+.criteria-info-content p,
+.criteria-info-content ul,
+.criteria-info-content li,
+.criteria-info-content .criteria-help-copy,
+.criteria-info-content .criteria-range-note {
+  font-size: 0.9rem;
+  line-height: 1.34;
+  color: #111827;
+}
+
+.criterion-note-actions {
+  margin-top: 0;
+}
+
+.criterion-note-panel {
+  padding: 0.28rem 0.32rem;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.criterion-note-textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 92px;
+  padding: 0.38rem 0.44rem;
+  border-radius: 0.4rem;
+  border: 1px solid #cbd5e1;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+@media (min-width: 1001px) {
+  .criteria-row {
+    display: grid;
+    grid-template-columns: minmax(180px, 280px) 72px minmax(260px, 290px) minmax(132px, 148px);
+    align-items: start;
+    column-gap: 0.26rem;
+    row-gap: 0;
+  }
+
+  .criteria-row__label,
+  .criteria-row__input,
+  .criteria-row__weight,
+  .criteria-row__actions {
+    min-width: 0;
+  }
+
+  .criteria-row__input {
+    justify-content: center;
+  }
+
+  .criteria-row__weight {
+    width: 100%;
+    justify-self: start;
+  }
+
+  .criteria-row__actions {
+    margin-left: 0;
+    width: 100%;
+    justify-self: start;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
+}
+
+.evaluation-success-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.evaluation-success-modal-content {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 1.2rem 1.4rem;
+  width: min(420px, calc(100vw - 2rem));
+  text-align: center;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+}
+
+.evaluation-success-modal-icon {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+@media (max-width: 1000px) {
+  .evaluation-header {
+    grid-template-columns: 1fr;
+  }
+
+  .evaluation-header__main {
+    grid-column: 1;
+  }
+
+  .evaluation-layout {
+    grid-template-columns: 1fr;
+    gap: 0.22rem;
+    overflow: visible;
+  }
+
+  .evaluation-step h3 {
+    transform: none;
+  }
+
+  .evaluation-sidebar {
+    order: -1;
+    position: sticky;
+    top: calc(var(--header-height, 70px) + 0.12rem);
+    right: auto;
+    width: auto;
+    min-width: 0;
+    z-index: 1200;
+  }
+
+  .evaluation-content {
+    max-height: calc(100vh - 10.9rem);
+    overflow-y: auto;
+    padding-right: 0.04rem;
+  }
+}
+
+@media (max-width: 1200px) and (min-width: 1001px) {
+  .evaluation-layout {
+    --evaluation-sidebar-width: 148px;
+    --evaluation-layout-gap: 0.22rem;
+  }
+
+  .evaluation-sidebar {
+    right: 0.45rem;
+    min-width: 148px;
+  }
+
+  .criteria-row {
+    gap: 0.18rem;
+  }
+
+  .criteria-row__label {
+    flex: 1 1 200px;
+  }
+}
+
+@media (max-width: 640px) {
+  .criteria-row__label,
+  .criteria-row__input,
+  .criteria-row__weight {
+    flex: 1 1 100%;
+  }
+
+  .criteria-row__input {
+    justify-content: flex-start;
+  }
+
+  .score-input {
+    max-width: 100%;
+  }
+}
 </style>
 </head>
 <body>
 <?php include 'header.php'; ?>
 <main>
-<div class="contact-form-container evaluation-page"><div class="evaluation-shell"><div class="button-container"><a href="evaluations.php" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php">Indietro</a></div><form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post"><input type="hidden" name="application_id" value="<?php echo $applicationId; ?>"><?php if ($existingEvaluationId !== null): ?><input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>"><?php endif; ?><div class="evaluation-header"><div class="evaluation-header__main"><div class="evaluation-header__title-row"><h2>Valutazione progetto</h2><p class="evaluation-subject-name">Ente: <strong><?php echo htmlspecialchars($entityName); ?></strong></p></div><div class="form-group"><label class="form-label">Documenti della risposta</label><div class="actions-cell document-actions"><?php if (!empty($applicationPdfPath)): ?><div class="document-action-group"><a class="page-button secondary-button document-action-button" href="application_download.php?id=<?php echo $applicationId; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i><span>Risposta</span></a></div><?php endif; ?><?php if (!empty($budgetPdfPath)): ?><div class="document-action-group"><a class="page-button secondary-button document-action-button" href="<?php echo htmlspecialchars($budgetViewHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i><span>Budget</span></a></div><?php endif; ?><?php if (!empty($cronoprogrammaPdfPath)): ?><div class="document-action-group"><a class="page-button secondary-button document-action-button" href="application_download.php?id=<?php echo $applicationId; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i><span>Cronoprogr.</span></a></div><?php endif; ?><?php if (!empty($checklistPath)): ?><div class="document-action-group"><a class="page-button secondary-button document-action-button" href="application_checklist_download.php?id=<?php echo $applicationId; ?>" target="_blank" rel="noopener noreferrer" title="Apri checklist" aria-label="Apri checklist"><i class="fas fa-eye" aria-hidden="true"></i><span>Checklist</span></a></div><?php endif; ?></div></div></div><div class="evaluation-status-panel evaluation-status-panel--<?php echo htmlspecialchars($displayStatusClass); ?>"><span class="evaluation-status-panel__label">Stato valutazione</span><span class="evaluation-status-badge evaluation-status-badge--<?php echo htmlspecialchars($displayStatusClass); ?>"><?php echo htmlspecialchars($displayStatusLabel); ?></span><p class="evaluation-status-panel__note"><?php echo htmlspecialchars($displayStatusNote); ?></p></div></div><div class="evaluation-layout"><div class="evaluation-content">
+<div class="contact-form-container evaluation-page"><div class="evaluation-shell"><div class="button-container"><a href="evaluations.php" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php">Indietro</a></div><form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post"><input type="hidden" name="application_id" value="<?php echo $applicationId; ?>"><?php if ($existingEvaluationId !== null): ?><input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>"><?php endif; ?><div class="evaluation-header"><div class="evaluation-header__main"><div class="evaluation-header__title-row"><h2>Valutazione progetto</h2><p class="evaluation-subject-name"><span class="evaluation-subject-name__label">Ente</span><strong><?php echo htmlspecialchars($entityName); ?></strong></p></div></div></div><div class="evaluation-layout"><div class="evaluation-content">
 <?php $stepIndex = 0; foreach ($sections as $sectionKey => $sectionDefinition): ?>
 <div class="evaluation-step<?php echo $stepIndex === 0 ? ' active' : ''; ?>" data-step-index="<?php echo $stepIndex; ?>" data-section-key="<?php echo htmlspecialchars($sectionKey); ?>" data-section-type="<?php echo htmlspecialchars((string) $sectionDefinition['type']); ?>" data-section-max="<?php echo htmlspecialchars((string) $sectionDefinition['max']); ?>" data-score-step="1"><h3><?php echo htmlspecialchars($sectionDefinition['label']); ?><span class="section-weight-badge"><?php echo (($sectionDefinition['type'] ?? '') === 'thematic') ? 'Max categoria' : 'Max sezione'; ?>: <?php echo htmlspecialchars((string) $sectionDefinition['max']); ?></span></h3><?php v4RenderSectionDescription($sectionDefinition); ?><?php foreach ($sectionDefinition['criteria'] as $fieldName => $criterionDefinition): ?><div class="form-group"><label class="form-label<?php echo (($sectionDefinition['type'] ?? '') !== 'thematic') ? ' required' : ''; ?>"><?php echo htmlspecialchars($criterionDefinition['label']); ?> <?php v4RenderBadges($criterionDefinition); ?></label><?php v4RenderScoreInput($sectionKey, $fieldName, $criterionDefinition['label'], $criterionDefinition, $evaluationData[$sectionKey]['scores'][$fieldName] ?? null); ?><?php if (!empty($criterionDefinition['help']) || evaluationGetV4FieldBounds($criterionDefinition)['min'] < 0): $bounds = evaluationGetV4FieldBounds($criterionDefinition); ?><small class="form-text"><?php if (!empty($criterionDefinition['help'])): ?><p class="criteria-help-copy"><?php echo htmlspecialchars($criterionDefinition['help']); ?></p><?php endif; ?><p class="criteria-range-note">Intervallo consentito: <?php echo htmlspecialchars((string) $bounds['min']); ?> - <?php echo htmlspecialchars((string) $bounds['max']); ?></p></small><?php endif; ?></div><div class="form-group criterion-note-group"><?php $criterionNoteValue = (string) ($evaluationData[$sectionKey]['criterion_notes'][$fieldName] ?? ''); $hasCriterionNote = trim($criterionNoteValue) !== ''; ?><div class="criterion-note-actions"><button type="button" class="criterion-note-toggle" aria-expanded="<?php echo $hasCriterionNote ? 'true' : 'false'; ?>" aria-controls="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"><?php echo $hasCriterionNote ? 'Modifica nota' : 'Aggiungi nota'; ?></button></div><div class="criterion-note-panel" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"<?php echo $hasCriterionNote ? '' : ' hidden'; ?>><label class="form-label" for="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>">Nota (opzionale)</label><textarea class="criterion-note-textarea" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>" name="<?php echo htmlspecialchars($sectionKey . '_criterion_notes[' . $fieldName . ']'); ?>"><?php echo htmlspecialchars($criterionNoteValue); ?></textarea></div></div><?php endforeach; ?></div>
 <?php $stepIndex++; endforeach; ?>
@@ -461,7 +1091,18 @@ function v4RenderSectionDescription(array $sectionDefinition): void
       group.appendChild(row);
 
       if (description) {
-        description.classList.add('criteria-info-text');
+        const infoDescription = description.tagName === 'SMALL'
+          ? (() => {
+              const wrapper = document.createElement('div');
+              wrapper.className = description.className;
+              while (description.firstChild) {
+                wrapper.appendChild(description.firstChild);
+              }
+              return wrapper;
+            })()
+          : description;
+
+        infoDescription.classList.add('criteria-info-text');
 
         const infoButton = document.createElement('button');
         infoButton.type = 'button';
@@ -472,7 +1113,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
         const infoContent = document.createElement('div');
         infoContent.className = 'criteria-info-content';
         infoContent.hidden = true;
-        infoContent.appendChild(description);
+        infoContent.appendChild(infoDescription);
 
         infoButton.addEventListener('click', () => {
           const hidden = infoContent.hidden;

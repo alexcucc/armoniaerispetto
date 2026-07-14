@@ -334,7 +334,7 @@
         padding: 0.45rem 0.62rem;
         box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
         font-weight: 600;
-        font-size: 0.84rem;
+        font-size: 0.92rem;
         color: #1f2937;
         text-align: center;
       }
@@ -354,7 +354,7 @@
 
       .total-score-overlay__label {
         display: block;
-        font-size: 0.74rem;
+        font-size: 0.86rem;
         font-weight: 500;
         color: #4b5563;
         margin-bottom: 0.08rem;
@@ -369,47 +369,51 @@
       }
 
       .total-score-overlay__value {
-        font-size: 1.1rem;
+        font-size: 1.08rem;
         color: #0c4a6e;
       }
 
       .total-score-overlay__separator {
-        font-size: 0.95rem;
+        font-size: 0.96rem;
         color: #64748b;
       }
 
       .total-score-overlay__max {
-        font-size: 0.94rem;
+        font-size: 0.96rem;
         color: #0f172a;
       }
 
       .evaluation-header {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
         align-items: center;
         gap: 0.45rem;
         margin-bottom: 0.12rem;
       }
 
       .evaluation-header__main {
-        grid-column: 2;
+        grid-column: 1;
         min-width: 0;
         text-align: center;
       }
 
       .evaluation-header__title-row {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 0.45rem;
-        flex-wrap: wrap;
+        gap: 0.16rem;
       }
 
       .evaluation-header h2 {
         margin: 0;
         text-align: center;
-        font-size: clamp(0.98rem, 1.45vw, 1.18rem);
-        line-height: 1.2;
+        font-size: clamp(0.82rem, 1.15vw, 0.98rem);
+        line-height: 1.1;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #64748b;
       }
 
       .evaluation-subject-name {
@@ -417,20 +421,24 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.2rem;
-        padding: 0.16rem 0.55rem;
+        gap: 0.32rem;
+        padding: 0.22rem 0.72rem;
         border-radius: 9999px;
-        border: 1px solid #bfdbfe;
-        background: #eff6ff;
-        color: #1e3a8a;
-        font-size: 0.84rem;
-        font-weight: 700;
-        line-height: 1.2;
+        border: 1px solid #c7d9c7;
+        background: linear-gradient(135deg, #f3faf4, #edf7ef);
+        color: #1f3b25;
+        font-size: 1rem;
+        font-weight: 800;
+        line-height: 1.15;
+        box-shadow: 0 8px 18px rgba(69, 102, 74, 0.12);
       }
 
-      .evaluation-status-panel {
-        grid-column: 3;
-        justify-self: end;
+      .evaluation-subject-name__label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #4b6a52;
       }
 
       .evaluation-subject-name strong {
@@ -448,6 +456,10 @@
         display: flex;
         flex-direction: column;
         gap: 0.2rem;
+      }
+
+      .contact-form-container.evaluation-page .form-label {
+        font-size: 0.95rem;
       }
 
       .evaluation-layout {
@@ -470,12 +482,14 @@
       }
 
       .evaluation-sidebar {
-        position: sticky;
+        position: fixed;
         top: calc(var(--header-height, 70px) + 0.2rem);
+        right: 0.75rem;
         display: flex;
         flex-direction: column;
         gap: 0.4rem;
         align-items: stretch;
+        width: var(--evaluation-sidebar-width);
         min-width: 188px;
         z-index: 1100;
       }
@@ -501,15 +515,15 @@
         gap: 0.38rem;
         flex-wrap: wrap;
         padding: 0.58rem 0.95rem;
-        border: 1px solid #bae6fd;
+        border: 1px solid #bfd2c0;
         border-radius: 0.8rem;
-        background: linear-gradient(135deg, #f0f9ff, #ffffff);
-        box-shadow: 0 12px 28px rgba(14, 165, 233, 0.08);
+        background: linear-gradient(135deg, #eef6ef, #ffffff);
+        box-shadow: 0 12px 28px rgba(92, 123, 97, 0.12);
         text-align: center;
         line-height: 1.2;
         font-size: 1.08rem;
         font-weight: 800;
-        color: #0f172a;
+        color: #274232;
       }
 
       .evaluation-step .form-group + .form-group {
@@ -547,7 +561,7 @@
         border-radius: 0.4rem;
         font-weight: 600;
         cursor: pointer;
-        font-size: 0.92rem;
+        font-size: 0.88rem;
       }
 
       .evaluation-actions__nav .page-button:disabled {
@@ -560,7 +574,7 @@
         width: 100%;
         min-width: 7rem;
         padding: 0.34rem 0.52rem;
-        font-size: 0.8rem;
+        font-size: 0.88rem;
       }
 
       .evaluation-actions .submit-btn {
@@ -574,7 +588,7 @@
         border-radius: 0.4rem;
         border: 1px solid #cbd5e1;
         font-weight: 600;
-        font-size: 0.84rem;
+        font-size: 0.95rem;
       }
 
       .score-input:focus {
@@ -583,35 +597,46 @@
         border-color: #0ea5e9;
       }
 
-      .criteria-weight-badge,
-      .section-weight-badge {
+      .criteria-weight-badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.08rem 0.4rem;
+        padding: 0.1rem 0.44rem;
         margin-left: 0.22rem;
         border-radius: 9999px;
         background: #ecfeff;
         color: #0ea5e9;
         font-weight: 700;
-        font-size: 0.78rem;
+        font-size: 0.84rem;
+        white-space: nowrap;
         border: 1px solid #bae6fd;
+      }
+
+      .section-weight-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.08rem 0.4rem;
+        margin-left: 0;
+        border-radius: 9999px;
+        background: #f4fbf5;
+        color: #2f5a3d;
+        font-weight: 700;
+        font-size: 0.78rem;
+        white-space: nowrap;
+        border: 1px solid #c8ddca;
       }
 
       .criteria-weighted-score {
         display: inline-flex;
         align-items: center;
-        padding: 0.08rem 0.4rem;
+        padding: 0.1rem 0.44rem;
         margin-left: 0.2rem;
         border-radius: 9999px;
         background: #fef3c7;
         color: #b45309;
         font-weight: 700;
-        font-size: 0.78rem;
+        font-size: 0.84rem;
+        white-space: nowrap;
         border: 1px solid #fde68a;
-      }
-
-      .section-weight-badge {
-        margin-left: 0;
       }
 
       .document-actions {
@@ -648,7 +673,7 @@
       }
 
       .criteria-row__label {
-        flex: 1 1 220px;
+        flex: 0 1 180px;
         min-width: 0;
       }
 
@@ -660,11 +685,17 @@
       }
 
       .criteria-row__weight {
-        flex: 1 1 150px;
+        flex: 0 1 auto;
+        min-width: 0;
         display: flex;
         align-items: center;
         gap: 0.18rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+      }
+
+      .criteria-row__weight .criteria-weight-badge,
+      .criteria-row__weight .criteria-weighted-score {
+        flex: 0 0 auto;
       }
 
       .criteria-label {
@@ -673,17 +704,20 @@
         gap: 0.2rem;
         margin: 0;
         line-height: 1.18;
-        font-size: 0.8rem;
+        font-size: 0.95rem;
       }
 
       .criteria-info-toggle {
+        display: inline-flex;
+        align-items: center;
         background: #e0f2fe;
         color: #0369a1;
         border: 1px solid #bae6fd;
         border-radius: 0.4rem;
-        padding: 0.18rem 0.42rem;
+        padding: 0.24rem 0.52rem;
         font-weight: 700;
-        font-size: 0.68rem;
+        font-size: 0.88rem;
+        white-space: nowrap;
         cursor: pointer;
       }
 
@@ -696,13 +730,49 @@
         border: 1px solid #e2e8f0;
         border-radius: 0.5rem;
         padding: 0.34rem 0.48rem;
-        font-size: 0.75rem;
-        color: #0f172a;
+        font-size: 0.9rem;
+        line-height: 1.34;
+        color: #111827;
         margin-top: 0.22rem;
+      }
+
+      .criteria-info-text,
+      .criteria-info-content p,
+      .criteria-info-content ul,
+      .criteria-info-content li,
+      .criteria-info-content .form-note {
+        font-size: 0.9rem;
+        line-height: 1.34;
+        color: #111827;
       }
 
       .criteria-info-text ul {
         margin: 0.15rem 0 0.1rem 0.9rem;
+      }
+
+      @media (min-width: 1001px) {
+        .criteria-row {
+          display: grid;
+          grid-template-columns: minmax(180px, 280px) 74px minmax(260px, 290px);
+          align-items: start;
+          column-gap: 0.34rem;
+          row-gap: 0;
+        }
+
+        .criteria-row__label,
+        .criteria-row__input,
+        .criteria-row__weight {
+          min-width: 0;
+        }
+
+        .criteria-row__input {
+          justify-content: center;
+        }
+
+        .criteria-row__weight {
+          width: 100%;
+          justify-self: start;
+        }
       }
 
       .evaluation-step h3:focus {
@@ -716,13 +786,8 @@
           grid-template-columns: 1fr;
         }
 
-        .evaluation-header__main,
-        .evaluation-status-panel {
+        .evaluation-header__main {
           grid-column: 1;
-        }
-
-        .evaluation-status-panel {
-          justify-self: stretch;
         }
 
         .evaluation-layout {
@@ -739,6 +804,8 @@
           order: -1;
           position: sticky;
           top: calc(var(--header-height, 70px) + 0.2rem);
+          right: auto;
+          width: auto;
           min-width: 0;
           z-index: 1200;
         }
@@ -778,6 +845,26 @@
         .total-score-overlay {
           width: 100%;
           max-width: none;
+        }
+      }
+
+      @media (max-width: 1200px) and (min-width: 1001px) {
+        .evaluation-layout {
+          --evaluation-sidebar-width: 168px;
+          --evaluation-layout-gap: 0.42rem;
+        }
+
+        .evaluation-sidebar {
+          right: 0.45rem;
+          min-width: 168px;
+        }
+
+        .criteria-row {
+          gap: 0.24rem;
+        }
+
+        .criteria-row__label {
+          flex: 1 1 200px;
         }
       }
 
@@ -834,47 +921,9 @@
             <div class="evaluation-header__main">
               <div class="evaluation-header__title-row">
                 <h2>Valutazione progetto</h2>
-                <p class="evaluation-subject-name">Ente: <strong><?php echo htmlspecialchars($entity_name); ?></strong></p>
+                <p class="evaluation-subject-name"><span class="evaluation-subject-name__label">Ente</span><strong><?php echo htmlspecialchars($entity_name); ?></strong></p>
               </div>
               <p class="form-note">Tutte le valutazioni utilizzano una scala da 0 (livello minimo) a 10 (livello massimo). Inserisci il punteggio desiderato nel campo numerico accanto a ciascun criterio.</p>
-              <div class="form-group">
-                <label class="form-label">Documenti della risposta</label>
-                <div class="actions-cell document-actions">
-                  <?php if (!empty($applicationPdfPath)): ?>
-                    <div class="document-action-group">
-                      <a class="page-button secondary-button document-action-button" href="application_download.php?id=<?php echo $application_id; ?>&type=application&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri risposta" aria-label="Apri risposta"><i class="fas fa-eye" aria-hidden="true"></i><span>Risposta</span></a>
-                    </div>
-                  <?php else: ?>
-                    <span class="text-muted">Risposta non disponibile</span>
-                  <?php endif; ?>
-                  <?php if (!empty($budgetPdfPath)): ?>
-                    <div class="document-action-group">
-                      <a class="page-button secondary-button document-action-button" href="<?php echo htmlspecialchars($budgetViewHref, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer" title="Apri budget" aria-label="Apri budget"><i class="fas fa-eye" aria-hidden="true"></i><span>Budget</span></a>
-                    </div>
-                  <?php else: ?>
-                    <span class="text-muted">Budget non disponibile</span>
-                  <?php endif; ?>
-                  <?php if (!empty($cronoprogrammaPdfPath)): ?>
-                    <div class="document-action-group">
-                      <a class="page-button secondary-button document-action-button" href="application_download.php?id=<?php echo $application_id; ?>&type=cronoprogramma&mode=inline" target="_blank" rel="noopener noreferrer" title="Apri cronoprogramma" aria-label="Apri cronoprogramma"><i class="fas fa-eye" aria-hidden="true"></i><span>Cronoprogr.</span></a>
-                    </div>
-                  <?php else: ?>
-                    <span class="text-muted">Cronoprogramma non disponibile</span>
-                  <?php endif; ?>
-                  <?php if (!empty($checklistPath)): ?>
-                    <div class="document-action-group">
-                      <a class="page-button secondary-button document-action-button" href="application_checklist_download.php?id=<?php echo $application_id; ?>" target="_blank" rel="noopener noreferrer" title="Apri checklist" aria-label="Apri checklist"><i class="fas fa-eye" aria-hidden="true"></i><span>Checklist</span></a>
-                    </div>
-                  <?php endif; ?>
-                </div>
-              </div>
-            </div>
-            <div class="evaluation-status-panel evaluation-status-panel--<?php echo htmlspecialchars($displayStatusClass); ?>">
-              <span class="evaluation-status-panel__label">Stato valutazione</span>
-              <span class="evaluation-status-badge evaluation-status-badge--<?php echo htmlspecialchars($displayStatusClass); ?>">
-                <?php echo htmlspecialchars($displayStatusLabel); ?>
-              </span>
-              <p class="evaluation-status-panel__note"><?php echo htmlspecialchars($displayStatusNote); ?></p>
             </div>
           </div>
 
@@ -1845,8 +1894,19 @@
             const hasDescription = Boolean(description);
             let infoContent = null;
             if (hasDescription && description) {
-              description.classList.remove('criteria-inline-info');
-              description.classList.add('criteria-info-text');
+              const infoDescription = description.tagName === 'SMALL'
+                ? (() => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = description.className;
+                    while (description.firstChild) {
+                      wrapper.appendChild(description.firstChild);
+                    }
+                    return wrapper;
+                  })()
+                : description;
+
+              infoDescription.classList.remove('criteria-inline-info');
+              infoDescription.classList.add('criteria-info-text');
 
               const infoButton = document.createElement('button');
               infoButton.type = 'button';
@@ -1857,7 +1917,7 @@
               infoContent = document.createElement('div');
               infoContent.className = 'criteria-info-content';
               infoContent.hidden = true;
-              infoContent.appendChild(description);
+              infoContent.appendChild(infoDescription);
 
               infoButton.addEventListener('click', () => {
                 const isHidden = infoContent?.hidden ?? true;
