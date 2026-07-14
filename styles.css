@@ -2096,11 +2096,33 @@ body.bandi-finanziamenti-page .sub-button-container {
   min-width: 600px; /* Ensure minimum width for scrolling */
 }
 
+.users-table.users-table--evaluations {
+  table-layout: fixed;
+}
+
 .users-table th,
 .users-table td {
   padding: 0;
   border-bottom: 1px solid #ddd;
   text-align: center;
+}
+
+.users-table--evaluations .evaluation-column--call {
+  width: 16rem;
+  min-width: 16rem;
+  max-width: 16rem;
+}
+
+.users-table--evaluations .evaluation-column--entity {
+  width: 14rem;
+  min-width: 14rem;
+  max-width: 14rem;
+}
+
+.users-table--evaluations td.evaluation-column {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .users-table td:first-child {

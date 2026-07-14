@@ -146,11 +146,6 @@ $resetUrl = 'evaluations.php?' . http_build_query([
     'order' => strtolower($sortOrder),
 ]);
 
-function isPdfDocumentPath(?string $path): bool
-{
-    return !empty($path) && strtolower((string) pathinfo($path, PATHINFO_EXTENSION)) === 'pdf';
-}
-
 // ----------------------------
 // Evaluations
 // ----------------------------
@@ -438,7 +433,17 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
               </p>
             <?php endif; ?>
             <div class="users-table-container">
-              <table class="users-table">
+              <table class="users-table users-table--evaluations">
+                <colgroup>
+                  <col class="evaluation-column evaluation-column--call">
+                  <col class="evaluation-column evaluation-column--entity">
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                  <col>
+                </colgroup>
                 <thead>
                   <tr>
                     <?php
@@ -452,10 +457,13 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                           $ariaSort = $isActive
                               ? (strtoupper($sortOrder) === 'ASC' ? 'ascending' : 'descending')
                               : 'none';
+                          $columnClass = $field === 'call_title'
+                              ? ' evaluation-column evaluation-column--call'
+                              : ' evaluation-column evaluation-column--entity';
 
                           echo '<th'
                               . ' scope="col"'
-                              . ' class="sortable"'
+                              . ' class="sortable' . $columnClass . '"'
                               . ' data-sort-url="' . htmlspecialchars($link) . '"'
                               . ' aria-sort="' . $ariaSort . '"'
                               . ' tabindex="0"'
@@ -496,8 +504,12 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                         $hasChecklist = !empty($row['checklist_path']);
                       ?>
                       <tr>
-                        <td><?php echo htmlspecialchars($row['call_title']); ?></td>
-                        <td><?php echo htmlspecialchars($row['ente']); ?></td>
+                        <td class="evaluation-column evaluation-column--call" title="<?php echo htmlspecialchars($row['call_title']); ?>">
+                          <?php echo htmlspecialchars($row['call_title']); ?>
+                        </td>
+                        <td class="evaluation-column evaluation-column--entity" title="<?php echo htmlspecialchars($row['ente']); ?>">
+                          <?php echo htmlspecialchars($row['ente']); ?>
+                        </td>
                         <td>
                           <span class="<?php echo htmlspecialchars($statusClass); ?>">
                             <?php echo htmlspecialchars($statusLabel); ?>
@@ -506,14 +518,6 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                         <td>
                           <div class="actions-cell">
                             <?php if ($hasApplicationPdf): ?>
-                              <a
-                                class="page-button secondary-button page-button--icon"
-                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=application&mode=inline"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Apri risposta"
-                                aria-label="Apri risposta"
-                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
                               <a
                                 class="page-button secondary-button page-button--icon"
                                 href="application_download.php?id=<?php echo $row['application_id']; ?>&type=application"
@@ -528,16 +532,6 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                         <td>
                           <div class="actions-cell">
                             <?php if ($hasBudgetPdf): ?>
-                              <?php if (isPdfDocumentPath($row['budget_pdf_path'])): ?>
-                              <a
-                                class="page-button secondary-button page-button--icon"
-                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget&mode=inline"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Apri budget"
-                                aria-label="Apri budget"
-                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
-                              <?php endif; ?>
                               <a
                                 class="page-button secondary-button page-button--icon"
                                 href="application_download.php?id=<?php echo $row['application_id']; ?>&type=budget"
@@ -552,14 +546,6 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                         <td>
                           <div class="actions-cell">
                             <?php if ($hasCronoprogrammaPdf): ?>
-                              <a
-                                class="page-button secondary-button page-button--icon"
-                                href="application_download.php?id=<?php echo $row['application_id']; ?>&type=cronoprogramma&mode=inline"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Apri cronoprogramma"
-                                aria-label="Apri cronoprogramma"
-                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
                               <a
                                 class="page-button secondary-button page-button--icon"
                                 href="application_download.php?id=<?php echo $row['application_id']; ?>&type=cronoprogramma"
@@ -577,18 +563,16 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                               <a
                                 class="page-button secondary-button page-button--icon"
                                 href="application_checklist_download.php?id=<?php echo $row['application_id']; ?>"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Apri checklist"
-                                aria-label="Apri checklist"
-                              ><i class="fas fa-eye" aria-hidden="true"></i></a>
+                                title="Scarica checklist"
+                                aria-label="Scarica checklist"
+                              ><i class="fas fa-download" aria-hidden="true"></i></a>
                             <?php else: ?>
                               <span>Non disponibile</span>
                             <?php endif; ?>
                           </div>
                         </td>
                         <td>
-                          <div class="actions-cell">
+                          <div class="actions-cell actions-cell--single-row">
                             <?php if ($isPending): ?>
                               <a class="page-button" href="evaluation_form.php?application_id=<?php echo $row['application_id']; ?>">Inizia valutazione</a>
                               <a class="page-button secondary-button" href="evaluation_force.php?application_id=<?php echo $row['application_id']; ?>&evaluator_id=<?php echo $currentUserId; ?>&source=evaluations">Forza voto</a>
