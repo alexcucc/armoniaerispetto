@@ -54,7 +54,6 @@ if ((int) ($applicationInfo['evaluator_assigned'] ?? 0) !== 1) {
     exit;
 }
 
-$sections = evaluationGetV4EnabledSections();
 $entityName = trim((string) ($applicationInfo['organization_name'] ?? '')) ?: 'Soggetto proponente';
 $applicationPdfPath = $applicationInfo['application_pdf_path'] ?? null;
 $budgetPdfPath = $applicationInfo['budget_pdf_path'] ?? null;
@@ -71,13 +70,17 @@ if ($existingEvaluation !== null && evaluationIsLegacyModel($existingEvaluation[
     return;
 }
 
-$evaluationData = evaluationV4CreateEmptyData();
+$modelVersion = $existingEvaluation['model_version'] ?? evaluationGetCurrentModelVersion();
+$definition = evaluationGetV4Definition($modelVersion);
+$sections = evaluationGetV4EnabledSections($modelVersion);
+$thematicGeneralDescription = trim((string) ($definition['thematic_general_description'] ?? ''));
+$evaluationData = evaluationV4CreateEmptyData($modelVersion);
 $existingEvaluationId = null;
 $existingEvaluationStatus = null;
 if ($existingEvaluation !== null) {
     $existingEvaluationId = (int) $existingEvaluation['id'];
     $existingEvaluationStatus = (string) $existingEvaluation['status'];
-    $evaluationData = evaluationV4LoadData($pdo, $existingEvaluationId);
+    $evaluationData = evaluationV4LoadData($pdo, $existingEvaluationId, $modelVersion);
 }
 
 $evaluationStatusLabels = ['SUBMITTED' => 'Inviata', 'REVISED' => 'Revisionata', 'DRAFT' => 'Bozza', 'PENDING' => 'Da iniziare'];
@@ -90,7 +93,7 @@ $displayStatusLabel = $evaluationStatusLabels[$displayStatusKey];
 $displayStatusNote = $evaluationStatusNotes[$displayStatusKey];
 $displayStatusClass = strtolower($displayStatusKey);
 $isAlreadySubmittedEvaluation = in_array($displayStatusKey, ['SUBMITTED', 'REVISED'], true);
-$thematicDisplayMaxScore = (float) (evaluationGetV4Definition()['thematic_display_max_score'] ?? 100.0);
+$thematicDisplayMaxScore = (float) ($definition['thematic_display_max_score'] ?? 100.0);
 
 $sectionsJson = [];
 $sectionLabels = [];
@@ -299,10 +302,14 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 
 .section-note-text {
   margin: 0.1rem 0 0.14rem;
-  font-size: 0.74rem;
+  font-size: 0.9rem;
   line-height: 1.24;
   color: #475569;
   white-space: pre-wrap;
+}
+
+.section-note-text--thematic-general {
+  font-size: 0.9rem;
 }
 
 .section-note-panel {
@@ -792,8 +799,8 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 <?php include 'header.php'; ?>
 <main>
 <div class="contact-form-container evaluation-page"><div class="evaluation-shell"><div class="button-container"><a href="evaluations.php" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php">Indietro</a></div><form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post"><input type="hidden" name="application_id" value="<?php echo $applicationId; ?>"><?php if ($existingEvaluationId !== null): ?><input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>"><?php endif; ?><div class="evaluation-header"><div class="evaluation-header__main"><div class="evaluation-header__title-row"><h2>Valutazione progetto</h2><p class="evaluation-subject-name"><span class="evaluation-subject-name__label">Ente</span><strong><?php echo htmlspecialchars($entityName); ?></strong></p></div></div></div><div class="evaluation-layout"><div class="evaluation-content">
-<?php $stepIndex = 0; foreach ($sections as $sectionKey => $sectionDefinition): ?>
-<div class="evaluation-step<?php echo $stepIndex === 0 ? ' active' : ''; ?>" data-step-index="<?php echo $stepIndex; ?>" data-section-key="<?php echo htmlspecialchars($sectionKey); ?>" data-section-type="<?php echo htmlspecialchars((string) $sectionDefinition['type']); ?>" data-section-max="<?php echo htmlspecialchars((string) $sectionDefinition['max']); ?>" data-score-step="1"><h3><?php echo htmlspecialchars($sectionDefinition['label']); ?><span class="section-weight-badge"><?php echo (($sectionDefinition['type'] ?? '') === 'thematic') ? 'Max categoria' : 'Max sezione'; ?>: <?php echo htmlspecialchars((string) $sectionDefinition['max']); ?></span></h3><?php v4RenderSectionDescription($sectionDefinition); ?><?php foreach ($sectionDefinition['criteria'] as $fieldName => $criterionDefinition): ?><div class="form-group"><label class="form-label<?php echo (($sectionDefinition['type'] ?? '') !== 'thematic') ? ' required' : ''; ?>"><?php echo htmlspecialchars($criterionDefinition['label']); ?> <?php v4RenderBadges($criterionDefinition); ?></label><?php v4RenderScoreInput($sectionKey, $fieldName, $criterionDefinition['label'], $criterionDefinition, $evaluationData[$sectionKey]['scores'][$fieldName] ?? null); ?><?php if (!empty($criterionDefinition['help']) || evaluationGetV4FieldBounds($criterionDefinition)['min'] < 0): $bounds = evaluationGetV4FieldBounds($criterionDefinition); ?><small class="form-text"><?php if (!empty($criterionDefinition['help'])): ?><p class="criteria-help-copy"><?php echo htmlspecialchars($criterionDefinition['help']); ?></p><?php endif; ?><p class="criteria-range-note">Intervallo consentito: <?php echo htmlspecialchars((string) $bounds['min']); ?> - <?php echo htmlspecialchars((string) $bounds['max']); ?></p></small><?php endif; ?></div><div class="form-group criterion-note-group"><?php $criterionNoteValue = (string) ($evaluationData[$sectionKey]['criterion_notes'][$fieldName] ?? ''); $hasCriterionNote = trim($criterionNoteValue) !== ''; ?><div class="criterion-note-actions"><button type="button" class="criterion-note-toggle" aria-expanded="<?php echo $hasCriterionNote ? 'true' : 'false'; ?>" aria-controls="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"><?php echo $hasCriterionNote ? 'Modifica nota' : 'Aggiungi nota'; ?></button></div><div class="criterion-note-panel" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"<?php echo $hasCriterionNote ? '' : ' hidden'; ?>><label class="form-label" for="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>">Nota (opzionale)</label><textarea class="criterion-note-textarea" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>" name="<?php echo htmlspecialchars($sectionKey . '_criterion_notes[' . $fieldName . ']'); ?>"><?php echo htmlspecialchars($criterionNoteValue); ?></textarea></div></div><?php endforeach; ?></div>
+<?php $stepIndex = 0; $hasRenderedThematicGeneralDescription = false; foreach ($sections as $sectionKey => $sectionDefinition): ?>
+<div class="evaluation-step<?php echo $stepIndex === 0 ? ' active' : ''; ?>" data-step-index="<?php echo $stepIndex; ?>" data-section-key="<?php echo htmlspecialchars($sectionKey); ?>" data-section-type="<?php echo htmlspecialchars((string) $sectionDefinition['type']); ?>" data-section-max="<?php echo htmlspecialchars((string) $sectionDefinition['max']); ?>" data-score-step="1"><?php if (!$hasRenderedThematicGeneralDescription && ($sectionDefinition['type'] ?? '') === 'thematic' && $thematicGeneralDescription !== ''): ?><p class="section-note-text section-note-text--thematic-general"><?php echo htmlspecialchars($thematicGeneralDescription, ENT_QUOTES, 'UTF-8'); ?></p><?php $hasRenderedThematicGeneralDescription = true; endif; ?><h3><?php echo htmlspecialchars($sectionDefinition['label']); ?><span class="section-weight-badge"><?php echo (($sectionDefinition['type'] ?? '') === 'thematic') ? 'Max categoria' : 'Max sezione'; ?>: <?php echo htmlspecialchars((string) $sectionDefinition['max']); ?></span></h3><?php v4RenderSectionDescription($sectionDefinition); ?><?php foreach ($sectionDefinition['criteria'] as $fieldName => $criterionDefinition): ?><div class="form-group"><label class="form-label<?php echo (($sectionDefinition['type'] ?? '') !== 'thematic') ? ' required' : ''; ?>"><?php echo htmlspecialchars($criterionDefinition['label']); ?> <?php v4RenderBadges($criterionDefinition); ?></label><?php v4RenderScoreInput($sectionKey, $fieldName, $criterionDefinition['label'], $criterionDefinition, $evaluationData[$sectionKey]['scores'][$fieldName] ?? null); ?><?php if (!empty($criterionDefinition['help']) || evaluationGetV4FieldBounds($criterionDefinition)['min'] < 0): $bounds = evaluationGetV4FieldBounds($criterionDefinition); ?><small class="form-text"><?php if (!empty($criterionDefinition['help'])): ?><p class="criteria-help-copy"><?php echo htmlspecialchars($criterionDefinition['help']); ?></p><?php endif; ?><p class="criteria-range-note">Intervallo consentito: <?php echo htmlspecialchars((string) $bounds['min']); ?> - <?php echo htmlspecialchars((string) $bounds['max']); ?></p></small><?php endif; ?></div><div class="form-group criterion-note-group"><?php $criterionNoteValue = (string) ($evaluationData[$sectionKey]['criterion_notes'][$fieldName] ?? ''); $hasCriterionNote = trim($criterionNoteValue) !== ''; ?><div class="criterion-note-actions"><button type="button" class="criterion-note-toggle" aria-expanded="<?php echo $hasCriterionNote ? 'true' : 'false'; ?>" aria-controls="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"><?php echo $hasCriterionNote ? 'Modifica nota' : 'Aggiungi nota'; ?></button></div><div class="criterion-note-panel" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"<?php echo $hasCriterionNote ? '' : ' hidden'; ?>><label class="form-label" for="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>">Nota (opzionale)</label><textarea class="criterion-note-textarea" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>" name="<?php echo htmlspecialchars($sectionKey . '_criterion_notes[' . $fieldName . ']'); ?>"><?php echo htmlspecialchars($criterionNoteValue); ?></textarea></div></div><?php endforeach; ?></div>
 <?php $stepIndex++; endforeach; ?>
 
 </div><div class="evaluation-sidebar"><div class="total-score-overlay" role="status" aria-live="polite"><div class="total-score-overlay__group"><span class="total-score-overlay__label">Totale punteggio / Totale max</span><span class="total-score-overlay__value-row"><span class="total-score-overlay__value" id="total-score-value">0</span><span class="total-score-overlay__separator">/</span><span class="total-score-overlay__max" id="total-score-max-value">0</span></span></div><div class="total-score-overlay__group"><span class="total-score-overlay__label">Totale sezione corrente / Max sezione corrente</span><span class="total-score-overlay__value-row"><span class="total-score-overlay__value" id="section-score-value">0</span><span class="total-score-overlay__separator">/</span><span class="total-score-overlay__max" id="section-score-max-value">0</span></span></div><div class="total-score-overlay__group total-score-overlay__group--thematic" id="thematic-score-group" hidden><span class="total-score-overlay__label">Totale criteri tematici / Max criteri tematici</span><span class="total-score-overlay__value-row"><span class="total-score-overlay__value" id="thematic-score-value">0</span><span class="total-score-overlay__separator">/</span><span class="total-score-overlay__max" id="thematic-score-max-value">0</span></span></div></div><div class="evaluation-actions"><div class="evaluation-actions__nav"><button type="button" class="page-button" id="previous-step-button">Sezione precedente</button><button type="button" class="page-button" id="next-step-button">Sezione successiva</button></div><div class="evaluation-actions__main"><?php if ($isAlreadySubmittedEvaluation): ?><button type="submit" class="submit-btn" name="action" value="save">Salva valutazione</button><?php else: ?><button type="submit" class="submit-btn secondary-button" name="action" value="save">Salva bozza</button><button type="submit" class="submit-btn" name="action" value="submit">Invia valutazione</button><?php endif; ?></div></div></div></div></form></div></div></main><?php include 'footer.php'; ?><div id="evaluation-success-modal" class="evaluation-success-modal" style="display:none;"><div class="evaluation-success-modal-content"><div class="evaluation-success-modal-icon">&#10003;</div><h3>Valutazione inviata</h3><p>Reindirizzamento in corso alla lista delle valutazioni.</p><button id="close-evaluation-modal" class="submit-btn">Vai subito</button></div></div>

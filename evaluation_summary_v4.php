@@ -51,11 +51,13 @@ if (evaluationIsLegacyModel($evaluation['model_version'] ?? null)) {
     return;
 }
 
-$sections = evaluationGetV4EnabledSections();
+$modelVersion = $evaluation['model_version'] ?? evaluationGetCurrentModelVersion();
+$definition = evaluationGetV4Definition($modelVersion);
+$sections = evaluationGetV4EnabledSections($modelVersion);
 $isBudgetPdf = !empty($evaluation['budget_pdf_path']) && strtolower((string) pathinfo((string) $evaluation['budget_pdf_path'], PATHINFO_EXTENSION)) === 'pdf';
 $evaluationId = (int) $evaluation['evaluation_id'];
-$sectionData = evaluationV4LoadData($pdo, $evaluationId);
-$totals = evaluationV4CalculateTotals($sectionData);
+$sectionData = evaluationV4LoadData($pdo, $evaluationId, $modelVersion);
+$totals = evaluationV4CalculateTotals($sectionData, $modelVersion);
 $forcedWeightedTotalScore = is_numeric($evaluation['forced_weighted_total_score'] ?? null) ? (float) $evaluation['forced_weighted_total_score'] : null;
 
 $sectionTotals = [
@@ -156,8 +158,8 @@ foreach ($sections as $sectionKey => $sectionDefinition) {
             <div class="summary-v4-total"><span>Progetto</span><strong><?php echo htmlspecialchars(evaluationV4FormatScore($sectionTotals['project'])); ?> / 30</strong></div>
             <div class="summary-v4-total"><span>Piano finanziario</span><strong><?php echo htmlspecialchars(evaluationV4FormatScore($sectionTotals['financial_plan'])); ?> / 15</strong></div>
             <div class="summary-v4-total"><span>Elementi qualitativi</span><strong><?php echo htmlspecialchars(evaluationV4FormatScore($sectionTotals['qualitative_elements'])); ?> / 25</strong></div>
-            <div class="summary-v4-total"><span>Criteri tematici</span><strong><?php echo htmlspecialchars(evaluationV4FormatScore($sectionTotals['thematic_total'])); ?> / 100</strong></div>
-            <div class="summary-v4-total"><span>Totale generale</span><strong><?php echo htmlspecialchars(evaluationV4FormatScore($sectionTotals['overall_total'])); ?> / 200</strong></div>
+            <div class="summary-v4-total"><span>Criteri tematici</span><strong><?php echo htmlspecialchars(evaluationV4FormatScore($sectionTotals['thematic_total'])); ?> / <?php echo htmlspecialchars((string) ($definition['thematic_display_max_score'] ?? 100)); ?></strong></div>
+            <div class="summary-v4-total"><span>Totale generale</span><strong><?php echo htmlspecialchars(evaluationV4FormatScore($sectionTotals['overall_total'])); ?> / <?php echo htmlspecialchars((string) ($definition['max_total_score'] ?? 200)); ?></strong></div>
           </div>
         </section>
 

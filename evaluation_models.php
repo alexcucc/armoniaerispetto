@@ -4,12 +4,33 @@ declare(strict_types=1);
 
 function evaluationGetCurrentModelVersion(): string
 {
-    return 'v5';
+    return 'v6';
+}
+
+function evaluationGetStructuredModelVersions(): array
+{
+    return ['v5', 'v6'];
+}
+
+function evaluationNormalizeModelVersion(?string $modelVersion): string
+{
+    $normalized = strtolower(trim((string) $modelVersion));
+
+    return $normalized === '' ? evaluationGetCurrentModelVersion() : $normalized;
 }
 
 function evaluationIsLegacyModel(?string $modelVersion): bool
 {
-    return strtolower((string) $modelVersion) !== evaluationGetCurrentModelVersion();
+    return !in_array(evaluationNormalizeModelVersion($modelVersion), evaluationGetStructuredModelVersions(), true);
+}
+
+function evaluationGetStructuredModelLabel(?string $modelVersion): string
+{
+    if (evaluationIsLegacyModel($modelVersion)) {
+        return 'Griglia precedente';
+    }
+
+    return 'Griglia ' . strtoupper(evaluationNormalizeModelVersion($modelVersion));
 }
 
 function evaluationGetLegacyMaxTotalScoreRaw(): float
@@ -17,7 +38,7 @@ function evaluationGetLegacyMaxTotalScoreRaw(): float
     return 2090.0;
 }
 
-function evaluationGetV4Definition(): array
+function evaluationGetV5Definition(): array
 {
     return [
         'max_total_score' => 200.0,
@@ -476,14 +497,59 @@ function evaluationGetV4Definition(): array
     ];
 }
 
-function evaluationGetV4Sections(): array
+function evaluationGetV6Definition(): array
 {
-    return evaluationGetV4Definition()['sections'];
+    $definition = evaluationGetV5Definition();
+
+    $definition['thematic_general_description'] = "I criteri tematici sono suddivisi in 7 sezioni, ciascuna con più voci. Tutte le sezioni tematiche sono riferite al progetto in se e non al soggetto proponente\nUna o più categorie o voce potrebbero non essere previsti nel singolo bando. In questo caso non esprimere il voto (cioè dare voto zero).\nPer ogni voce va valutata, partendo dai dati della domanda e delle check list, l'adeguatezza della proposta per il raggiungimento dell'obiettivo.\nIl voto è correlato alla efficacia della proposta stessa (presumibile dalla domanda) per il raggiungimento del risultato\nIn generale applicare, ove possibile, la seguente metrica per il voto : 0 Assente o non valutabile; 2 Molto debole; 4 Debole; 6 Adeguato; 8 Buono; 10 Eccellente (e valori dispari intermedi)";
+
+    $proposingCriteria = &$definition['sections']['proposing_entity']['criteria'];
+    $proposingCriteria['organizational_management_score']['label'] = 'Struttura organizzativa';
+    $proposingCriteria['organizational_management_score']['weight'] = 4;
+    $proposingCriteria['organizational_management_score']['help'] = "La loro struttura organizzativa è adeguata con quanto da loro proposto ?\nChe tipo di governance ha l'ente? Sono presenti organi specifici per funzioni dedicate (es. comitato scientifico, tecnico, amministrativo)? Se si = + punti\nQuanto incide il volontariato? Più volontari rispetto al totale degli addetti (dato che si desume dalla domanda) comportano un punteggio maggiore.\nLa capacità organizzativa è da dedurre da come è formulata la proposta al bando. Pertanto, il livello qualitativo dell'organizzazione è desumibile dalla documentazione fornita nella domanda e nei documenti correlati (budget).";
+    unset($proposingCriteria['organizational_structure_score']);
+    unset($proposingCriteria);
+
+    $projectCriteria = &$definition['sections']['project']['criteria'];
+    $projectCriteria['synergies_efficiency_score']['help'] = "E' un progetto che condivide obiettivi, stakeholder, risorse, metodologie o deliverable con altri progetti precedenti o in corso? Se si = + punti\nPresenta sinergie con gli stessi? Se si = + punti\nSono previsti recovery plan (gestione insuccessi del progetto) nel caso in cui il progetto andasse male? Se si = + punti\nReplica progetti di successo già realizzati altrove? Se si = + punti";
+    $projectCriteria['inefficiencies_score']['help'] = "Sono previste sovrapposizioni nei risultati attesi con altri progetti? Se si meno punti\nRisulta una duplicazione eccessiva di attività, obiettivi o output ? Se si= - punti";
+    unset($projectCriteria);
+
+    $financialCriteria = &$definition['sections']['financial_plan']['criteria'];
+    unset($financialCriteria['funding_limits_compliance_score']);
+    $financialCriteria['budget_clarity_score']['weight'] = 4;
+    $financialCriteria['budget_clarity_score']['help'] = "Il budget è chiaro e completo e dettagliato in tutte le sue parti?";
+    $financialCriteria['cofinancing_score']['help'] = "Quanto è elevata la percentuale del cofinanziamento, proprio o di terzi, (che chi convalida ha già verificato sia superiore al 20%) ? + elevata la % = + punti\nLe fonti di cofinanziamento sono autorevoli? Più sono autorevoli (es. grosse fondazioni o entri pubblici maggiori) più elevato il punteggio (i cofinanziatori sono indicati sulla domanda)";
+    $financialCriteria['project_value_soundness_score']['weight'] = 3;
+    unset($financialCriteria);
+
+    return $definition;
 }
 
-function evaluationGetV4EnabledSections(): array
+function evaluationGetDefinitionForModelVersion(?string $modelVersion = null): array
 {
-    return evaluationGetV4Sections();
+    $normalizedVersion = evaluationNormalizeModelVersion($modelVersion);
+
+    return match ($normalizedVersion) {
+        'v5' => evaluationGetV5Definition(),
+        'v6' => evaluationGetV6Definition(),
+        default => evaluationGetV6Definition(),
+    };
+}
+
+function evaluationGetV4Definition(?string $modelVersion = null): array
+{
+    return evaluationGetDefinitionForModelVersion($modelVersion);
+}
+
+function evaluationGetV4Sections(?string $modelVersion = null): array
+{
+    return evaluationGetV4Definition($modelVersion)['sections'];
+}
+
+function evaluationGetV4EnabledSections(?string $modelVersion = null): array
+{
+    return evaluationGetV4Sections($modelVersion);
 }
 
 function evaluationGetV4FieldBounds(array $criterionDefinition): array
@@ -503,10 +569,10 @@ function evaluationV4GetCriterionNoteColumn(string $fieldName): string
     return $fieldName . '_notes';
 }
 
-function evaluationV4CreateEmptyData(): array
+function evaluationV4CreateEmptyData(?string $modelVersion = null): array
 {
     $data = [];
-    foreach (evaluationGetV4Sections() as $sectionKey => $sectionDefinition) {
+    foreach (evaluationGetV4Sections($modelVersion) as $sectionKey => $sectionDefinition) {
         $data[$sectionKey] = [
             'scores' => [],
             'criterion_notes' => [],
@@ -519,10 +585,10 @@ function evaluationV4CreateEmptyData(): array
     return $data;
 }
 
-function evaluationV4LoadData(PDO $pdo, int $evaluationId): array
+function evaluationV4LoadData(PDO $pdo, int $evaluationId, ?string $modelVersion = null): array
 {
-    $data = evaluationV4CreateEmptyData();
-    foreach (evaluationGetV4Sections() as $sectionKey => $sectionDefinition) {
+    $data = evaluationV4CreateEmptyData($modelVersion);
+    foreach (evaluationGetV4Sections($modelVersion) as $sectionKey => $sectionDefinition) {
         $fields = array_keys($sectionDefinition['criteria']);
         $noteColumns = array_map('evaluationV4GetCriterionNoteColumn', $fields);
         $columns = implode(', ', array_merge($fields, $noteColumns));
@@ -571,9 +637,9 @@ function evaluationV4CalculateSection(array $sectionDefinition, array $sectionDa
     ];
 }
 
-function evaluationV4CalculateTotals(array $data): array
+function evaluationV4CalculateTotals(array $data, ?string $modelVersion = null): array
 {
-    $definition = evaluationGetV4Definition();
+    $definition = evaluationGetV4Definition($modelVersion);
     $sections = $definition['sections'];
     $results = [];
     $thematicTotal = 0.0;
@@ -630,5 +696,7 @@ function evaluationV4FormatScore($value): string
 
 function evaluationGetForcedWeightedMaxScoreForModel(?string $modelVersion): float
 {
-    return evaluationIsLegacyModel($modelVersion) ? evaluationGetLegacyMaxTotalScoreRaw() : evaluationGetV4Definition()['max_total_score'];
+    return evaluationIsLegacyModel($modelVersion)
+        ? evaluationGetLegacyMaxTotalScoreRaw()
+        : evaluationGetDefinitionForModelVersion($modelVersion)['max_total_score'];
 }

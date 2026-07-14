@@ -172,7 +172,7 @@ if (!$existingEvaluation && ($totalEvaluators <= 0 || $completedEvaluations >= $
               <p><strong>Ente:</strong> <?php echo htmlspecialchars($applicationInfo['organization_name']); ?></p>
               <p><strong>Valutatore:</strong> <?php echo htmlspecialchars($selectedEvaluator['evaluator_name']); ?></p>
               <p><strong>Valutazioni complete:</strong> <?php echo htmlspecialchars((string) $completedEvaluations); ?>/<?php echo htmlspecialchars((string) $totalEvaluators); ?></p>
-              <p><strong>Modello valutazione:</strong> <?php echo htmlspecialchars(evaluationIsLegacyModel($modelVersion) ? 'Griglia precedente' : 'Griglia v4'); ?></p>
+              <p><strong>Modello valutazione:</strong> <?php echo htmlspecialchars(evaluationGetStructuredModelLabel($modelVersion)); ?></p>
               <?php if ($existingEvaluation): ?>
                 <p><strong>Valutazione forzata esistente:</strong> puoi aggiornare il voto totale pesato salvato.</p>
               <?php endif; ?>

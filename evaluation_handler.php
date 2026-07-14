@@ -215,10 +215,10 @@ function validateLegacySections(array $postData, bool $validateForSubmit, bool $
     ];
 }
 
-function validateV4Sections(array $postData, bool $validateForSubmit, bool $isAjaxRequest): array
+function validateV4Sections(array $postData, bool $validateForSubmit, bool $isAjaxRequest, ?string $modelVersion = null): array
 {
-    $sections = evaluationGetV4EnabledSections();
-    $data = evaluationV4CreateEmptyData();
+    $sections = evaluationGetV4EnabledSections($modelVersion);
+    $data = evaluationV4CreateEmptyData($modelVersion);
     $incompleteSections = [];
 
     foreach ($sections as $sectionKey => $sectionDefinition) {
@@ -284,7 +284,7 @@ function validateV4Sections(array $postData, bool $validateForSubmit, bool $isAj
 
     return [
         'data' => $data,
-        'totals' => evaluationV4CalculateTotals($data),
+        'totals' => evaluationV4CalculateTotals($data, $modelVersion),
         'incomplete_labels' => $incompleteSections,
     ];
 }
@@ -485,7 +485,7 @@ if (!$isForcedWeightedOnlyAction) {
     if ($isLegacyModel) {
         $legacyValidation = validateLegacySections($_POST, $validateSectionsForSubmit, $isAjaxRequest);
     } else {
-        $v4Validation = validateV4Sections($_POST, $validateSectionsForSubmit, $isAjaxRequest);
+        $v4Validation = validateV4Sections($_POST, $validateSectionsForSubmit, $isAjaxRequest, $modelVersion);
     }
 }
 
@@ -635,7 +635,7 @@ try {
                 ]);
             }
         } else {
-            $sections = evaluationGetV4EnabledSections();
+            $sections = evaluationGetV4EnabledSections($modelVersion);
             $data = $v4Validation['data'];
             $totals = $v4Validation['totals'];
 

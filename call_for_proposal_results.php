@@ -36,15 +36,22 @@ $totalEvaluatorsStmt = $pdo->prepare(
 $totalEvaluatorsStmt->execute([':call_id' => $callId]);
 $totalEvaluators = (int) $totalEvaluatorsStmt->fetchColumn();
 
+$structuredModelVersionsSql = implode(
+    ', ',
+    array_map(
+        static fn (string $version): string => '\'' . $version . '\'',
+        evaluationGetStructuredModelVersions()
+    )
+);
 $legacyToV4Factor = evaluationGetV4Definition()['max_total_score'] / evaluationGetLegacyMaxTotalScoreRaw();
 
 $evaluationScoreSubquery = '
     SELECT
         ev.id AS evaluation_id,
         CASE
-            WHEN ev.forced_weighted_total_score IS NOT NULL AND ev.model_version = \'v4\' THEN ev.forced_weighted_total_score
+            WHEN ev.forced_weighted_total_score IS NOT NULL AND ev.model_version IN (' . $structuredModelVersionsSql . ') THEN ev.forced_weighted_total_score
             WHEN ev.forced_weighted_total_score IS NOT NULL THEN ev.forced_weighted_total_score * ' . $legacyToV4Factor . '
-            WHEN ev.model_version = \'v4\' THEN COALESCE(ev4g.overall_score, 0)
+            WHEN ev.model_version IN (' . $structuredModelVersionsSql . ') THEN COALESCE(ev4g.overall_score, 0)
             ELSE (
                 COALESCE(efp.weighted_score, 0)
                 + COALESCE(ep.weighted_score, 0)
