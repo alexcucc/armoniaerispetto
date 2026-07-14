@@ -437,12 +437,12 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                 <colgroup>
                   <col class="evaluation-column evaluation-column--call">
                   <col class="evaluation-column evaluation-column--entity">
-                  <col>
-                  <col>
-                  <col>
-                  <col>
-                  <col>
-                  <col>
+                  <col class="evaluation-column evaluation-column--status">
+                  <col class="evaluation-column evaluation-column--document">
+                  <col class="evaluation-column evaluation-column--document">
+                  <col class="evaluation-column evaluation-column--document">
+                  <col class="evaluation-column evaluation-column--document">
+                  <col class="evaluation-column evaluation-column--action">
                 </colgroup>
                 <thead>
                   <tr>
