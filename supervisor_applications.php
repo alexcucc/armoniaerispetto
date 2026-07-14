@@ -195,7 +195,15 @@ if ($supervisorId) {
                     </p>
                 <?php endif; ?>
                 <div class="users-table-container">
-                    <table class="users-table">
+                    <table class="users-table users-table--supervisor-applications">
+                        <colgroup>
+                            <col class="supervisor-application-column supervisor-application-column--call">
+                            <col class="supervisor-application-column supervisor-application-column--entity">
+                            <col class="supervisor-application-column supervisor-application-column--project">
+                            <col>
+                            <col>
+                            <col>
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>Bando</th>
@@ -225,9 +233,18 @@ if ($supervisorId) {
                                         $canDeleteValidation = !$isClosed && in_array($statusKey, ['APPROVED', 'REJECTED'], true);
                                     ?>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($app['call_title']); ?></td>
-                                        <td><?php echo htmlspecialchars($app['organization_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($app['project_name']); ?></td>
+                                        <td
+                                            class="supervisor-application-column supervisor-application-column--call"
+                                            title="<?php echo htmlspecialchars($app['call_title']); ?>"
+                                        ><?php echo htmlspecialchars($app['call_title']); ?></td>
+                                        <td
+                                            class="supervisor-application-column supervisor-application-column--entity"
+                                            title="<?php echo htmlspecialchars($app['organization_name']); ?>"
+                                        ><?php echo htmlspecialchars($app['organization_name']); ?></td>
+                                        <td
+                                            class="supervisor-application-column supervisor-application-column--project"
+                                            title="<?php echo htmlspecialchars($app['project_name']); ?>"
+                                        ><?php echo htmlspecialchars($app['project_name']); ?></td>
                                         <td><?php echo htmlspecialchars($statusLabel); ?></td>
                                         <td>
                                             <?php if ($isRejected): ?>

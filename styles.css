@@ -2100,6 +2100,10 @@ body.bandi-finanziamenti-page .sub-button-container {
   table-layout: auto;
 }
 
+.users-table.users-table--supervisor-applications {
+  table-layout: auto;
+}
+
 .users-table th,
 .users-table td {
   padding: 0;
@@ -2132,6 +2136,30 @@ body.bandi-finanziamenti-page .sub-button-container {
 }
 
 .users-table--evaluations td.evaluation-column {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.users-table--supervisor-applications .supervisor-application-column--call {
+  width: 11rem;
+  min-width: 11rem;
+  max-width: 11rem;
+}
+
+.users-table--supervisor-applications .supervisor-application-column--entity {
+  width: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
+}
+
+.users-table--supervisor-applications .supervisor-application-column--project {
+  width: 12rem;
+  min-width: 12rem;
+  max-width: 12rem;
+}
+
+.users-table--supervisor-applications td.supervisor-application-column {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
