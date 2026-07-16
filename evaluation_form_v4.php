@@ -121,10 +121,24 @@ function v4RenderScoreInput(string $sectionKey, string $fieldName, string $label
 function v4RenderBadges(array $criterionDefinition): void
 {
     $bounds = evaluationGetV4FieldBounds($criterionDefinition);
-    echo '<span class="criteria-weight-badge criteria-weight-badge--range">Range: ' . htmlspecialchars((string) $bounds['min'], ENT_QUOTES, 'UTF-8') . ' / ' . htmlspecialchars((string) $bounds['max'], ENT_QUOTES, 'UTF-8') . '</span>';
+    echo '<span class="criteria-weight-badge criteria-weight-badge--range">'
+        . '<span class="criteria-badge__label">Range:&nbsp;</span>'
+        . '<span class="criteria-badge__value-group">'
+        . '<span class="criteria-badge__value">' . htmlspecialchars((string) $bounds['min'], ENT_QUOTES, 'UTF-8') . '</span>'
+        . '<span class="criteria-badge__separator">/</span>'
+        . '<span class="criteria-badge__value">' . htmlspecialchars((string) $bounds['max'], ENT_QUOTES, 'UTF-8') . '</span>'
+        . '</span>'
+        . '</span>';
 
     if (isset($criterionDefinition['weight'])) {
-        echo '<span class="criteria-weight-badge">Peso: ' . htmlspecialchars((string) $criterionDefinition['weight'], ENT_QUOTES, 'UTF-8') . '</span><span class="criteria-weighted-score" aria-live="polite">Voto pesato: 0</span>';
+        echo '<span class="criteria-weight-badge criteria-weight-badge--weight">'
+            . '<span class="criteria-badge__label">Peso:&nbsp;</span>'
+            . '<span class="criteria-badge__value">' . htmlspecialchars((string) $criterionDefinition['weight'], ENT_QUOTES, 'UTF-8') . '</span>'
+            . '</span>'
+            . '<span class="criteria-weighted-score" aria-live="polite">'
+            . '<span class="criteria-badge__label">Voto pesato:&nbsp;</span>'
+            . '<span class="criteria-badge__value criteria-weighted-score__value">0</span>'
+            . '</span>';
     }
 }
 
@@ -487,8 +501,9 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 .criteria-weight-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.08rem 0.34rem;
-  margin-left: 0.15rem;
+  justify-content: flex-start;
+  padding: 0.08rem 0.28rem;
+  margin-left: 0;
   border-radius: 9999px;
   background: #ecfeff;
   color: #0ea5e9;
@@ -527,8 +542,9 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 .criteria-weighted-score {
   display: inline-flex;
   align-items: center;
-  padding: 0.08rem 0.34rem;
-  margin-left: 0.15rem;
+  justify-content: flex-start;
+  padding: 0.08rem 0.28rem;
+  margin-left: 0;
   border-radius: 9999px;
   background: #fef3c7;
   color: #b45309;
@@ -536,6 +552,30 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   font-size: 0.84rem;
   white-space: nowrap;
   border: 1px solid #fde68a;
+}
+
+.criteria-badge__label {
+  flex: 0 0 auto;
+}
+
+.criteria-badge__value-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  min-width: 3.3ch;
+}
+
+.criteria-badge__value,
+.criteria-weighted-score__value {
+  display: inline-block;
+  min-width: 2ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.criteria-badge__separator {
+  flex: 0 0 auto;
 }
 
 .criteria-row {
@@ -558,17 +598,20 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 }
 
 .criteria-row__weight {
-  flex: 0 1 auto;
+  flex: 1 1 100%;
   min-width: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, max-content);
   align-items: center;
-  gap: 0.14rem;
-  flex-wrap: nowrap;
+  justify-content: start;
+  gap: 0;
 }
 
 .criteria-row__weight .criteria-weight-badge,
 .criteria-row__weight .criteria-weighted-score {
-  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  gap: 0;
 }
 
 .criteria-row__actions {
@@ -687,7 +730,9 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 
   .criteria-row__weight {
     width: auto;
+    grid-template-columns: max-content max-content max-content;
     justify-self: end;
+    justify-content: end;
   }
 
   .criteria-row__actions {
@@ -923,13 +968,13 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   };
 
   const updateCriterionWeightedScore = (input) => {
-    const badge = input.closest('.form-group')?.querySelector('.criteria-weighted-score');
-    if (!badge) {
+    const valueElement = input.closest('.form-group')?.querySelector('.criteria-weighted-score__value');
+    if (!valueElement) {
       return;
     }
 
     const weighted = weightedCriterion(input);
-    badge.textContent = 'Voto pesato: ' + formatScore(weighted === null ? 0 : weighted);
+    valueElement.textContent = formatScore(weighted === null ? 0 : weighted);
   };
 
   const calculateSectionScore = (step) => {
