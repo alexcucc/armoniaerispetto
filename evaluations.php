@@ -438,9 +438,9 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                   <col class="evaluation-column evaluation-column--call">
                   <col class="evaluation-column evaluation-column--entity">
                   <col class="evaluation-column evaluation-column--status">
-                  <col class="evaluation-column evaluation-column--document-main">
-                  <col class="evaluation-column evaluation-column--document-main">
-                  <col class="evaluation-column evaluation-column--document-main">
+                  <col class="evaluation-column evaluation-column--document-application">
+                  <col class="evaluation-column evaluation-column--document-budget">
+                  <col class="evaluation-column evaluation-column--document-gantt">
                   <col class="evaluation-column evaluation-column--document-checklist">
                   <col class="evaluation-column evaluation-column--action">
                 </colgroup>
@@ -476,9 +476,9 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                       }
                     ?>
                     <th class="evaluation-column evaluation-column--status">Stato</th>
-                    <th class="evaluation-column evaluation-column--document-main">Domanda</th>
-                    <th class="evaluation-column evaluation-column--document-main">Budget</th>
-                    <th class="evaluation-column evaluation-column--document-main">Gantt</th>
+                    <th class="evaluation-column evaluation-column--document-application">Domanda</th>
+                    <th class="evaluation-column evaluation-column--document-budget">Budget</th>
+                    <th class="evaluation-column evaluation-column--document-gantt">Gantt</th>
                     <th class="evaluation-column evaluation-column--document-checklist">Checklist</th>
                     <th>Azione</th>
                   </tr>
@@ -515,7 +515,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                             <?php echo htmlspecialchars($statusLabel); ?>
                           </span>
                         </td>
-                        <td>
+                        <td class="evaluation-column evaluation-column--document-application">
                           <div class="actions-cell">
                             <?php if ($hasApplicationPdf): ?>
                               <a
@@ -525,11 +525,11 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                                 aria-label="Scarica risposta"
                               ><i class="fas fa-download" aria-hidden="true"></i></a>
                             <?php else: ?>
-                              <span>Non disponibile</span>
+                              <span class="text-muted" role="img" aria-label="Non disponibile" title="Non disponibile">-</span>
                             <?php endif; ?>
                           </div>
                         </td>
-                        <td>
+                        <td class="evaluation-column evaluation-column--document-budget">
                           <div class="actions-cell">
                             <?php if ($hasBudgetPdf): ?>
                               <a
@@ -539,11 +539,11 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                                 aria-label="Scarica budget"
                               ><i class="fas fa-download" aria-hidden="true"></i></a>
                             <?php else: ?>
-                              <span>Non disponibile</span>
+                              <span class="text-muted" role="img" aria-label="Non disponibile" title="Non disponibile">-</span>
                             <?php endif; ?>
                           </div>
                         </td>
-                        <td>
+                        <td class="evaluation-column evaluation-column--document-gantt">
                           <div class="actions-cell">
                             <?php if ($hasCronoprogrammaPdf): ?>
                               <a
@@ -553,11 +553,11 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                                 aria-label="Scarica cronoprogramma"
                               ><i class="fas fa-download" aria-hidden="true"></i></a>
                             <?php else: ?>
-                              <span>Non disponibile</span>
+                              <span class="text-muted" role="img" aria-label="Non disponibile" title="Non disponibile">-</span>
                             <?php endif; ?>
                           </div>
                         </td>
-                        <td>
+                        <td class="evaluation-column evaluation-column--document-checklist">
                           <div class="actions-cell">
                             <?php if ($hasChecklist): ?>
                               <a
@@ -567,7 +567,7 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                                 aria-label="Scarica checklist"
                               ><i class="fas fa-download" aria-hidden="true"></i></a>
                             <?php else: ?>
-                              <span>Non disponibile</span>
+                              <span class="text-muted" role="img" aria-label="Non disponibile" title="Non disponibile">-</span>
                             <?php endif; ?>
                           </div>
                         </td>

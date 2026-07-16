@@ -2127,16 +2127,12 @@ body.bandi-finanziamenti-page .sub-button-container {
   width: 7rem;
 }
 
-.users-table.users-table--evaluations .evaluation-column--document-main {
-  width: 4.5rem;
-  min-width: 4.5rem;
-  max-width: 4.5rem;
-}
-
+.users-table.users-table--evaluations .evaluation-column--document-application,
+.users-table.users-table--evaluations .evaluation-column--document-budget,
+.users-table.users-table--evaluations .evaluation-column--document-gantt,
 .users-table.users-table--evaluations .evaluation-column--document-checklist {
-  width: 5rem;
-  min-width: 5rem;
-  max-width: 5rem;
+  width: 1%;
+  white-space: nowrap;
 }
 
 .users-table.users-table--evaluations .evaluation-column--action {
@@ -2161,6 +2157,18 @@ body.bandi-finanziamenti-page .sub-button-container {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.users-table.users-table--evaluations th.evaluation-column--document-application,
+.users-table.users-table--evaluations th.evaluation-column--document-budget,
+.users-table.users-table--evaluations th.evaluation-column--document-gantt,
+.users-table.users-table--evaluations th.evaluation-column--document-checklist,
+.users-table.users-table--evaluations td.evaluation-column--document-application,
+.users-table.users-table--evaluations td.evaluation-column--document-budget,
+.users-table.users-table--evaluations td.evaluation-column--document-gantt,
+.users-table.users-table--evaluations td.evaluation-column--document-checklist {
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
 }
 
 .users-table--supervisor-applications .supervisor-application-column--call {
