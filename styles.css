@@ -2111,31 +2111,53 @@ body.bandi-finanziamenti-page .sub-button-container {
   text-align: center;
 }
 
-.users-table--evaluations .evaluation-column--call {
+.users-table.users-table--evaluations .evaluation-column--call {
   width: 11rem;
   min-width: 11rem;
   max-width: 11rem;
 }
 
-.users-table--evaluations .evaluation-column--entity {
+.users-table.users-table--evaluations .evaluation-column--entity {
   width: 10rem;
   min-width: 10rem;
   max-width: 10rem;
 }
 
-.users-table--evaluations .evaluation-column--status {
+.users-table.users-table--evaluations .evaluation-column--status {
   width: 7rem;
 }
 
-.users-table--evaluations .evaluation-column--document {
-  width: 3.5rem;
+.users-table.users-table--evaluations .evaluation-column--document-main {
+  width: 4.5rem;
+  min-width: 4.5rem;
+  max-width: 4.5rem;
 }
 
-.users-table--evaluations .evaluation-column--action {
+.users-table.users-table--evaluations .evaluation-column--document-checklist {
+  width: 5rem;
+  min-width: 5rem;
+  max-width: 5rem;
+}
+
+.users-table.users-table--evaluations .evaluation-column--action {
   width: 12.5rem;
 }
 
-.users-table--evaluations td.evaluation-column {
+.users-table.users-table--evaluations th {
+  padding: 0.22rem 0.4rem;
+  line-height: 1.05;
+}
+
+.users-table.users-table--evaluations th .sortable-header {
+  gap: 0.22rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.users-table.users-table--evaluations th.evaluation-column,
+.users-table.users-table--evaluations td.evaluation-column {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

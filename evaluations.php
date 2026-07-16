@@ -438,10 +438,10 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                   <col class="evaluation-column evaluation-column--call">
                   <col class="evaluation-column evaluation-column--entity">
                   <col class="evaluation-column evaluation-column--status">
-                  <col class="evaluation-column evaluation-column--document">
-                  <col class="evaluation-column evaluation-column--document">
-                  <col class="evaluation-column evaluation-column--document">
-                  <col class="evaluation-column evaluation-column--document">
+                  <col class="evaluation-column evaluation-column--document-main">
+                  <col class="evaluation-column evaluation-column--document-main">
+                  <col class="evaluation-column evaluation-column--document-main">
+                  <col class="evaluation-column evaluation-column--document-checklist">
                   <col class="evaluation-column evaluation-column--action">
                 </colgroup>
                 <thead>
@@ -475,11 +475,11 @@ usort($evaluations, function (array $a, array $b) use ($sortField, $sortOrder) {
                               . '</th>';
                       }
                     ?>
-                    <th>Stato</th>
-                    <th>Risposta al bando</th>
-                    <th>Modulo budget</th>
-                    <th>Cronoprogramma</th>
-                    <th>Checklist</th>
+                    <th class="evaluation-column evaluation-column--status">Stato</th>
+                    <th class="evaluation-column evaluation-column--document-main">Domanda</th>
+                    <th class="evaluation-column evaluation-column--document-main">Budget</th>
+                    <th class="evaluation-column evaluation-column--document-main">Gantt</th>
+                    <th class="evaluation-column evaluation-column--document-checklist">Checklist</th>
                     <th>Azione</th>
                   </tr>
                 </thead>
