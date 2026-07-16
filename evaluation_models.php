@@ -503,6 +503,55 @@ function evaluationGetV6Definition(): array
 
     $definition['thematic_general_description'] = "I criteri tematici sono suddivisi in 7 sezioni, ciascuna con più voci. Tutte le sezioni tematiche sono riferite al progetto in se e non al soggetto proponente\nUna o più categorie o voce potrebbero non essere previsti nel singolo bando. In questo caso non esprimere il voto (cioè dare voto zero).\nPer ogni voce va valutata, partendo dai dati della domanda e delle check list, l'adeguatezza della proposta per il raggiungimento dell'obiettivo.\nIl voto è correlato alla efficacia della proposta stessa (presumibile dalla domanda) per il raggiungimento del risultato\nIn generale applicare, ove possibile, la seguente metrica per il voto : 0 Assente o non valutabile; 2 Molto debole; 4 Debole; 6 Adeguato; 8 Buono; 10 Eccellente (e valori dispari intermedi)";
 
+    $definition['sections']['thematic_safeguard']['max'] = 80;
+    $definition['sections']['thematic_safeguard']['criteria'] = [
+        'prevention_denunciation_score' => [
+            'label' => 'Prevenzione (operativa – tattica) Denuncia',
+            'weight' => 6,
+            'help' => "Scoprire e denunciare casi di maltrattamenti e/o abusi con uso di stampa e media",
+        ],
+        'prevention_action_score' => [
+            'label' => 'Prevenzione (operativa – tattica) Azione',
+            'weight' => 10,
+            'help' => "Azioni concrete ed operative per eliminare cause di potenziale danno agli animali",
+        ],
+        'legal_contrast_score' => [
+            'label' => 'Contrasto ai maltrattamenti (giuridico/legale)',
+            'weight' => 8,
+            'help' => "Azioni legali contro casi specifici, querele, segnalazioni e denunce alla magistratura e agli enti pubblici preposti, supporto a procedimenti",
+        ],
+        'liberation_actions_score' => [
+            'label' => 'Contrasto ai maltrattamenti (azioni di liberazione)',
+            'weight' => 16,
+            'help' => "Azioni concrete per la liberazione fisica degli animali dai luoghi di abuso (allevamenti intensivi, laboratori per sperimentazioni). Interventi diretti di recupero, sequestro, salvataggio e sottrazione degli animali da tali situazioni",
+        ],
+        'shelter_remedy_score' => [
+            'label' => 'Rimedio accoglimento',
+            'weight' => 8,
+            'help' => "Creazione o sviluppo di canili e gattili o santuari e rifugi per domestici o di allevamento. Capacità di offrire ricovero temporaneo o permanente agli animali recuperati o tutelati. Capacità di garantire adeguatezza delle cure mediche e dei percorsi riabilitativi dopo il recupero o l'accoglimento",
+        ],
+        'recovery_remedy_score' => [
+            'label' => 'Rimedio recupero',
+            'weight' => 8,
+            'help' => "Recupero animali feriti, recupero sequestrati, salvataggio animali in natura",
+        ],
+        'protection_remedy_score' => [
+            'label' => 'Rimedio protezione',
+            'weight' => 10,
+            'help' => "Creazione o co-partecipazione a sviluppo di CRAS per selvatici",
+        ],
+        'veterinary_rehabilitation_score' => [
+            'label' => 'Rimedio cura e riabilitazione veterinaria',
+            'weight' => 8,
+            'help' => "Fornitura di cure e interventi di riabilitazione resi in CRAS o cliniche o centri dedicati",
+        ],
+        'relocation_remedy_score' => [
+            'label' => 'Rimedio ricollocamento',
+            'weight' => 6,
+            'help' => "Azioni di ricollocamento di animali sia domestici che da allevamento presso terzi privati. Capacità di favorire adozioni, reinserimento in natura o trasferimento in strutture adeguate",
+        ],
+    ];
+
     $proposingCriteria = &$definition['sections']['proposing_entity']['criteria'];
     $proposingCriteria['organizational_management_score']['label'] = 'Struttura organizzativa';
     $proposingCriteria['organizational_management_score']['weight'] = 4;
