@@ -502,7 +502,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0.08rem 0.28rem;
+  padding: 0.06rem 0.22rem;
   margin-left: 0;
   border-radius: 9999px;
   background: #ecfeff;
@@ -543,7 +543,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0.08rem 0.28rem;
+  padding: 0.06rem 0.22rem;
   margin-left: 0;
   border-radius: 9999px;
   background: #fef3c7;
@@ -572,6 +572,10 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   min-width: 2ch;
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+
+.criteria-weighted-score__value {
+  min-width: 3.9ch;
 }
 
 .criteria-badge__separator {
