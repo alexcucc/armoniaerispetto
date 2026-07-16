@@ -375,8 +375,9 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 
 .evaluation-sidebar {
   position: fixed;
-  top: calc(var(--header-height, 70px) + 0.12rem);
+  top: 50vh;
   right: 0.75rem;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 0.16rem;
@@ -667,9 +668,9 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 @media (min-width: 1001px) {
   .criteria-row {
     display: grid;
-    grid-template-columns: minmax(180px, 280px) 72px minmax(260px, 290px) minmax(132px, 148px);
+    grid-template-columns: minmax(0, 1fr) 84px auto auto;
     align-items: start;
-    column-gap: 0.26rem;
+    column-gap: 0.5rem;
     row-gap: 0;
   }
 
@@ -681,19 +682,19 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   }
 
   .criteria-row__input {
-    justify-content: center;
+    justify-content: flex-end;
   }
 
   .criteria-row__weight {
-    width: 100%;
-    justify-self: start;
+    width: auto;
+    justify-self: end;
   }
 
   .criteria-row__actions {
     margin-left: 0;
-    width: 100%;
-    justify-self: start;
-    justify-content: flex-start;
+    width: auto;
+    justify-self: end;
+    justify-content: flex-end;
     flex-wrap: nowrap;
   }
 }
@@ -746,6 +747,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
     position: sticky;
     top: calc(var(--header-height, 70px) + 0.12rem);
     right: auto;
+    transform: none;
     width: auto;
     min-width: 0;
     z-index: 1200;
