@@ -315,7 +315,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 }
 
 .section-note-text {
-  margin: 0.1rem 0 0;
+  margin: 0.1rem 0 0.4rem;
   font-size: 0.9rem;
   line-height: 1.24;
   color: #475569;
