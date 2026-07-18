@@ -867,7 +867,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 <body>
 <?php include 'header.php'; ?>
 <main>
-<div class="contact-form-container evaluation-page"><div class="evaluation-shell"><div class="button-container"><a href="evaluations.php" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php">Indietro</a></div><form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post"><input type="hidden" name="application_id" value="<?php echo $applicationId; ?>"><?php if ($existingEvaluationId !== null): ?><input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>"><?php endif; ?><div class="evaluation-header"><div class="evaluation-header__main"><div class="evaluation-header__title-row"><p class="evaluation-subject-name"><span class="evaluation-subject-name__label">Ente</span><strong><?php echo htmlspecialchars($entityName); ?></strong></p><h2>Valutazione del progetto</h2></div></div></div><div class="evaluation-layout"><div class="evaluation-content">
+<div class="contact-form-container evaluation-page"><div class="evaluation-shell"><div class="button-container"><a href="evaluations.php" class="page-button back-button evaluation-actions__back-link" data-destination="evaluations.php">Indietro</a></div><form id="evaluation-form" class="contact-form" action="evaluation_handler.php" method="post"><input type="hidden" name="application_id" value="<?php echo $applicationId; ?>"><?php if ($existingEvaluationId !== null): ?><input type="hidden" name="evaluation_id" value="<?php echo $existingEvaluationId; ?>"><?php endif; ?><div class="evaluation-header"><div class="evaluation-header__main"><div class="evaluation-header__title-row"><p class="evaluation-subject-name"><span class="evaluation-subject-name__label">Ente</span><strong><?php echo htmlspecialchars($entityName); ?></strong></p><h2 id="evaluation-page-title">Valutazione del progetto</h2></div></div></div><div class="evaluation-layout"><div class="evaluation-content">
 <?php $stepIndex = 0; foreach ($sections as $sectionKey => $sectionDefinition): ?>
 <div class="evaluation-step<?php echo $stepIndex === 0 ? ' active' : ''; ?>" data-step-index="<?php echo $stepIndex; ?>" data-section-key="<?php echo htmlspecialchars($sectionKey); ?>" data-section-type="<?php echo htmlspecialchars((string) $sectionDefinition['type']); ?>" data-section-max="<?php echo htmlspecialchars((string) $sectionDefinition['max']); ?>" data-score-step="1"><?php if (($sectionDefinition['type'] ?? '') === 'thematic' && $thematicGeneralDescription !== ''): ?><p class="section-note-text section-note-text--thematic-general"><?php echo htmlspecialchars($thematicGeneralDescription, ENT_QUOTES, 'UTF-8'); ?></p><?php endif; ?><h3><?php echo htmlspecialchars($sectionDefinition['label']); ?><span class="section-weight-badge"><?php echo (($sectionDefinition['type'] ?? '') === 'thematic') ? 'Max categoria' : 'Max sezione'; ?>: <?php echo htmlspecialchars((string) $sectionDefinition['max']); ?></span></h3><?php v4RenderSectionDescription($sectionDefinition); ?><?php foreach ($sectionDefinition['criteria'] as $fieldName => $criterionDefinition): ?><div class="form-group"><label class="form-label<?php echo (($sectionDefinition['type'] ?? '') !== 'thematic') ? ' required' : ''; ?>"><?php echo htmlspecialchars($criterionDefinition['label']); ?> <?php v4RenderBadges($criterionDefinition); ?></label><?php v4RenderScoreInput($sectionKey, $fieldName, $criterionDefinition['label'], $criterionDefinition, $evaluationData[$sectionKey]['scores'][$fieldName] ?? null); ?><?php if (!empty($criterionDefinition['help']) || evaluationGetV4FieldBounds($criterionDefinition)['min'] < 0): $bounds = evaluationGetV4FieldBounds($criterionDefinition); ?><small class="form-text"><?php if (!empty($criterionDefinition['help'])): ?><p class="criteria-help-copy"><?php echo htmlspecialchars($criterionDefinition['help']); ?></p><?php endif; ?><p class="criteria-range-note">Intervallo consentito: <?php echo htmlspecialchars((string) $bounds['min']); ?> - <?php echo htmlspecialchars((string) $bounds['max']); ?></p></small><?php endif; ?></div><div class="form-group criterion-note-group"><?php $criterionNoteValue = (string) ($evaluationData[$sectionKey]['criterion_notes'][$fieldName] ?? ''); $hasCriterionNote = trim($criterionNoteValue) !== ''; ?><div class="criterion-note-actions"><button type="button" class="criterion-note-toggle" aria-expanded="<?php echo $hasCriterionNote ? 'true' : 'false'; ?>" aria-controls="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"><?php echo $hasCriterionNote ? 'Modifica nota' : 'Aggiungi nota'; ?></button></div><div class="criterion-note-panel" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note_panel'); ?>"<?php echo $hasCriterionNote ? '' : ' hidden'; ?>><label class="form-label" for="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>">Nota (opzionale)</label><textarea class="criterion-note-textarea" id="<?php echo htmlspecialchars($sectionKey . '_' . $fieldName . '_note'); ?>" name="<?php echo htmlspecialchars($sectionKey . '_criterion_notes[' . $fieldName . ']'); ?>"><?php echo htmlspecialchars($criterionNoteValue); ?></textarea></div></div><?php endforeach; ?></div>
 <?php $stepIndex++; endforeach; ?>
@@ -892,11 +892,14 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   const previousStepButton = document.getElementById('previous-step-button');
   const nextStepButton = document.getElementById('next-step-button');
   const backLink = document.querySelector('.evaluation-actions__back-link');
+  const pageTitleElement = document.getElementById('evaluation-page-title');
   const stepElements = Array.from(document.querySelectorAll('.evaluation-step'));
   const sectionsConfig = <?php echo json_encode($sectionsJson, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
   const sectionLabels = <?php echo json_encode($sectionLabels, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
   const thematicDisplayMaxScore = <?php echo json_encode($thematicDisplayMaxScore); ?>;
   const unsavedChangesMessage = 'Hai modificato la valutazione. Uscendo senza salvare perderai le modifiche. Vuoi continuare?';
+  const defaultPageTitle = 'Valutazione del progetto';
+  const proposingEntityPageTitle = 'Valutazione del soggetto';
 
   let activeStepIndex = 0;
   let hasUnsavedChanges = false;
@@ -929,6 +932,15 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   const isScoreStep = (step) => step && step.dataset.scoreStep === '1';
   const getSectionKey = (step) => (step ? (step.dataset.sectionKey || null) : null);
   const isThematicStep = (step) => step && step.dataset.sectionType === 'thematic';
+  const updatePageTitle = () => {
+    if (!pageTitleElement) {
+      return;
+    }
+
+    pageTitleElement.textContent = getSectionKey(getActiveStep()) === 'proposing_entity'
+      ? proposingEntityPageTitle
+      : defaultPageTitle;
+  };
 
   const formatScore = (value) => {
     if (!Number.isFinite(value)) {
@@ -1086,6 +1098,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
     stepElements.forEach((step, index) => {
       step.classList.toggle('active', index === activeStepIndex);
     });
+    updatePageTitle();
     updateNavigationState();
     refreshTotals();
     scrollToPageTop();
@@ -1269,6 +1282,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   transformCriteriaLayout();
   bindCriterionNoteToggles();
   installBrowserBackGuard();
+  updatePageTitle();
 
   window.addEventListener('beforeunload', (event) => {
     if (!hasUnsavedChanges || suppressBeforeUnloadPrompt) {
