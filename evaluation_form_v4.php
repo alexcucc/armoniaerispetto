@@ -428,9 +428,11 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   box-shadow: 0 10px 24px rgba(92, 123, 97, 0.12);
   text-align: center;
   line-height: 1.16;
-  font-size: 1.02rem;
+  font-size: 1.06rem;
   font-weight: 800;
-  color: #274232;
+  letter-spacing: 0.01em;
+  color: #0284c7;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .evaluation-step > .section-note-text + .criteria-group,
