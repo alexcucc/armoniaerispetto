@@ -638,6 +638,7 @@ function v4RenderSectionDescription(array $sectionDefinition): void
   margin: 0;
   line-height: 1.18;
   font-size: 0.95rem;
+  color: #0369a1;
 }
 
 .criteria-info-toggle,
