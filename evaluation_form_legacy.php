@@ -422,15 +422,16 @@
         align-items: center;
         justify-content: center;
         gap: 0.32rem;
-        padding: 0.22rem 0.72rem;
+        max-width: 100%;
+        padding: 0.34rem 0.86rem;
         border-radius: 9999px;
-        border: 1px solid #c7d9c7;
-        background: linear-gradient(135deg, #f3faf4, #edf7ef);
-        color: #1f3b25;
-        font-size: 1rem;
+        border: 1px solid #14532d;
+        background: linear-gradient(135deg, #166534, #15803d);
+        color: #ffffff;
+        font-size: clamp(1rem, 1.25vw, 1.12rem);
         font-weight: 800;
         line-height: 1.15;
-        box-shadow: 0 8px 18px rgba(69, 102, 74, 0.12);
+        box-shadow: 0 8px 18px rgba(20, 83, 45, 0.28);
       }
 
       .evaluation-subject-name__label {
@@ -438,11 +439,12 @@
         font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #4b6a52;
+        color: #dcfce7;
       }
 
       .evaluation-subject-name strong {
-        font-weight: 800;
+        font-weight: 850;
+        overflow-wrap: anywhere;
       }
 
       .evaluation-header .form-note {
