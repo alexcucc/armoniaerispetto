@@ -47,20 +47,12 @@ if ($baseDir && $realPdfPath && is_file($realPdfPath)) {
               </a>
             </div>
             <?php if ($hasPdf): ?>
-            <div class="pdf-mobile-actions">
-              <a href="call_for_proposal_public_download.php?id=<?php echo urlencode((string) $callId); ?>" target="_blank" rel="noopener noreferrer" class="page-button">
-                Apri il PDF del bando
-              </a>
-              <a href="call_for_proposal_public_download.php?id=<?php echo urlencode((string) $callId); ?>&amp;download=1" class="page-button">
-                Scarica il PDF
-              </a>
-            </div>
             <object
               data="call_for_proposal_public_download.php?id=<?php echo urlencode((string) $callId); ?>#toolbar=0&navpanes=0&scrollbar=1&page=1"
               type="application/pdf"
               class="pdf-viewer"
               loading="lazy">
-              <p>Il tuo browser non supporta la visualizzazione di PDF. <a href="call_for_proposal_public_download.php?id=<?php echo urlencode((string) $callId); ?>" target="_blank" rel="noopener noreferrer">Apri il PDF del bando</a>.</p>
+              <p>Il tuo browser non supporta la visualizzazione di PDF.</p>
             </object>
             <?php else: ?>
             <p>Il PDF di questo bando non è al momento disponibile.</p>
@@ -76,6 +68,13 @@ if ($baseDir && $realPdfPath && is_file($realPdfPath)) {
         </div>
       </div>
     </main>
+    <?php if ($hasPdf): ?>
+    <script>
+      if (window.matchMedia('(max-width: 767px)').matches) {
+        window.location.replace('call_for_proposal_public_download.php?id=<?php echo urlencode((string) $callId); ?>');
+      }
+    </script>
+    <?php endif; ?>
     <?php include 'footer.php';?>
   </body>
 </html>

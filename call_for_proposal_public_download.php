@@ -36,12 +36,8 @@ if (strpos($normalizedRealPath, $normalizedBaseDir . '/') !== 0) {
     exit();
 }
 
-$download = filter_input(INPUT_GET, 'download', FILTER_VALIDATE_BOOLEAN);
-$disposition = $download ? 'attachment' : 'inline';
-
 header('Content-Type: application/pdf');
-header('X-Content-Type-Options: nosniff');
-header('Content-Disposition: ' . $disposition . '; filename="call_for_proposal.pdf"');
+header('Content-Disposition: inline; filename="call_for_proposal.pdf"');
 header('Content-Length: ' . filesize($realPath));
 
 readfile($realPath);

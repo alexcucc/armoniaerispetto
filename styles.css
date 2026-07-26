@@ -2879,28 +2879,6 @@ body.document-page .pdf-viewer {
   min-height: 70vh;
 }
 
-.pdf-mobile-actions {
-  display: none;
-}
-
-@media (max-width: 767px) {
-  body.document-page .pdf-viewer {
-    display: none;
-  }
-
-  body.document-page .pdf-mobile-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin: 1rem 0;
-  }
-
-  body.document-page .pdf-mobile-actions .page-button {
-    width: 100%;
-    max-width: none;
-  }
-}
-
 .summary-context__item {
   margin: 0;
   padding: 0.14rem 0.48rem;
