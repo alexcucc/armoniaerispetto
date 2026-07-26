@@ -353,8 +353,13 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 
 .section-note-panel__example-list {
   display: grid;
-  gap: 0.12rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.18rem 0.34rem;
   margin-top: 0.18rem;
+}
+
+.section-note-panel__example-list .section-note-panel__line:first-child {
+  grid-column: 1 / -1;
 }
 
 .criteria-help-copy {
@@ -723,6 +728,9 @@ function v4RenderSectionDescription(array $sectionDefinition): void
 }
 
 @media (min-width: 1001px) {
+  .section-note-panel__example-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
   .criteria-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 84px auto auto;
