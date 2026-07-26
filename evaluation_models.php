@@ -58,7 +58,7 @@ function evaluationGetV5Definition(): array
                     'activities_consistency_score' => [
                         'label' => 'Coerenza attività svolte',
                         'weight' => 4,
-                        'help' => "- Lo statuto è coerente rispetto al bando?\n- Il track record degli ultimi due anni è in linea con quanto previsto dallo statuto e dallo scopo sociale? (es. di incoerenza= nello statuto aiuto ai carcerati e attività realizzate negli ultimi due anni sono volte alla sensibilizz animali. Il convalidatore ne dà evidanza nella checklist)",
+                        'help' => "- Le attività che svolgono concretamente sono coerenti rispetto allo statuto?\n- Il track record degli ultimi due anni è in linea con quanto previsto dallo statuto e dallo scopo sociale? (es. di incoerenza= nello statuto aiuto ai carcerati e attività realizzate negli ultimi due anni sono volte alla sensibilizz animali. Il convalidatore ne dà evidanza nella checklist)",
                     ],
                     'experience_score' => [
                         'label' => 'Esperienza',
